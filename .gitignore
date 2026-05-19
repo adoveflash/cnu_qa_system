@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets
+.env
+*.key
+
+# Data (용량 큰 것들)
+data/corpus/raw/
+data/vector_db/
+models/lora_adapter/*.bin
+models/lora_adapter/*.safetensors
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
