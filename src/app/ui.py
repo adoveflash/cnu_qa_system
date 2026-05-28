@@ -1,6 +1,7 @@
-"""Gradio 웹 UI 모듈.
+"""Gradio 챗봇 웹 UI 모듈.
 
-충남대학교 학내 정보 Q&A 시스템 인터페이스.
+충남대학교 학내 정보 Q&A 챗봇 인터페이스.
+대화 이력을 유지하는 챗봇 형태로 동작한다.
 """
 
 from __future__ import annotations
@@ -9,13 +10,31 @@ from typing import Any
 
 import gradio as gr
 
+CSS = """
+.chatbot-header {
+    text-align: center;
+    padding: 1.5rem 1rem 0.5rem;
+}
+.chatbot-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #003876;
+    margin-bottom: 0.25rem;
+}
+.chatbot-header p {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+footer { display: none !important; }
+"""
+
 
 def create_app(
     retriever: Any,
     model: Any,
     tokenizer: Any,
 ) -> gr.Blocks:
-    """Gradio UI를 생성한다.
+    """Gradio 챗봇 UI를 생성한다.
 
     Args:
         retriever: Retriever 인스턴스
@@ -27,54 +46,54 @@ def create_app(
     """
     from src.model.inference import generate_answer
 
-    def answer_question(question: str) -> str:
-        """질문에 대한 답변을 생성한다."""
-        if not question.strip():
+    def respond(message: str, history: list[dict[str, str]]) -> str:
+        """사용자 메시지에 대한 챗봇 응답을 생성한다."""
+        if not message.strip():
             return "질문을 입력해주세요."
 
-        context, urls = retriever.build_context(question)
+        context, urls = retriever.build_context(message)
 
         if not context:
-            return "관련 정보를 찾을 수 없습니다."
+            return "관련 정보를 찾을 수 없습니다. 다른 키워드로 질문해보세요."
 
-        answer = generate_answer(question, context, urls, model, tokenizer)
+        answer = generate_answer(message, context, urls, model, tokenizer)
         return answer
 
-    with gr.Blocks(title="충남대학교 학내 정보 Q&A") as app:
-        gr.Markdown(
+    with gr.Blocks(css=CSS, title="CNU Q&A 챗봇") as app:
+        gr.HTML(
             """
-            # 충남대학교 학내 정보 Q&A 시스템
-            학사, 장학금, 취업, 컴퓨터융합학부 정보를 질문해보세요.
+            <div class="chatbot-header">
+                <h1>충남대학교 학내 정보 Q&A</h1>
+                <p>학사 | 장학금 | 취업 | 컴퓨터융합학부</p>
+            </div>
             """
         )
 
-        with gr.Row():
-            question_input = gr.Textbox(
-                label="질문",
-                placeholder="예: 졸업 요건이 어떻게 되나요?",
-                lines=2,
-            )
-
-        submit_btn = gr.Button("질문하기", variant="primary")
-
-        answer_output = gr.Textbox(
-            label="답변",
-            lines=10,
-            interactive=False,
-        )
-
-        gr.Examples(
+        gr.ChatInterface(
+            fn=respond,
+            type="messages",
+            chatbot=gr.Chatbot(
+                height=520,
+                type="messages",
+                show_copy_button=True,
+                placeholder="안녕하세요! 충남대학교 학내 정보에 대해 무엇이든 물어보세요.",
+            ),
+            textbox=gr.Textbox(
+                placeholder="질문을 입력하세요...",
+                show_label=False,
+                container=False,
+            ),
             examples=[
                 "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
-                "수강신청은 언제 하나요?",
+                "수강신청은 언제, 어떻게 하나요?",
+                "교내 장학금 종류와 신청 방법을 알려주세요.",
                 "인재개발원에서 하는 취업 프로그램이 뭐가 있나요?",
-                "장학금 신청은 어떻게 하나요?",
             ],
-            inputs=question_input,
+            submit_btn="전송",
+            retry_btn="다시 생성",
+            undo_btn="이전으로",
+            clear_btn="대화 초기화",
         )
-
-        submit_btn.click(fn=answer_question, inputs=question_input, outputs=answer_output)
-        question_input.submit(fn=answer_question, inputs=question_input, outputs=answer_output)
 
     return app
 
@@ -85,9 +104,7 @@ def launch(
     tokenizer: Any,
     share: bool = True,
 ) -> None:
-    """Gradio UI + REST API를 함께 실행한다.
-
-    Gradio 웹앱과 FastAPI REST API(/api/ask)를 동일 서버에서 제공한다.
+    """Gradio 챗봇 UI + REST API를 함께 실행한다.
 
     Args:
         retriever: Retriever 인스턴스
@@ -100,5 +117,4 @@ def launch(
     gradio_app = create_app(retriever, model, tokenizer)
     fastapi_app = create_api(retriever, model, tokenizer)
 
-    # Gradio를 FastAPI에 마운트
     gradio_app.launch(share=share, app=fastapi_app)
