@@ -80,7 +80,6 @@ def create_app(
             type="messages",
             chatbot=gr.Chatbot(
                 height=520,
-                show_copy_button=True,
                 placeholder="안녕하세요! 충남대학교 학내 정보에 대해 무엇이든 물어보세요.",
             ),
             textbox=gr.Textbox(
