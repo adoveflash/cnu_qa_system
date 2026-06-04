@@ -1,21 +1,50 @@
 # CLAUDE.md
 
-충남대학교 학내 정보 Q/A 시스템 — 자연어처리 텀프로젝트
+충남대학교 Campus ChatBot — 자연어처리 텀프로젝트
 
 ## 프로젝트 개요
 
-- **목적**: 충남대 학사·장학금·취업·컴공과 정보를 RAG + LoRA 파인튜닝 LLM으로 답변하는 Q/A 시스템
-- **언어**: Python 3.10+
-- **마감**: 기말고사 날 자정
-- **제출물**: Colab 노트북 1개 (`submission.ipynb`)
+- **목적**: 충남대 재학생을 위한 AI 챗봇 (질문 분류 + RAG 기반 챗봇 + 실시간 정보 반영)
+- **언어**: Python 3.10.12
+- **마감**: 2026-06-12 (금) 자정 (사이버캠퍼스 제출)
+- **제출물**: `Termproject_{이름}.zip` (소스코드, 모델 파일/다운로드 링크, 발표자료, UI 영상)
+- **참고 PDF**: `2_term_project_QA.pdf` (초기 과제 설명), `2026_자연어처리_term_project.pdf` (최종 과제 명세)
+
+## 평가 항목 (총 130점)
+
+| Task   | 내용                                       | 배점 | 평가 방식                                                 |
+| ------ | ------------------------------------------ | ---- | --------------------------------------------------------- |
+| Task 1 | 질문 유형 분류기 (Question Classification) | 40   | F1 Score (정량)                                           |
+| Task 2 | 챗봇 모델 및 인터페이스 (Chat Model & UI)  | 60   | 정성 평가 (UI 구동 10 + Chat Interface 10 + 맥락 응답 40) |
+| Task 3 | 실시간 정보 반영 (Optional)                | 30   | 정성 평가 (실제 정보 동기화 정확성)                       |
+
+### Task 1: 질문 유형 분류기
+
+- 5개 카테고리로 분류, F1 Score로 평가
+- **라벨**: 졸업요건=0, 학교 공지사항=1, 학사일정=2, 식단 안내=3, 통학/셔틀 버스=4
+- 입력: `data/test_cls.json` (`[{"question": "..."}]`)
+- 출력: `outputs/cls_output.json` (`[{"question": "...", "label": N}]`)
+- 실행 파일: `src/classifier.ipynb`
+
+### Task 2: 챗봇 모델 및 인터페이스
+
+- UI: 사용자가 질문 입력 → 응답 확인 (영상으로 평가)
+- Chat Model: 테스트셋에 대한 배치 추론 결과 JSON 제출
+- 입력: `data/test_chat.json` (`[{"user": "..."}]`)
+- 출력: `outputs/chat_output.json` (`[{"user": "...", "model": "..."}]`)
+- 실행 파일: `chatbot.sh` (JSON 생성 + UI 실행)
+
+### Task 3: 실시간 정보 반영 (Optional)
+
+- RAG, Crawling 등으로 최신 정보 반영
+- tool calling 사용 가능
+- 입력: `data/test_realtime.json` (`[{"user": "..."}]`)
+- 출력: `outputs/realtime_output.json` (`[{"user": "...", "model": "..."}]`)
 
 ## 절대 금지
 
-- 평가용 Q&A 100개를 학습 데이터에 포함하지 않는다
+- 평가용 테스트셋(`test_cls.json`, `test_chat.json`, `test_realtime.json`)을 학습 데이터에 포함하지 않는다
 - KorQuAD 등 **기존 공개 Q&A 데이터셋을 학습에 사용하지 않는다** (과제 규정 위반)
-- 학번/비밀번호/API 키를 코드·문서·커밋에 평문으로 쓰지 않는다
-- 다른 사람 계정으로 로그인하지 않는다 (본인 계정만 사용)
-- robots.txt에서 `Disallow: /`인 도메인(`www.cnu.ac.kr`)은 자동 크롤링하지 않는다 (단, `plus.cnu.ac.kr/html/kr/`, `plus.cnu.ac.kr/html/hub/`는 학술 목적 수집 허용)
 - User-Agent를 검색엔진 봇(Googlebot 등)으로 위장하지 않는다
 - 수집한 데이터에 본인 또는 타인의 개인정보(학번, 이름, 성적 등)를 남기지 않는다 — 반드시 마스킹
 - Colab 무료 T4 (15GB VRAM)에서 OOM 나는 설정으로 제출하지 않는다
@@ -37,11 +66,18 @@
 위 항목을 변경하려면 메모리 한계 등 **수치 근거**를 제시한다. 단순 취향 변경은 거부한다.
 모델 교체는 `src/model/base.py`에서 한 줄 변경으로 가능하도록 설계한다.
 
-## 도메인 범위
+## 도메인 범위 (5개 카테고리)
 
-다음 영역을 다룬다.
+과제 명세에서 지정한 5개 카테고리:
 
-- 학사 정보 (수강신청, 졸업 요건, 휴·복학, 학사일정)
+1. **졸업요건** (label=0) — 졸업학점, 전공/교양 졸업 요건 등
+2. **학교 공지사항** (label=1) — 학교/학과 공지사항
+3. **학사일정** (label=2) — 수강 신청/정정 기간, 학기 일정 등
+4. **식단 안내** (label=3) — 교내 식당의 주간/일일 메뉴
+5. **통학/셔틀 버스** (label=4) — 버스 시간표, 정류장 위치, 운행 여부 등
+
+추가로 다루는 영역 (챗봇 응답용):
+
 - 장학금 (교내·외 종류, 신청 절차, 자격 요건)
 - 취업·진로 (인재개발원 프로그램, 채용 공지)
 - 컴퓨터융합학부 정보 (전공 트랙, 커리큘럼, 학과 공지)
@@ -52,11 +88,27 @@ robots.txt 정책상 자동 크롤링 가능 또는 사람-속도 수집이 허�
 
 - `plus.cnu.ac.kr/html/hub/` (4처1국 통합 허브) — `/html/` 경로는 검색엔진 봇에 Allow
 - `plus.cnu.ac.kr/html/kr/` (학교 공식 안내)
-- `computer.cnu.ac.kr` (컴퓨터융합학부) — 별도 robots.txt 확인 필요
-- `job.cnu.ac.kr` (인재개발원) — 별도 robots.txt 확인 필요
+  - `/html/kr/sub05/sub05_050403.html` — 셔틀버스 시간표, 노선, 정류장
+  - `/html/kr/sub05/sub05_05050101.html` — 교내 식당 위치/운영시간
+  - `/html/kr/sub05/sub05_050404.html` — 금주의식단 안내
+  - `/html/kr/sub01/sub01_01080302.html` — 교통편 안내 (시내버스 노선)
+- `computer.cnu.ac.kr` (컴퓨터융합학부)
+- `job.cnu.ac.kr` (인재개발원)
 - `sugang.cnu.ac.kr/login/data/2026_Sugang.pdf` (수강신청 매뉴얼)
 
-### 수집 대상 도메인 (2차, 시간 여유 시)
+### 수집 대상 도메인 (2차 — 식단/셔틀 보강)
+
+robots.txt 없음(404) = 명시적 차단 없음. 학술 목적 수집 허용:
+
+- `mobileadmin.cnu.ac.kr/food/index.jsp` — **주간 식단 메뉴** (조식/중식/석식, 가격)
+  - 제1~4학생회관 + 생활과학대학 식당
+  - JS 렌더링 → `playwright` 필요
+- `www.cnucoop.co.kr` — **생활협동조합 식당 안내** (robots.txt 없음)
+  - `/ezhtml2.php?html=canteen` — 식당 목록, 위치, 운영시간
+  - **기숙사 식당(남학생 기숙사 식당, N-14)** 포함
+  - 정적 HTML → `requests` + `BeautifulSoup` (EUC-KR 인코딩 주의)
+
+### 수집 대상 도메인 (3차, 시간 여유 시)
 
 본인 계정 세션 쿠키를 활용한 인증 후 수집. **모든 학생에게 공통인 정보만 수집**하며 개인정보 페이지는 제외:
 
@@ -66,33 +118,46 @@ robots.txt 정책상 자동 크롤링 가능 또는 사람-속도 수집이 허�
 ### 제외
 
 - `www.cnu.ac.kr` — robots.txt 전면 Disallow
+- `dorm.cnu.ac.kr` — robots.txt 전면 Disallow (기숙사 식단은 `cnucoop.co.kr`에서 대체 수집)
 - 본인 또는 타 학생의 개인정보 페이지 (성적, 등록금 납부내역, 장학금 수령 내역 등)
 - `with.cnu.ac.kr` (학생 커뮤니티 — 타 학생 게시물 포함, 개인정보 리스크)
 
 ## 디렉터리 구조
 
+과제 명세 기준 제출 구조 (빨간색 = 평가용 고정 경로):
+
 ```
-.
-├── CLAUDE.md
-├── README.md
-├── requirements.txt
-├── submission.ipynb            # 제출용 — 평가자가 "모두 실행"만으로 결과를 봐야 함
+Termproject_{이름}/
+├── data/
+│   ├── test_cls.json           # 평가용 (조교 제공, 고정 경로)
+│   ├── test_chat.json          # 평가용 (조교 제공, 고정 경로)
+│   ├── test_realtime.json      # 평가용 (조교 제공, optional)
+│   ├── train.json              # 학습 데이터 (직접 구축)
+│   └── valid.json              # 검증 데이터 (직접 구축)
 ├── src/
+│   ├── classifier.ipynb        # Task 1 — 평가 시 이것만 실행
+│   ├── chatbot_ui.py           # Task 2 — 챗봇 UI
+│   ├── realtime_model.py       # Task 3 — 실시간 정보 반영
 │   ├── crawl/                  # 크롤러, HTML/PDF 정제
 │   ├── data/                   # 청킹, Q&A 자동 생성, 개인정보 마스킹
 │   ├── rag/                    # 임베딩, 벡터 DB, 검색
 │   ├── model/                  # base 로드, LoRA 학습, 추론
-│   ├── eval/                   # LLM judge, latency 측정
-│   └── app/                    # Gradio UI
-├── data/
-│   ├── corpus/                 # 크롤링 원본 (.jsonl)
-│   ├── qa/train.jsonl
-│   ├── qa/eval.jsonl           # 100개, 학습 절대 포함 금지
-│   └── vector_db/
-├── models/lora_adapter/        # 어댑터만, < 200MB
+│   └── eval/                   # 평가 스크립트
+├── model/
+│   └── model.bin               # 학습된 모델/어댑터
+├── outputs/                    # 실행 결과 (자동 생성)
+│   ├── cls_output.json         # Task 1 결과
+│   ├── chat_output.json        # Task 2 결과
+│   └── realtime_output.json    # Task 3 결과
+├── chatbot.sh                  # Task 2 — 평가 시 이것만 실행 (JSON 생성 + UI)
+├── requirements.txt
+├── README.md
+├── CLAUDE.md
 └── docs/
-    └── decisions/              # 의사결정 기록 (왜 이 모델? 왜 이 구조?)
+    └── decisions/              # 의사결정 기록
 ```
+
+**평가 시 실행 파일**: `src/classifier.ipynb`와 `chatbot.sh`만 실행
 
 `src/<모듈>/AGENTS.md`가 있다면 그 디렉터리 작업 시 함께 읽는다.
 
@@ -145,15 +210,28 @@ robots.txt 정책상 자동 크롤링 가능 또는 사람-속도 수집이 허�
 - 컨텍스트에 없는 내용은 추측하지 않는다 → "확인되지 않은 정보입니다" 응답
 - 시스템 프롬프트: "충남대학교 학내 정보 안내 도우미"로 고정
 
-## 평가 노트북 요건
+## 평가 실행 요건
 
-`submission.ipynb`는 다음 순서로 동작한다. 중간에 사용자 입력을 요구하지 않는다.
+### Task 1: `src/classifier.ipynb`
 
-1. `pip install` 일괄 설치 (런타임 5분 이내)
-2. base 모델 4bit + LoRA 어댑터 로드 (어댑터는 HF Hub에서 다운로드)
-3. 벡터 DB 인덱스 다운로드 (Google Drive 또는 HF Hub)
-4. Gradio UI 실행 (`share=True`)
-5. 평가용 100개 일괄 추론 → LLM judge 점수 + latency 출력
+Colab에서 실행. `data/test_cls.json`을 읽어 `outputs/cls_output.json` 생성.
+
+### Task 2: `chatbot.sh`
+
+실행 시 두 가지 동작:
+
+1. `data/test_chat.json`을 읽어 `outputs/chat_output.json` 생성
+2. 챗봇 UI 실행 (사용자 대화 가능)
+
+### Task 3 (Optional): `chatbot.sh` 내에서 처리
+
+`data/test_realtime.json`을 읽어 `outputs/realtime_output.json` 생성.
+
+### 환경
+
+- Python 3.10.12, torch 2.5.1, pytorch-lightning 2.4.0 (사용 시)
+- Colab 환경에서 실행 가능한 .ipynb 또는 .py
+- `requirements.txt` 제출 필수
 
 ## 의사결정 기록
 
@@ -170,18 +248,17 @@ robots.txt 정책상 자동 크롤링 가능 또는 사람-속도 수집이 허�
 - `001-base-model-검증.md`: Qwen2.5-7B 4bit 채택 (T4 VRAM 5.33GB 검증)
 - `002-크롤링-범위.md`: plus.cnu.ac.kr/html/, computer, job 도메인 한정
 
-## 작업 시작 전 체크
+## 제출 체크리스트
 
-- [ ] 현재 어느 단계 작업인가? (crawl / data / rag / train / eval / app)
-- [ ] 변경이 `submission.ipynb` 실행에 영향을 주는가?
-- [ ] 새 의존성이 Colab T4에서 동작하는가?
-
-## 작업 종료 전 체크
-
-- [ ] `ruff check` 통과
-- [ ] `submission.ipynb`가 처음부터 끝까지 실행되는가?
-- [ ] 평가용 100개를 건드리지 않았는가?
+- [ ] `src/classifier.ipynb` 실행 → `outputs/cls_output.json` 정상 생성
+- [ ] `chatbot.sh` 실행 → `outputs/chat_output.json` 정상 생성 + UI 실행
+- [ ] (optional) `outputs/realtime_output.json` 정상 생성
+- [ ] UI 작동 영상 (2분 내외) 녹화
+- [ ] 발표 자료 (5분 내외) 준비 — 구현 방법 + 챗 인터페이스 동작 여부
+- [ ] `requirements.txt` 최신화
 - [ ] 개인정보가 데이터셋에 남아 있지 않은가?
+- [ ] Colab T4에서 OOM 없이 동작하는가?
+- [ ] `ruff check` 통과
 - [ ] 의사결정이 있었다면 `docs/decisions/`에 기록했는가?
 
 ---

@@ -3,6 +3,8 @@
 from datetime import datetime
 from pathlib import Path
 
+from .crawl_meal import crawl_meal
+from .crawl_shuttle import crawl_shuttle
 from .pdf_crawler import crawl_pdf
 from .static_crawler import crawl_board_offset, crawl_static
 
@@ -135,6 +137,22 @@ def main() -> None:
         n = crawl_pdf(url, out, source_name=name)
         print(f"  저장 완료: {n}건")
         total += n
+
+    print("\n" + "=" * 60)
+    print("5단계: 식단 크롤링 (plus, cnucoop, mobileadmin)")
+    print("=" * 60)
+    out = RAW_DIR / f"meal_{TODAY}.jsonl"
+    n = crawl_meal(out)
+    print(f"  저장 완료: {n}건")
+    total += n
+
+    print("\n" + "=" * 60)
+    print("6단계: 셔틀버스/교통 크롤링 (plus)")
+    print("=" * 60)
+    out = RAW_DIR / f"shuttle_{TODAY}.jsonl"
+    n = crawl_shuttle(out)
+    print(f"  저장 완료: {n}건")
+    total += n
 
     print("\n" + "=" * 60)
     print(f"총 저장 문서 수: {total}")

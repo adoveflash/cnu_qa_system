@@ -18,4 +18,4 @@ models/lora_adapter/*.safetensors
 .ipynb_checkpoints/
 
 # OS
-.DS_Store
+.DS_Store.env

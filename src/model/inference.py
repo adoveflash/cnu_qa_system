@@ -87,3 +87,29 @@ def generate_answer(
         answer += url_text
 
     return answer
+
+
+def fallback_answer(question: str, context: str, urls: list[str]) -> str:
+    """모델 없이 RAG 컨텍스트만으로 응답을 구성한다.
+
+    Args:
+        question: 사용자 질문
+        context: RAG 검색 컨텍스트
+        urls: 출처 URL 리스트
+
+    Returns:
+        RAG 기반 응답 문자열
+    """
+    if not context:
+        return "관련 정보를 찾을 수 없습니다."
+
+    excerpt = context[:500]
+    if len(context) > 500:
+        excerpt += "..."
+
+    answer = f"검색된 정보를 바탕으로 답변드립니다.\n\n{excerpt}"
+
+    if urls:
+        answer += "\n\n출처:\n" + "\n".join(f"- {url}" for url in urls)
+
+    return answer
