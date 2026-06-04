@@ -12,24 +12,6 @@ import gradio as gr
 
 from src.model.inference import generate_answer, fallback_answer
 
-CSS = """
-.chatbot-header {
-    text-align: center;
-    padding: 1.5rem 1rem 0.5rem;
-}
-.chatbot-header h1 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #003876;
-    margin-bottom: 0.25rem;
-}
-.chatbot-header p {
-    font-size: 0.9rem;
-    color: #64748b;
-}
-footer { display: none !important; }
-"""
-
 EXAMPLES = [
     "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
     "이번 학기 수강신청은 언제 시작하나요?",
@@ -66,33 +48,32 @@ def create_app(
         return fallback_answer(message, context, urls)
 
     with gr.Blocks(title="CNU Q&A 챗봇") as app:
-        gr.HTML(
-            """
-            <div class="chatbot-header">
-                <h1>충남대학교 학내 정보 Q&A</h1>
-                <p>졸업요건 | 공지사항 | 학사일정 | 식단 | 셔틀버스</p>
-            </div>
-            """
+        gr.Markdown(
+            "# 충남대학교 학내 정보 Q&A\n"
+            "졸업요건 | 공지사항 | 학사일정 | 식단 | 셔틀버스"
         )
 
-        gr.ChatInterface(
-            fn=respond,
-            type="messages",
-            chatbot=gr.Chatbot(
-                height=520,
-                placeholder="안녕하세요! 충남대학교 학내 정보에 대해 무엇이든 물어보세요.",
-            ),
-            textbox=gr.Textbox(
-                placeholder="질문을 입력하세요...",
-                show_label=False,
-                container=False,
-            ),
-            examples=EXAMPLES,
-            submit_btn="전송",
-            retry_btn="다시 생성",
-            undo_btn="이전으로",
-            clear_btn="대화 초기화",
-        )
+        chatbot = gr.Chatbot(height=520)
+        msg = gr.Textbox(placeholder="질문을 입력하세요...", show_label=False)
+
+        with gr.Row():
+            submit_btn = gr.Button("전송", variant="primary")
+            clear_btn = gr.Button("대화 초기화")
+
+        gr.Examples(examples=EXAMPLES, inputs=msg)
+
+        def user_submit(message: str, history: list) -> tuple:
+            """사용자 메시지 제출 처리."""
+            if not message.strip():
+                return "", history
+            history = history + [{"role": "user", "content": message}]
+            answer = respond(message, history)
+            history = history + [{"role": "assistant", "content": answer}]
+            return "", history
+
+        submit_btn.click(user_submit, [msg, chatbot], [msg, chatbot])
+        msg.submit(user_submit, [msg, chatbot], [msg, chatbot])
+        clear_btn.click(lambda: ([], ""), outputs=[chatbot, msg])
 
     return app
 
