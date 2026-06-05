@@ -3,6 +3,7 @@
 충남대학교 학내 정보 Q&A 챗봇 인터페이스.
 모델 유무에 관계없이 동작한다 (모델 없으면 RAG fallback).
 스트리밍 지원: 모델이 있으면 토큰 단위로 실시간 출력.
+Gradio 5.x / 6.x 호환.
 """
 
 from __future__ import annotations
@@ -13,6 +14,8 @@ from typing import Any
 import gradio as gr
 
 from src.model.inference import fallback_answer, generate_answer_stream
+
+_GRADIO_6 = int(gr.__version__.split(".")[0]) >= 6
 
 _CSS = """
 .gradio-container {
@@ -74,6 +77,37 @@ _CATEGORIES = {
 }
 
 
+def _make_chatbot_kwargs() -> dict:
+    """Gradio 버전에 맞는 Chatbot kwargs를 반환한다."""
+    kwargs: dict[str, Any] = {"height": 480, "show_label": False}
+    if not _GRADIO_6:
+        kwargs["type"] = "tuples"
+        kwargs["placeholder"] = "질문을 입력하거나 위 카테고리를 눌러보세요."
+    return kwargs
+
+
+def _make_blocks_kwargs() -> dict:
+    """Gradio 버전에 맞는 Blocks kwargs를 반환한다."""
+    kwargs: dict[str, Any] = {"title": "CNU Q&A 챗봇"}
+    if not _GRADIO_6:
+        kwargs["theme"] = gr.themes.Soft(
+            primary_hue=gr.themes.colors.blue,
+            secondary_hue=gr.themes.colors.slate,
+            neutral_hue=gr.themes.colors.slate,
+            font=gr.themes.GoogleFont("Noto Sans KR"),
+        )
+        kwargs["css"] = _CSS
+    return kwargs
+
+
+def _make_launch_kwargs(share: bool) -> dict:
+    """Gradio 버전에 맞는 launch kwargs를 반환한다."""
+    kwargs: dict[str, Any] = {"share": share}
+    if _GRADIO_6:
+        kwargs["css"] = _CSS
+    return kwargs
+
+
 def create_app(
     retriever: Any,
     model: Any | None = None,
@@ -89,14 +123,7 @@ def create_app(
     Returns:
         Gradio Blocks 앱
     """
-    theme = gr.themes.Soft(
-        primary_hue=gr.themes.colors.blue,
-        secondary_hue=gr.themes.colors.slate,
-        neutral_hue=gr.themes.colors.slate,
-        font=gr.themes.GoogleFont("Noto Sans KR"),
-    )
-
-    with gr.Blocks(title="CNU Q&A 챗봇", theme=theme, css=_CSS) as app:
+    with gr.Blocks(**_make_blocks_kwargs()) as app:
         # 헤더
         gr.HTML(
             '<div class="header-container">'
@@ -114,12 +141,7 @@ def create_app(
                 cat_buttons[label] = gr.Button(label, size="sm", elem_classes="category-btn")
 
         # 채팅 영역
-        chatbot = gr.Chatbot(
-            height=480,
-            placeholder="질문을 입력하거나 위 카테고리를 눌러보세요.",
-            show_label=False,
-            type="tuples",
-        )
+        chatbot = gr.Chatbot(**_make_chatbot_kwargs())
 
         # 입력 영역
         with gr.Row(elem_classes="input-row"):
@@ -133,7 +155,6 @@ def create_app(
 
         with gr.Row():
             clear_btn = gr.Button("대화 초기화", size="sm", variant="secondary")
-            gr.Markdown(value="", visible=True)
 
         def add_user_message(message: str, history: list) -> tuple[str, list]:
             """사용자 메시지를 히스토리에 추가하고 입력창을 비운다."""
@@ -149,6 +170,10 @@ def create_app(
                 return
 
             question = history[-1][0]
+            # Gradio 6에서 content가 dict로 올 수 있음
+            if isinstance(question, dict):
+                question = question.get("value", question.get("text", str(question)))
+
             context, urls = retriever.build_context(question, top_k=5)
 
             if model is not None and tokenizer is not None:
@@ -196,4 +221,4 @@ def launch(
     """
     app = create_app(retriever, model, tokenizer)
     print("[ui] Gradio UI 시작...")
-    app.launch(share=share)
+    app.launch(**_make_launch_kwargs(share))
