@@ -18,15 +18,26 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStream
 from src.model.base import load_model, load_tokenizer
 from src.tools.definitions import TOOLS, execute_tool
 
-_SYSTEM_PROMPT = (
-    "당신은 충남대학교 학내 정보 안내 도우미입니다.\n"
-    "규칙:\n"
-    "1. 반드시 주어진 참고 자료에 있는 정보만 사용하여 답변하세요.\n"
-    "2. 참고 자료에 없는 내용은 추측하지 말고 '확인되지 않은 정보입니다'라고 답하세요.\n"
-    "3. 답변은 간결하고 정확하게 작성하세요.\n"
-    "4. 답변 끝에 출처 URL을 포함하세요.\n"
-    "5. 실시간 정보(식단, 셔틀버스, 학사일정, 공지사항)가 필요하면 도구를 호출하세요."
-)
+def _build_system_prompt() -> str:
+    """오늘 날짜를 포함한 시스템 프롬프트를 생성한다."""
+    from datetime import datetime
+
+    today = datetime.now().strftime("%Y-%m-%d (%A)")
+    return (
+        f"당신은 충남대학교 학내 정보 안내 도우미입니다. 오늘 날짜: {today}\n"
+        "규칙:\n"
+        "1. 반드시 주어진 참고 자료에 있는 정보만 사용하여 답변하세요.\n"
+        "2. 참고 자료에 없는 내용은 추측하지 말고 '확인되지 않은 정보입니다'라고 답하세요.\n"
+        "3. 답변은 간결하고 정확하게 작성하세요.\n"
+        "4. 답변 끝에 출처 URL을 포함하세요.\n"
+        "5. 실시간 정보(식단, 셔틀버스, 학사일정, 공지사항)가 필요하면 도구를 호출하세요.\n"
+        "6. 도구 호출 시 날짜 인자가 필요하면 오늘 날짜를 사용하세요.\n"
+        "7. 도구 결과를 답변에 포함할 때 원본 데이터를 그대로 전달하세요. 없는 내용을 지어내지 마세요.\n"
+        "8. 반드시 한국어로 답변하세요."
+    )
+
+
+_SYSTEM_PROMPT = _build_system_prompt()
 _SEED = 42
 _THINK_TAG_RE = re.compile(r"<think>.*?</think>\s*", flags=re.DOTALL)
 _TOOL_CALL_RE = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", flags=re.DOTALL)
