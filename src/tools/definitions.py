@@ -96,8 +96,103 @@ TOOLS = [
 # ── Tool 실행 함수 ──────────────────────────────────────────────────────────
 
 
+def _fetch_dorm_meal(date: str) -> str:
+    """기숙사 식단을 크롤링한다 (dorm.cnu.ac.kr).
+
+    Args:
+        date: YYYY-MM-DD 형식 날짜
+
+    Returns:
+        정리된 기숙사 식단 텍스트
+    """
+    try:
+        resp = _SESSION.get(
+            "https://dorm.cnu.ac.kr/html/kr/sub03/sub03_0304.html",
+            timeout=30,
+        )
+        resp.encoding = resp.apparent_encoding or "utf-8"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for tag in soup.find_all(["script", "style", "nav", "footer", "header"]):
+            tag.decompose()
+
+        # 날짜에서 일(day) 추출 — 페이지는 "6(금)" 같은 형식 사용
+        dt = datetime.strptime(date, "%Y-%m-%d")
+        day_num = dt.day
+        weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][dt.weekday()]
+        target_label = f"{day_num}({weekday_kr})"
+
+        body = soup.find("body")
+        if not body:
+            return ""
+
+        text = body.get_text(separator="\n", strip=True)
+        lines = text.split("\n")
+
+        # 해당 날짜 섹션 찾기
+        capture = False
+        day_lines: list[str] = []
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            # 해당 날짜 시작
+            if target_label in line:
+                capture = True
+                day_lines.append(f"--- {date} ({weekday_kr}) ---")
+                continue
+            # 다음 날짜가 시작되면 중단
+            if capture and re.match(r"^\d{1,2}\([월화수목금토일]\)", line):
+                break
+            if capture:
+                day_lines.append(line)
+
+        if day_lines:
+            return "[기숙사 식단]\n" + "\n".join(day_lines[:40])
+    except Exception as e:
+        return f"[기숙사] 조회 실패: {e}"
+    return ""
+
+
+def _fetch_student_hall_meal(date: str) -> str:
+    """학생회관 식단을 크롤링한다 (mobileadmin.cnu.ac.kr).
+
+    Args:
+        date: YYYY-MM-DD 형식 날짜
+
+    Returns:
+        정리된 학생회관 식단 텍스트
+    """
+    try:
+        date_str = date.replace("-", "")
+        resp = _SESSION.get(
+            f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_str}",
+            timeout=30,
+        )
+        resp.encoding = resp.apparent_encoding or "utf-8"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for tag in soup.find_all(["script", "style"]):
+            tag.decompose()
+
+        tables = soup.find_all("table")
+        parts: list[str] = []
+        for table in tables:
+            for tr in table.find_all("tr"):
+                cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
+                row = " | ".join(c for c in cells if c)
+                if row and "운영안함" not in row:
+                    parts.append(row)
+
+        if parts:
+            return f"[학생회관 식단 {date}]\n" + "\n".join(parts[:40])
+    except Exception as e:
+        return f"[학생회관] 조회 실패: {e}"
+    return ""
+
+
 def get_meal_menu(date: str | None = None) -> str:
     """교내 식당 식단을 크롤링하여 반환한다.
+
+    기숙사 식단(dorm.cnu.ac.kr)과 학생회관 식단(mobileadmin.cnu.ac.kr)을 조회한다.
 
     Args:
         date: 조회 날짜 (YYYY-MM-DD). None이면 오늘.
@@ -110,60 +205,20 @@ def get_meal_menu(date: str | None = None) -> str:
 
     results: list[str] = []
 
-    # 1) cnucoop.co.kr — 생협 식당 (기숙사 포함)
-    try:
-        resp = _SESSION.get("https://www.cnucoop.co.kr/ezhtml2.php?html=canteen", timeout=30)
-        if "euc-kr" in resp.headers.get("Content-Type", "").lower():
-            resp.encoding = "euc-kr"
-        elif resp.apparent_encoding:
-            resp.encoding = resp.apparent_encoding
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for tag in soup.find_all(["script", "style", "nav", "footer", "header"]):
-            tag.decompose()
-        body = soup.find("body")
-        if body:
-            text = body.get_text(separator="\n", strip=True)
-            text = re.sub(r"\n{3,}", "\n\n", text)
-            if len(text) > 50:
-                results.append(f"[생협 식당 안내]\n{text[:2000]}")
-    except Exception as e:
-        results.append(f"[생협] 조회 실패: {e}")
+    # 1) 기숙사 식단
+    dorm = _fetch_dorm_meal(date)
+    if dorm:
+        results.append(dorm)
 
     time.sleep(CRAWL_DELAY)
 
-    # 2) mobileadmin.cnu.ac.kr — 주간 식단
-    try:
-        date_str = date.replace("-", "")
-        resp = _SESSION.get(
-            f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_str}",
-            timeout=30,
-        )
-        resp.encoding = resp.apparent_encoding or "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for tag in soup.find_all(["script", "style"]):
-            tag.decompose()
-        tables = soup.find_all("table")
-        parts: list[str] = []
-        for table in tables:
-            for tr in table.find_all("tr"):
-                cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
-                row = " | ".join(c for c in cells if c)
-                if row:
-                    parts.append(row)
-        if parts:
-            results.append(f"[식단표 {date}]\n" + "\n".join(parts[:50]))
-        else:
-            body = soup.find("body")
-            if body:
-                text = body.get_text(separator="\n", strip=True)
-                text = re.sub(r"\n{3,}", "\n\n", text)
-                if len(text) > 50:
-                    results.append(f"[식단표 {date}]\n{text[:1500]}")
-    except Exception as e:
-        results.append(f"[식단표] 조회 실패: {e}")
+    # 2) 학생회관 식단
+    hall = _fetch_student_hall_meal(date)
+    if hall:
+        results.append(hall)
 
     if not results:
-        return "식단 정보를 가져올 수 없습니다."
+        return f"{date} 식단 정보를 가져올 수 없습니다. 주말이거나 운영하지 않는 날일 수 있습니다."
     return "\n\n".join(results)
 
 
