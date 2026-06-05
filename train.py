@@ -35,8 +35,8 @@ LOCAL_OUTPUT = "models/lora_adapter"
 CKPT_DIR = "checkpoints"
 MAX_LENGTH = 768
 NUM_EPOCHS = 5
-BATCH_SIZE = 8
-GRAD_ACCUM = 2
+BATCH_SIZE = 4
+GRAD_ACCUM = 4
 LR = 2e-4
 
 TRAIN_PATH = "data/qa/train_clean.jsonl"
@@ -106,6 +106,7 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
 )
 model.config.use_cache = False
+model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
 
 if torch.cuda.is_available():
     vram_gb = torch.cuda.memory_reserved() / 1024**3
@@ -262,7 +263,8 @@ training_args = TrainingArguments(
     fp16=True,
     report_to="none",
     optim="paged_adamw_8bit",
-    gradient_checkpointing=False,
+    gradient_checkpointing=True,
+    gradient_checkpointing_kwargs={"use_reentrant": False},
 )
 
 trainer = Trainer(
