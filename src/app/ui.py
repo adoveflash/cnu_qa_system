@@ -118,6 +118,7 @@ def create_app(
             height=480,
             placeholder="질문을 입력하거나 위 카테고리를 눌러보세요.",
             show_label=False,
+            type="tuples",
         )
 
         # 입력 영역
@@ -138,25 +139,26 @@ def create_app(
             """사용자 메시지를 히스토리에 추가하고 입력창을 비운다."""
             if not message.strip():
                 return "", history
-            history = history + [{"role": "user", "content": message}]
+            history = history + [[message, None]]
             return "", history
 
         def bot_respond(history: list) -> Generator[list, None, None]:
             """마지막 사용자 메시지에 대해 스트리밍 응답을 생성한다."""
-            if not history or history[-1]["role"] != "user":
+            if not history or history[-1][0] is None:
                 yield history
                 return
 
-            raw = history[-1]["content"]
-            question = raw.get("value", str(raw)) if isinstance(raw, dict) else raw
+            question = history[-1][0]
             context, urls = retriever.build_context(question, top_k=5)
 
             if model is not None and tokenizer is not None:
                 for partial in generate_answer_stream(question, context, urls, model, tokenizer):
-                    yield history + [{"role": "assistant", "content": partial}]
+                    history[-1][1] = partial
+                    yield history
             else:
                 answer = fallback_answer(question, context, urls)
-                yield history + [{"role": "assistant", "content": answer}]
+                history[-1][1] = answer
+                yield history
 
         # 전송 / Enter 이벤트
         submit_btn.click(add_user_message, [msg, chatbot], [msg, chatbot]).then(
