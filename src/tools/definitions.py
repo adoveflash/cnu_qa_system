@@ -154,7 +154,9 @@ def _fetch_dorm_meal(date: str) -> str:
 
 
 def _fetch_student_hall_meal(date: str) -> str:
-    """학생회관 식단을 크롤링한다 (mobileadmin.cnu.ac.kr).
+    """학생회관 식단을 playwright로 크롤링한다 (mobileadmin.cnu.ac.kr).
+
+    JS 렌더링이 필요하므로 playwright를 사용한다.
 
     Args:
         date: YYYY-MM-DD 형식 날짜
@@ -163,27 +165,35 @@ def _fetch_student_hall_meal(date: str) -> str:
         정리된 학생회관 식단 텍스트
     """
     try:
-        date_str = date.replace("-", "")
-        resp = _SESSION.get(
-            f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_str}",
-            timeout=30,
-        )
-        resp.encoding = resp.apparent_encoding or "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for tag in soup.find_all(["script", "style"]):
-            tag.decompose()
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return "[학생회관] playwright 미설치"
 
-        tables = soup.find_all("table")
-        parts: list[str] = []
-        for table in tables:
-            for tr in table.find_all("tr"):
-                cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
-                row = " | ".join(c for c in cells if c)
-                if row and "운영안함" not in row:
-                    parts.append(row)
+    date_str = date.replace("-", "")
+    url = f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_str}"
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(url, timeout=30000)
+            # JS 렌더링 대기
+            page.wait_for_timeout(3000)
+
+            # 테이블에서 식단 데이터 추출
+            rows = page.query_selector_all("table tr")
+            parts: list[str] = []
+            for row in rows:
+                cells = row.query_selector_all("td, th")
+                texts = [c.inner_text().strip() for c in cells]
+                line = " | ".join(t for t in texts if t)
+                if line and "운영안함" not in line:
+                    parts.append(line)
+
+            browser.close()
 
         if parts:
-            return f"[학생회관 식단 {date}]\n" + "\n".join(parts[:40])
+            return f"[학생회관 식단 {date}]\n" + "\n".join(parts[:50])
     except Exception as e:
         return f"[학생회관] 조회 실패: {e}"
     return ""
