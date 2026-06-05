@@ -1,7 +1,7 @@
 """베이스 모델 로드 모듈.
 
-Qwen2.5-7B-Instruct를 4bit NF4 양자화로 로드한다.
-모델 교체는 이 파일의 `load_model(name)` 한 줄 변경으로 가능하다.
+Qwen3-8B를 4bit NF4 양자화로 로드한다.
+모델 교체는 이 파일의 `_DEFAULT_MODEL` 한 줄 변경으로 가능하다.
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ from __future__ import annotations
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-_DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+_DEFAULT_MODEL = "Qwen/Qwen3-8B"
 _SEED = 42
 
 
@@ -58,5 +58,4 @@ def load_model(name: str = _DEFAULT_MODEL) -> AutoModelForCausalLM:
         device_map="auto",
         trust_remote_code=True,
     )
-    model.config.use_cache = False
     return model

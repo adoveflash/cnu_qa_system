@@ -13,7 +13,7 @@ from typing import Any
 
 from transformers import AutoTokenizer, PreTrainedTokenizerFast
 
-_DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+_DEFAULT_MODEL = "Qwen/Qwen3-8B"
 
 
 def load_tokenizer(model_name: str = _DEFAULT_MODEL) -> PreTrainedTokenizerFast:

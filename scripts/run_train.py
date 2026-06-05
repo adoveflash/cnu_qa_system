@@ -9,6 +9,9 @@
 
     # 배치 사이즈 변경
     python scripts/run_train.py --batch_size 8
+
+    # 정제된 데이터 사용 (권장)
+    python scripts/run_train.py --train_path data/qa/train_clean.jsonl
 """
 
 from __future__ import annotations
@@ -25,17 +28,21 @@ from src.model.train import train
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="QLoRA 학습 실행")
-    parser.add_argument("--train_path", type=str, default="data/qa/train.jsonl")
+    parser.add_argument("--train_path", type=str, default="data/qa/train_clean.jsonl")
+    parser.add_argument("--eval_path", type=str, default="data/qa/eval.jsonl")
+    parser.add_argument("--chunks_path", type=str, default="data/corpus/chunks.jsonl")
     parser.add_argument("--output_dir", type=str, default="models/lora_adapter")
-    parser.add_argument("--model_name", type=str, default="Qwen/Qwen2.5-7B-Instruct")
-    parser.add_argument("--num_epochs", type=int, default=3)
-    parser.add_argument("--batch_size", type=int, default=8)
+    parser.add_argument("--model_name", type=str, default="Qwen/Qwen3-8B")
+    parser.add_argument("--num_epochs", type=int, default=5)
+    parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--learning_rate", type=float, default=2e-4)
-    parser.add_argument("--max_length", type=int, default=512)
+    parser.add_argument("--max_length", type=int, default=768)
     args = parser.parse_args()
 
     train(
         train_path=Path(args.train_path),
+        eval_path=Path(args.eval_path),
+        chunks_path=Path(args.chunks_path),
         output_dir=Path(args.output_dir),
         model_name=args.model_name,
         num_epochs=args.num_epochs,

@@ -10,8 +10,8 @@
 
 | 구성 요소 | 선택 |
 |-----------|------|
-| Base 모델 | `Qwen/Qwen2.5-7B-Instruct` (4bit NF4) |
-| 파인튜닝 | QLoRA (r=16, alpha=32, target: q/k/v/o_proj) |
+| Base 모델 | `Qwen/Qwen3-8B` (4bit NF4) |
+| 파인튜닝 | QLoRA (r=32, alpha=64, target: q/k/v/o/up/down_proj) |
 | 임베딩 | `BAAI/bge-m3` |
 | 벡터 DB | ChromaDB (로컬) |
 | 웹 UI | Gradio (`share=True`) |
@@ -23,7 +23,7 @@
  └─► bge-m3 임베딩
       └─► ChromaDB top-5 검색
            └─► [시스템 프롬프트 + 컨텍스트 + 질문]
-                └─► Qwen2.5-7B + LoRA
+                └─► Qwen3-8B + LoRA
                      └─► 답변 + 출처 URL
 ```
 

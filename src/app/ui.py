@@ -2,15 +2,17 @@
 
 충남대학교 학내 정보 Q&A 챗봇 인터페이스.
 모델 유무에 관계없이 동작한다 (모델 없으면 RAG fallback).
+스트리밍 지원: 모델이 있으면 토큰 단위로 실시간 출력.
 """
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from typing import Any
 
 import gradio as gr
 
-from src.model.inference import generate_answer, fallback_answer
+from src.model.inference import fallback_answer, generate_answer_stream
 
 EXAMPLES = [
     "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
@@ -37,16 +39,6 @@ def create_app(
         Gradio Blocks 앱
     """
 
-    def respond(message: str, history: list[dict[str, str]]) -> str:
-        if not message.strip():
-            return "질문을 입력해주세요."
-
-        context, urls = retriever.build_context(message, top_k=5)
-
-        if model is not None and tokenizer is not None:
-            return generate_answer(message, context, urls, model, tokenizer)
-        return fallback_answer(message, context, urls)
-
     with gr.Blocks(title="CNU Q&A 챗봇") as app:
         gr.Markdown(
             "# 충남대학교 학내 정보 Q&A\n"
@@ -62,17 +54,41 @@ def create_app(
 
         gr.Examples(examples=EXAMPLES, inputs=msg)
 
-        def user_submit(message: str, history: list) -> tuple:
-            """사용자 메시지 제출 처리."""
+        def add_user_message(message: str, history: list) -> tuple[str, list]:
+            """사용자 메시지를 히스토리에 추가하고 입력창을 비운다."""
             if not message.strip():
                 return "", history
             history = history + [{"role": "user", "content": message}]
-            answer = respond(message, history)
-            history = history + [{"role": "assistant", "content": answer}]
             return "", history
 
-        submit_btn.click(user_submit, [msg, chatbot], [msg, chatbot])
-        msg.submit(user_submit, [msg, chatbot], [msg, chatbot])
+        def bot_respond(history: list) -> Generator[list, None, None]:
+            """마지막 사용자 메시지에 대해 스트리밍 응답을 생성한다."""
+            if not history or history[-1]["role"] != "user":
+                yield history
+                return
+
+            question = history[-1]["content"]
+            context, urls = retriever.build_context(question, top_k=5)
+
+            if model is not None and tokenizer is not None:
+                for partial in generate_answer_stream(
+                    question, context, urls, model, tokenizer
+                ):
+                    yield history + [{"role": "assistant", "content": partial}]
+            else:
+                answer = fallback_answer(question, context, urls)
+                yield history + [{"role": "assistant", "content": answer}]
+
+        submit_btn.click(
+            add_user_message, [msg, chatbot], [msg, chatbot]
+        ).then(
+            bot_respond, chatbot, chatbot
+        )
+        msg.submit(
+            add_user_message, [msg, chatbot], [msg, chatbot]
+        ).then(
+            bot_respond, chatbot, chatbot
+        )
         clear_btn.click(lambda: ([], ""), outputs=[chatbot, msg])
 
     return app

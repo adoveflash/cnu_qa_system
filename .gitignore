@@ -19,3 +19,4 @@ models/lora_adapter/*.safetensors
 
 # OS
 .DS_Store.env
+.cookies.json

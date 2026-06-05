@@ -55,9 +55,8 @@
 
 | 항목                             | 값                                                             |
 | -------------------------------- | -------------------------------------------------------------- |
-| Base 모델 (1차)                  | `Qwen/Qwen2.5-7B-Instruct` (4bit NF4 양자화) — smoke test 통과 |
-| Base 모델 (비교용, 시간 여유 시) | `MLP-KTLim/llama-3-Korean-Bllossom-8B`                         |
-| 파인튜닝                         | QLoRA, r=16, alpha=32, dropout=0.05, target=q/k/v/o_proj       |
+| Base 모델                        | `Qwen/Qwen3-8B` (4bit NF4 양자화) — Qwen2.5-7B에서 업그레이드  |
+| 파인튜닝                         | QLoRA, r=32, alpha=64, dropout=0.1, target=q/k/v/o/up/down_proj |
 | 임베딩                           | `BAAI/bge-m3`                                                  |
 | 벡터 DB                          | ChromaDB (로컬)                                                |
 | 웹 UI                            | Gradio (`share=True`)                                          |
@@ -203,7 +202,7 @@ Termproject_{이름}/
 
 ```
 질문 → bge-m3 임베딩 → ChromaDB top-5 검색 →
-[시스템 프롬프트 + 컨텍스트 + 질문] → Qwen2.5-7B + LoRA → 답변 + 출처 URL
+[시스템 프롬프트 + 컨텍스트 + 질문] → Qwen3-8B + LoRA → 답변 + 출처 URL
 ```
 
 - **모든 답변에 출처 URL을 함께 반환**한다

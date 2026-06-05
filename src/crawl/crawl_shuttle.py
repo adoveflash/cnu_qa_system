@@ -160,10 +160,9 @@ def crawl_shuttle(output_path: Path | None = None) -> int:
 
 
 def _crawl_shuttle_subpages(fout) -> int:
-    """plus.cnu.ac.kr 내 셔틀/교통 관련 하위 페이지를 추가 수집한다."""
-    # sub05_0504 (교통/생활 서비스) 계열 페이지 탐색
+    """plus.cnu.ac.kr 내 교통/셔틀 관련 하위 페이지를 추가 수집한다."""
     sub_urls = [
-        "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050401.html",
+        # 시내버스 노선 안내 (캠퍼스별)
         "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050402.html",
     ]
 
@@ -178,7 +177,6 @@ def _crawl_shuttle_subpages(fout) -> int:
             title = _extract_title(soup)
             content = _clean_text(soup)
 
-            # 교통/셔틀 관련 키워드가 포함된 경우만 저장
             keywords = ["셔틀", "버스", "교통", "통학", "정류장", "노선", "운행"]
             if len(content) >= 50 and any(kw in content for kw in keywords):
                 table_text = _extract_tables(soup)
