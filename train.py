@@ -35,8 +35,8 @@ LOCAL_OUTPUT = "models/lora_adapter"
 CKPT_DIR = "checkpoints"
 MAX_LENGTH = 768
 NUM_EPOCHS = 5
-BATCH_SIZE = 1
-GRAD_ACCUM = 16
+BATCH_SIZE = 8
+GRAD_ACCUM = 2
 LR = 2e-4
 
 TRAIN_PATH = "data/qa/train_clean.jsonl"
