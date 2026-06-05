@@ -21,7 +21,6 @@ from peft import LoraConfig, TaskType, get_peft_model
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    BitsAndBytesConfig,
     Trainer,
     TrainerCallback,
     TrainingArguments,
@@ -86,22 +85,15 @@ print("\n" + "=" * 60)
 print("2. 모델 & 토크나이저 로드")
 print("=" * 60)
 
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.float16,
-    bnb_4bit_use_double_quant=True,
-)
-
 print("[1/2] 토크나이저 로드...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-print("[2/2] 모델 로드 (4bit NF4)...")
+print("[2/2] 모델 로드 (fp16)...")
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
-    quantization_config=bnb_config,
+    torch_dtype=torch.float16,
     device_map="auto",
     trust_remote_code=True,
 )
@@ -262,7 +254,7 @@ training_args = TrainingArguments(
     seed=SEED,
     fp16=True,
     report_to="none",
-    optim="paged_adamw_8bit",
+    optim="adamw_torch",
     gradient_checkpointing=True,
     gradient_checkpointing_kwargs={"use_reentrant": False},
 )
