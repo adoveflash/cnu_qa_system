@@ -14,13 +14,64 @@ import gradio as gr
 
 from src.model.inference import fallback_answer, generate_answer_stream
 
-EXAMPLES = [
-    "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
-    "이번 학기 수강신청은 언제 시작하나요?",
-    "오늘 학식 뭐 나와요?",
-    "셔틀버스 시간표 알려주세요",
-    "최근 공지사항 알려줘",
-]
+_CSS = """
+.gradio-container {
+    max-width: 900px !important;
+    margin: 0 auto !important;
+}
+.header-container {
+    text-align: center;
+    padding: 24px 0 12px;
+}
+.header-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a365d;
+    margin-bottom: 4px;
+}
+.header-sub {
+    font-size: 14px;
+    color: #64748b;
+}
+.category-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+.category-btn {
+    font-size: 13px !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    color: #334155 !important;
+    cursor: pointer;
+}
+.category-btn:hover {
+    background: #e2e8f0 !important;
+    border-color: #94a3b8 !important;
+}
+.input-row {
+    gap: 8px;
+}
+.send-btn {
+    min-width: 80px !important;
+    border-radius: 10px !important;
+}
+footer {
+    display: none !important;
+}
+"""
+
+_CATEGORIES = {
+    "졸업요건": "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
+    "공지사항": "최근 공지사항 알려줘",
+    "학사일정": "이번 학기 수강신청은 언제 시작하나요?",
+    "식단": "오늘 학식 뭐 나와요?",
+    "셔틀버스": "셔틀버스 시간표 알려주세요",
+}
 
 
 def create_app(
@@ -38,21 +89,57 @@ def create_app(
     Returns:
         Gradio Blocks 앱
     """
+    theme = gr.themes.Soft(
+        primary_hue=gr.themes.colors.blue,
+        secondary_hue=gr.themes.colors.slate,
+        neutral_hue=gr.themes.colors.slate,
+        font=gr.themes.GoogleFont("Noto Sans KR"),
+    )
 
-    with gr.Blocks(title="CNU Q&A 챗봇") as app:
-        gr.Markdown(
-            "# 충남대학교 학내 정보 Q&A\n"
-            "졸업요건 | 공지사항 | 학사일정 | 식단 | 셔틀버스"
+    with gr.Blocks(title="CNU Q&A 챗봇", theme=theme, css=_CSS) as app:
+        # 헤더
+        gr.HTML(
+            '<div class="header-container">'
+            '<div class="header-title">충남대학교 학내 정보 Q&A</div>'
+            '<div class="header-sub">'
+            "Qwen3-8B + RAG 기반 캠퍼스 챗봇"
+            "</div>"
+            "</div>"
         )
 
-        chatbot = gr.Chatbot(height=520)
-        msg = gr.Textbox(placeholder="질문을 입력하세요...", show_label=False)
+        # 카테고리 바로가기 버튼
+        with gr.Row(elem_classes="category-row"):
+            cat_buttons = {}
+            for label in _CATEGORIES:
+                cat_buttons[label] = gr.Button(
+                    label, size="sm", elem_classes="category-btn"
+                )
+
+        # 채팅 영역
+        chatbot = gr.Chatbot(
+            height=480,
+            placeholder="질문을 입력하거나 위 카테고리를 눌러보세요.",
+            show_label=False,
+        )
+
+        # 입력 영역
+        with gr.Row(elem_classes="input-row"):
+            msg = gr.Textbox(
+                placeholder="충남대에 대해 무엇이든 물어보세요...",
+                show_label=False,
+                scale=6,
+                container=False,
+            )
+            submit_btn = gr.Button(
+                "전송", variant="primary", scale=1, elem_classes="send-btn"
+            )
 
         with gr.Row():
-            submit_btn = gr.Button("전송", variant="primary")
-            clear_btn = gr.Button("대화 초기화")
-
-        gr.Examples(examples=EXAMPLES, inputs=msg)
+            clear_btn = gr.Button("대화 초기화", size="sm", variant="secondary")
+            status = gr.Markdown(
+                value="",
+                visible=True,
+            )
 
         def add_user_message(message: str, history: list) -> tuple[str, list]:
             """사용자 메시지를 히스토리에 추가하고 입력창을 비운다."""
@@ -79,16 +166,23 @@ def create_app(
                 answer = fallback_answer(question, context, urls)
                 yield history + [{"role": "assistant", "content": answer}]
 
+        # 전송 / Enter 이벤트
         submit_btn.click(
             add_user_message, [msg, chatbot], [msg, chatbot]
-        ).then(
-            bot_respond, chatbot, chatbot
-        )
+        ).then(bot_respond, chatbot, chatbot)
         msg.submit(
             add_user_message, [msg, chatbot], [msg, chatbot]
-        ).then(
-            bot_respond, chatbot, chatbot
-        )
+        ).then(bot_respond, chatbot, chatbot)
+
+        # 카테고리 버튼 이벤트
+        for label, question in _CATEGORIES.items():
+            cat_buttons[label].click(
+                lambda q=question: q, outputs=[msg]
+            ).then(
+                add_user_message, [msg, chatbot], [msg, chatbot]
+            ).then(bot_respond, chatbot, chatbot)
+
+        # 초기화
         clear_btn.click(lambda: ([], ""), outputs=[chatbot, msg])
 
     return app
