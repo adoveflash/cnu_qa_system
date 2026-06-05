@@ -167,36 +167,47 @@ def _fetch_student_hall_meal(date: str) -> str:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return "[학생회관] playwright 미설치"
+        print("  [tool] playwright 미설치 — pip install playwright && playwright install chromium")
+        return "[학생회관] playwright 미설치. 학생회관 식단 조회 불가."
 
     date_str = date.replace("-", "")
     url = f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_str}"
+    print(f"  [tool] 학생회관 식단 크롤링: {url}")
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
             page = browser.new_page()
             page.goto(url, timeout=30000)
-            # JS 렌더링 대기
-            page.wait_for_timeout(3000)
+            # JS 렌더링 대기 — 식단 테이블이 로드될 때까지
+            page.wait_for_timeout(5000)
 
-            # 테이블에서 식단 데이터 추출
-            rows = page.query_selector_all("table tr")
-            parts: list[str] = []
-            for row in rows:
-                cells = row.query_selector_all("td, th")
-                texts = [c.inner_text().strip() for c in cells]
-                line = " | ".join(t for t in texts if t)
+            # 전체 페이지 텍스트 추출 (테이블 포함)
+            content = page.content()
+            browser.close()
+
+        soup = BeautifulSoup(content, "html.parser")
+        for tag in soup.find_all(["script", "style"]):
+            tag.decompose()
+
+        tables = soup.find_all("table")
+        parts: list[str] = []
+        for table in tables:
+            for tr in table.find_all("tr"):
+                cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
+                line = " | ".join(c for c in cells if c)
                 if line and "운영안함" not in line:
                     parts.append(line)
 
-            browser.close()
+        print(f"  [tool] 학생회관 식단: {len(parts)}행 추출")
 
         if parts:
             return f"[학생회관 식단 {date}]\n" + "\n".join(parts[:50])
+        else:
+            return f"[학생회관] {date} 식단 데이터 없음 (주말 또는 미운영)"
     except Exception as e:
+        print(f"  [tool] 학생회관 조회 실패: {e}")
         return f"[학생회관] 조회 실패: {e}"
-    return ""
 
 
 def get_meal_menu(date: str | None = None) -> str:
