@@ -199,17 +199,23 @@ def generate_answer(
 
     tools = TOOLS if use_tools else None
 
-    # Tool call 판단은 LoRA 비활성화 상태로 (LoRA가 tool call 생성을 방해하므로)
+    # Tool call 판단: LoRA 비활성화 + RAG 컨텍스트 없이 순수 질문만 전달
+    # (RAG 컨텍스트가 있으면 모델이 tool 대신 직접 답변하려 함)
     tool_calls = []
+    raw_tool = ""
     if use_tools and hasattr(model, "disable_adapter_layers"):
+        tool_messages = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": question},
+        ]
         model.disable_adapter_layers()
-        raw_tool = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
+        raw_tool = _generate_once(tool_messages, model, tokenizer, max_new_tokens, tools=tools)
         raw_tool = _strip_think_tags(raw_tool)
         tool_calls = _parse_tool_calls(raw_tool)
         model.enable_adapter_layers()
 
     if tool_calls:
-        # 모델이 tool_call을 생성한 경우
+        # tool 실행 후 결과 + RAG 컨텍스트 합쳐서 최종 답변 생성
         messages.append({"role": "assistant", "content": raw_tool})
 
         for tc in tool_calls:
@@ -263,12 +269,16 @@ def generate_answer_stream(
 
     tools = TOOLS if use_tools else None
 
-    # 1단계: tool call 판단 (LoRA 비활성화 상태로)
+    # 1단계: tool call 판단 (LoRA 비활성화 + RAG 없이 순수 질문만)
     tool_calls = []
     raw_tool = ""
     if use_tools and hasattr(model, "disable_adapter_layers"):
+        tool_messages = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": question},
+        ]
         model.disable_adapter_layers()
-        raw_tool = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
+        raw_tool = _generate_once(tool_messages, model, tokenizer, max_new_tokens, tools=tools)
         raw_tool = _strip_think_tags(raw_tool)
         tool_calls = _parse_tool_calls(raw_tool)
         model.enable_adapter_layers()
