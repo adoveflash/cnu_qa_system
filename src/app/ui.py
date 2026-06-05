@@ -147,7 +147,8 @@ def create_app(
                 yield history
                 return
 
-            question = history[-1]["content"]
+            raw = history[-1]["content"]
+            question = raw.get("value", str(raw)) if isinstance(raw, dict) else raw
             context, urls = retriever.build_context(question, top_k=5)
 
             if model is not None and tokenizer is not None:
