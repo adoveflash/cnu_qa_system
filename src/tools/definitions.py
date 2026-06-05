@@ -214,9 +214,12 @@ def get_academic_calendar(month: int | None = None) -> str:
     Returns:
         학사일정 텍스트
     """
-    portal_file = Path("data/corpus/raw/portal_20260605.jsonl")
-    if not portal_file.exists():
+    # 가장 최신 portal 파일 사용
+    raw_dir = Path("data/corpus/raw")
+    portal_files = sorted(raw_dir.glob("portal_*.jsonl"), reverse=True)
+    if not portal_files:
         return "학사일정 데이터를 찾을 수 없습니다."
+    portal_file = portal_files[0]
 
     with open(portal_file, encoding="utf-8") as f:
         docs = [json.loads(line) for line in f]
@@ -235,11 +238,11 @@ def get_academic_calendar(month: int | None = None) -> str:
 
     if month is not None:
         # 해당 월 섹션만 추출
-        pattern = rf"## 2026년 {month}월\n(.*?)(?=## 2026년 \d+월|\Z)"
+        pattern = rf"## \d{{4}}년 {month}월\n(.*?)(?=## \d{{4}}년 \d+월|\Z)"
         match = re.search(pattern, content, re.DOTALL)
         if match:
-            return f"2026년 {month}월 학사일정:\n{match.group(0).strip()}"
-        return f"2026년 {month}월 학사일정을 찾을 수 없습니다."
+            return f"{month}월 학사일정:\n{match.group(0).strip()}"
+        return f"{month}월 학사일정을 찾을 수 없습니다."
 
     return content[:3000]
 

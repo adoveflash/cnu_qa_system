@@ -6,7 +6,6 @@ Task 1 질문 분류 데이터 증강 스크립트.
 """
 
 import json
-import os
 import random
 import time
 from pathlib import Path
@@ -93,7 +92,7 @@ def generate_questions(
             # "1. ", "- ", "• " 등 제거
             for prefix in ["- ", "• ", "· "]:
                 if line.startswith(prefix):
-                    line = line[len(prefix):]
+                    line = line[len(prefix) :]
                     break
             if line[0].isdigit() and ("." in line[:4] or ")" in line[:4]):
                 line = line.split(".", 1)[-1].split(")", 1)[-1].strip()
@@ -128,7 +127,9 @@ def main() -> None:
         existing = label_questions[label]
         existing_count = len(existing)
         needed = TARGET_PER_LABEL - existing_count
-        print(f"\n[라벨 {label}: {LABEL_NAMES[label]}] 기존 {existing_count}개, {needed}개 생성 필요")
+        print(
+            f"\n[라벨 {label}: {LABEL_NAMES[label]}] 기존 {existing_count}개, {needed}개 생성 필요"
+        )
 
         generated: list[str] = []
         call_count = 0
@@ -140,7 +141,9 @@ def main() -> None:
                 new_questions = generate_questions(client, label, existing, batch)
                 generated.extend(new_questions)
                 call_count += 1
-                print(f"  API 호출 #{call_count}: {len(new_questions)}개 생성 (누적 {len(generated)}/{needed})")
+                print(
+                    f"  API 호출 #{call_count}: {len(new_questions)}개 생성 (누적 {len(generated)}/{needed})"
+                )
 
                 # rate limit 방지
                 time.sleep(0.3)
@@ -159,7 +162,9 @@ def main() -> None:
         for q in new_only:
             all_augmented.append({"question": q, "label": label})
 
-        print(f"  [완료] 중복 제거 후 신규 {len(new_only)}개 추가 (라벨 총 {existing_count + len(new_only)}개)")
+        print(
+            f"  [완료] 중복 제거 후 신규 {len(new_only)}개 추가 (라벨 총 {existing_count + len(new_only)}개)"
+        )
 
     # 셔플
     random.shuffle(all_augmented)
@@ -169,8 +174,9 @@ def main() -> None:
 
     # 통계 출력
     from collections import Counter
+
     label_counts = Counter(item["label"] for item in all_augmented)
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"총 데이터: {len(all_augmented)}개")
     for label in sorted(label_counts):
         print(f"  라벨 {label} ({LABEL_NAMES[label]}): {label_counts[label]}개")

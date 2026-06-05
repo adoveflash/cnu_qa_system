@@ -13,7 +13,7 @@ from sentence_transformers import SentenceTransformer
 
 import chromadb
 
-from src.rag.embedder import embed_texts, load_embedding_model
+from src.rag.embedder import load_embedding_model
 
 _DEFAULT_DB_PATH = Path("data/vector_db")
 _STATIC_COLLECTION = "cnu_chunks"

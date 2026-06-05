@@ -59,7 +59,7 @@ def build_index(
     # 기존 컬렉션 삭제 후 재생성 (전체 재인덱싱)
     try:
         client.delete_collection(collection_name)
-    except (ValueError, chromadb.errors.NotFoundError):
+    except Exception:
         pass
     collection = client.create_collection(
         name=collection_name,
@@ -104,7 +104,7 @@ def search(
         검색 결과 리스트 [{text, url, title, source, score}, ...]
     """
     model = load_embedding_model(embedding_model_name)
-    query_embedding = embed_texts([query], model)[0]
+    query_embedding = model.encode(query).tolist()
 
     client = chromadb.PersistentClient(path=str(db_path))
     collection = client.get_collection(collection_name)

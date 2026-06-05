@@ -111,9 +111,7 @@ def create_app(
         with gr.Row(elem_classes="category-row"):
             cat_buttons = {}
             for label in _CATEGORIES:
-                cat_buttons[label] = gr.Button(
-                    label, size="sm", elem_classes="category-btn"
-                )
+                cat_buttons[label] = gr.Button(label, size="sm", elem_classes="category-btn")
 
         # 채팅 영역
         chatbot = gr.Chatbot(
@@ -130,16 +128,11 @@ def create_app(
                 scale=6,
                 container=False,
             )
-            submit_btn = gr.Button(
-                "전송", variant="primary", scale=1, elem_classes="send-btn"
-            )
+            submit_btn = gr.Button("전송", variant="primary", scale=1, elem_classes="send-btn")
 
         with gr.Row():
             clear_btn = gr.Button("대화 초기화", size="sm", variant="secondary")
-            status = gr.Markdown(
-                value="",
-                visible=True,
-            )
+            gr.Markdown(value="", visible=True)
 
         def add_user_message(message: str, history: list) -> tuple[str, list]:
             """사용자 메시지를 히스토리에 추가하고 입력창을 비운다."""
@@ -158,27 +151,23 @@ def create_app(
             context, urls = retriever.build_context(question, top_k=5)
 
             if model is not None and tokenizer is not None:
-                for partial in generate_answer_stream(
-                    question, context, urls, model, tokenizer
-                ):
+                for partial in generate_answer_stream(question, context, urls, model, tokenizer):
                     yield history + [{"role": "assistant", "content": partial}]
             else:
                 answer = fallback_answer(question, context, urls)
                 yield history + [{"role": "assistant", "content": answer}]
 
         # 전송 / Enter 이벤트
-        submit_btn.click(
-            add_user_message, [msg, chatbot], [msg, chatbot]
-        ).then(bot_respond, chatbot, chatbot)
-        msg.submit(
-            add_user_message, [msg, chatbot], [msg, chatbot]
-        ).then(bot_respond, chatbot, chatbot)
+        submit_btn.click(add_user_message, [msg, chatbot], [msg, chatbot]).then(
+            bot_respond, chatbot, chatbot
+        )
+        msg.submit(add_user_message, [msg, chatbot], [msg, chatbot]).then(
+            bot_respond, chatbot, chatbot
+        )
 
         # 카테고리 버튼 이벤트
         for label, question in _CATEGORIES.items():
-            cat_buttons[label].click(
-                lambda q=question: q, outputs=[msg]
-            ).then(
+            cat_buttons[label].click(lambda q=question: q, outputs=[msg]).then(
                 add_user_message, [msg, chatbot], [msg, chatbot]
             ).then(bot_respond, chatbot, chatbot)
 

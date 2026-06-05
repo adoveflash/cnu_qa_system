@@ -37,5 +37,5 @@ def embed_texts(
     Returns:
         임베딩 벡터 리스트
     """
-    embeddings = model.encode(texts, batch_size=batch_size, show_progress_bar=True)
+    embeddings = model.encode(texts, batch_size=batch_size)
     return embeddings.tolist()

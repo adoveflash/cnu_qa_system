@@ -10,12 +10,10 @@ ChromaDB 'live' 컬렉션을 갱신한다.
 
 from __future__ import annotations
 
-import json
 import re
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
 
 import chromadb
 import requests
@@ -56,13 +54,15 @@ def _fetch_cnucoop_menu() -> list[dict[str, str]]:
             content = body.get_text(separator="\n", strip=True)
             content = re.sub(r"\n{3,}", "\n\n", content)
             if len(content) > 50:
-                docs.append({
-                    "text": content,
-                    "url": url,
-                    "title": "충남대 생협 식당 안내 (기숙사 식당 포함)",
-                    "source": "cnucoop",
-                    "category": "식단",
-                })
+                docs.append(
+                    {
+                        "text": content,
+                        "url": url,
+                        "title": "충남대 생협 식당 안내 (기숙사 식당 포함)",
+                        "source": "cnucoop",
+                        "category": "식단",
+                    }
+                )
     except Exception as e:
         print(f"  [cnucoop] 오류: {e}")
     return docs
@@ -112,13 +112,15 @@ def _fetch_mobile_meal_requests() -> list[dict[str, str]]:
 
             if content_parts:
                 content = f"충남대학교 식단표 ({formatted})\n\n" + "\n".join(content_parts)
-                docs.append({
-                    "text": content,
-                    "url": f"{base_url}?searchYmd={date_str}",
-                    "title": f"충남대 식단표 ({formatted})",
-                    "source": "mobileadmin",
-                    "category": "식단",
-                })
+                docs.append(
+                    {
+                        "text": content,
+                        "url": f"{base_url}?searchYmd={date_str}",
+                        "title": f"충남대 식단표 ({formatted})",
+                        "source": "mobileadmin",
+                        "category": "식단",
+                    }
+                )
         except Exception:
             pass
         time.sleep(CRAWL_DELAY)
@@ -156,13 +158,15 @@ def _fetch_mobile_meal_playwright() -> list[dict[str, str]]:
 
                     if len(content) > 50:
                         content = f"충남대학교 식단표 ({formatted})\n\n{content}"
-                        docs.append({
-                            "text": content,
-                            "url": url,
-                            "title": f"충남대 식단표 ({formatted})",
-                            "source": "mobileadmin",
-                            "category": "식단",
-                        })
+                        docs.append(
+                            {
+                                "text": content,
+                                "url": url,
+                                "title": f"충남대 식단표 ({formatted})",
+                                "source": "mobileadmin",
+                                "category": "식단",
+                            }
+                        )
                 except Exception:
                     pass
                 time.sleep(CRAWL_DELAY)
@@ -233,13 +237,15 @@ def fetch_notice_docs() -> list[dict[str, str]]:
                 content = re.sub(r"\n{3,}", "\n\n", content)
 
                 if len(content) > 50:
-                    docs.append({
-                        "text": content,
-                        "url": url,
-                        "title": title,
-                        "source": "computer",
-                        "category": "공지사항",
-                    })
+                    docs.append(
+                        {
+                            "text": content,
+                            "url": url,
+                            "title": title,
+                            "source": "computer",
+                            "category": "공지사항",
+                        }
+                    )
             except Exception:
                 pass
             time.sleep(CRAWL_DELAY)
