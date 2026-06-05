@@ -95,7 +95,7 @@ class Retriever:
             [{text, url, title, source, distance}, ...]
         """
         k = top_k or self.top_k
-        query_embedding = embed_texts([query], self.model)[0]
+        query_embedding = self.model.encode(query).tolist()
 
         # static 컬렉션 검색
         results = self._query_collection(self.static, query_embedding, k)
