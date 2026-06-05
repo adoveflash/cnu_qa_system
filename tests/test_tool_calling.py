@@ -8,48 +8,36 @@ sys.path.insert(0, ".")
 print("1. importing modules...")
 from src.model.inference import (
     load_model_with_lora,
-    _generate_once,
-    _parse_tool_calls,
+    generate_answer,
     _SYSTEM_PROMPT,
 )
-from src.tools.definitions import TOOLS
 
 print("2. loading model + LoRA adapter...")
 model, tokenizer = load_model_with_lora()
 print(f"   model device: {model.device}")
-print(f"   model type: {type(model).__name__}")
 
-# --- Test 1: with tools, food question ---
-print("\n=== TEST 1: food question WITH tools ===")
-messages1 = [
-    {"role": "system", "content": _SYSTEM_PROMPT},
-    {"role": "user", "content": "today meal menu?"},
-]
-raw1 = _generate_once(messages1, model, tokenizer, tools=TOOLS)
-print(f"RAW OUTPUT:\n{raw1}")
-print(f"TOOL CALLS: {_parse_tool_calls(raw1)}")
-
-# --- Test 2: check what the template looks like ---
-print("\n=== TEST 2: template check ===")
-template_text = tokenizer.apply_chat_template(
-    messages1, tokenize=False, add_generation_prompt=True, enable_thinking=False, tools=TOOLS
+# --- Test 1: food question (should trigger tool call) ---
+print("\n=== TEST 1: food question (should call get_meal_menu) ===")
+answer1 = generate_answer(
+    question="today meal menu?",
+    context="",
+    urls=[],
+    model=model,
+    tokenizer=tokenizer,
+    use_tools=True,
 )
-# Print last 500 chars to see tool definitions
-print(f"TEMPLATE (last 500 chars):\n{template_text[-500:]}")
+print(f"ANSWER:\n{answer1}")
 
-# --- Test 3: without LoRA ---
-print("\n=== TEST 3: food question WITHOUT LoRA (base only) ===")
-from src.model.base import load_model, load_tokenizer
-base_model = load_model("Qwen/Qwen3-8B")
-base_tokenizer = load_tokenizer("Qwen/Qwen3-8B")
-base_model.eval()
-
-messages3 = [
-    {"role": "system", "content": _SYSTEM_PROMPT},
-    {"role": "user", "content": "today meal menu?"},
-]
-raw3 = _generate_once(messages3, base_model, base_tokenizer, tools=TOOLS)
-print(f"RAW OUTPUT:\n{raw3}")
-print(f"TOOL CALLS: {_parse_tool_calls(raw3)}")
+# --- Test 2: general question (should NOT trigger tool call) ---
+print("\n=== TEST 2: general question (no tool needed) ===")
+answer2 = generate_answer(
+    question="graduation credits?",
+    context="[ref1] total 130 credits needed for graduation",
+    urls=["https://computer.cnu.ac.kr"],
+    model=model,
+    tokenizer=tokenizer,
+    use_tools=True,
+)
+print(f"ANSWER:\n{answer2}")
 
 print("\n=== DONE ===")

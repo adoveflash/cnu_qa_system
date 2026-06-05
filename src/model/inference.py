@@ -187,25 +187,32 @@ def generate_answer(
     ]
 
     tools = TOOLS if use_tools else None
-    raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
-    raw = _strip_think_tags(raw)
 
-    # Tool call 파싱 및 실행 (최대 1회)
-    tool_calls = _parse_tool_calls(raw) if use_tools else []
+    # Tool call 판단은 LoRA 비활성화 상태로 (LoRA가 tool call 생성을 방해하므로)
+    tool_calls = []
+    if use_tools and hasattr(model, "disable_adapter_layers"):
+        model.disable_adapter_layers()
+        raw_tool = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
+        raw_tool = _strip_think_tags(raw_tool)
+        tool_calls = _parse_tool_calls(raw_tool)
+        model.enable_adapter_layers()
+
     if tool_calls:
         # 모델이 tool_call을 생성한 경우
-        messages.append({"role": "assistant", "content": raw})
+        messages.append({"role": "assistant", "content": raw_tool})
 
         for tc in tool_calls:
             print(f"  [tool] {tc['name']}({tc['arguments']})")
             result = execute_tool(tc["name"], tc["arguments"])
             messages.append({"role": "tool", "name": tc["name"], "content": result})
 
-        # tool 결과를 포함하여 최종 답변 생성 (tool 없이)
+        # tool 결과를 포함하여 최종 답변 생성 (LoRA 활성화 상태)
         final_raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=None)
         answer = _strip_think_tags(final_raw)
     else:
-        answer = raw
+        # Tool call 없음 — LoRA로 일반 RAG 답변 생성
+        raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
+        answer = _strip_think_tags(raw)
 
     answer += _format_sources(urls)
     return answer
@@ -245,18 +252,21 @@ def generate_answer_stream(
 
     tools = TOOLS if use_tools else None
 
-    # 1단계: 첫 번째 생성 (tool call 여부 확인)
-    raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
-    raw = _strip_think_tags(raw)
-
-    tool_calls = _parse_tool_calls(raw) if use_tools else []
+    # 1단계: tool call 판단 (LoRA 비활성화 상태로)
+    tool_calls = []
+    raw_tool = ""
+    if use_tools and hasattr(model, "disable_adapter_layers"):
+        model.disable_adapter_layers()
+        raw_tool = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
+        raw_tool = _strip_think_tags(raw_tool)
+        tool_calls = _parse_tool_calls(raw_tool)
+        model.enable_adapter_layers()
 
     if tool_calls:
-        # Tool 실행 중 상태 표시
         tool_names = ", ".join(tc["name"] for tc in tool_calls)
         yield f"🔍 실시간 정보 조회 중... ({tool_names})"
 
-        messages.append({"role": "assistant", "content": raw})
+        messages.append({"role": "assistant", "content": raw_tool})
         for tc in tool_calls:
             print(f"  [tool] {tc['name']}({tc['arguments']})")
             result = execute_tool(tc["name"], tc["arguments"])
@@ -296,12 +306,41 @@ def generate_answer_stream(
         if source_text:
             yield final + source_text
     else:
-        # Tool call 없음 — 이미 생성된 결과를 그대로 반환
-        answer = raw
+        # Tool call 없음 — LoRA로 일반 답변 스트리밍
+        template_kwargs = {
+            "tokenize": False,
+            "add_generation_prompt": True,
+            "enable_thinking": False,
+        }
+        if tools:
+            template_kwargs["tools"] = tools
+        text = tokenizer.apply_chat_template(messages, **template_kwargs)
+        inputs = tokenizer(text, return_tensors="pt").to(model.device)
+
+        streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+        gen_kwargs = {
+            **inputs,
+            "max_new_tokens": max_new_tokens,
+            "do_sample": False,
+            "repetition_penalty": 1.2,
+            "streamer": streamer,
+        }
+
+        torch.manual_seed(_SEED)
+        thread = threading.Thread(target=model.generate, kwargs=gen_kwargs)
+        thread.start()
+
+        accumulated = ""
+        for chunk in streamer:
+            accumulated += chunk
+            yield _strip_think_tags(accumulated)
+
+        thread.join()
+
+        final = _strip_think_tags(accumulated)
         source_text = _format_sources(urls)
         if source_text:
-            answer += source_text
-        yield answer
+            yield final + source_text
 
 
 def fallback_answer(question: str, context: str, urls: list[str]) -> str:
