@@ -1,7 +1,7 @@
 """Gradio 챗봇 웹 UI 모듈.
 
 충남대학교 학내 정보 Q&A 챗봇 인터페이스.
-모델 유무에 관계없이 동작한다 (모델 없으면 RAG fallback).
+Gradio 6.x 전용 — messages 형식 사용.
 """
 
 from __future__ import annotations
@@ -11,6 +11,15 @@ from typing import Any
 import gradio as gr
 
 from src.model.inference import fallback_answer, generate_answer_stream
+
+
+def _extract_text(content: Any) -> str:
+    """Gradio content에서 순수 텍스트를 추출한다."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, dict):
+        return content.get("value", content.get("text", str(content)))
+    return str(content)
 
 
 def create_app(
@@ -31,27 +40,23 @@ def create_app(
             clear_btn = gr.Button("대화 초기화")
 
         def respond(message: str, history: list) -> tuple[str, list]:
-            """동기 응답 — 질문에 대해 답변을 생성한다."""
             if not message.strip():
                 return "", history
 
-            history = history + [[message, None]]
-            question = message
-
-            # dict로 올 수 있는 경우 방어
-            if isinstance(question, dict):
-                question = question.get("value", question.get("text", str(question)))
-
+            question = _extract_text(message)
             context, urls = retriever.build_context(question, top_k=5)
 
             if model is not None and tokenizer is not None:
                 answer = ""
                 for partial in generate_answer_stream(question, context, urls, model, tokenizer):
                     answer = partial
-                history[-1][1] = answer
             else:
-                history[-1][1] = fallback_answer(question, context, urls)
+                answer = fallback_answer(question, context, urls)
 
+            history = history + [
+                {"role": "user", "content": question},
+                {"role": "assistant", "content": answer},
+            ]
             return "", history
 
         submit_btn.click(respond, [msg, chatbot], [msg, chatbot])
