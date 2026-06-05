@@ -106,7 +106,6 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
 )
 model.config.use_cache = False
-model.gradient_checkpointing_enable()
 
 if torch.cuda.is_available():
     vram_gb = torch.cuda.memory_reserved() / 1024**3
@@ -263,8 +262,7 @@ training_args = TrainingArguments(
     fp16=True,
     report_to="none",
     optim="paged_adamw_8bit",
-    gradient_checkpointing=True,
-    gradient_checkpointing_kwargs={"use_reentrant": False},
+    gradient_checkpointing=False,
 )
 
 trainer = Trainer(
