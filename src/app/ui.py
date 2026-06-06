@@ -47,28 +47,37 @@ def create_app(
             submit_btn = gr.Button("전송", variant="primary")
             clear_btn = gr.Button("대화 초기화")
 
-        def respond(message: str, history: list) -> tuple[str, list]:
+        def respond(message: str, history: list):
             if not message.strip():
-                return "", history
+                yield "", history
+                return
 
             question = _extract_text(message)
             context, urls = retriever.build_context(question, top_k=5)
 
-            if model is not None and tokenizer is not None:
-                answer = ""
-                for partial in generate_answer_stream(question, context, urls, model, tokenizer):
-                    answer = partial
-            else:
-                answer = fallback_answer(question, context, urls)
-
+            # 사용자 메시지 추가
             if _USE_MESSAGES:
                 history = history + [
                     {"role": "user", "content": question},
-                    {"role": "assistant", "content": answer},
+                    {"role": "assistant", "content": ""},
                 ]
             else:
-                history = history + [[question, answer]]
-            return "", history
+                history = history + [[question, ""]]
+
+            if model is not None and tokenizer is not None:
+                for partial in generate_answer_stream(question, context, urls, model, tokenizer):
+                    if _USE_MESSAGES:
+                        history[-1]["content"] = partial
+                    else:
+                        history[-1][1] = partial
+                    yield "", history
+            else:
+                answer = fallback_answer(question, context, urls)
+                if _USE_MESSAGES:
+                    history[-1]["content"] = answer
+                else:
+                    history[-1][1] = answer
+                yield "", history
 
         submit_btn.click(respond, [msg, chatbot], [msg, chatbot])
         msg.submit(respond, [msg, chatbot], [msg, chatbot])
