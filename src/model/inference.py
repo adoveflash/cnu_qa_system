@@ -20,6 +20,12 @@ from src.tools.detector import detect_tool
 
 _SEED = 42
 _THINK_TAG_RE = re.compile(r"<think>.*?</think>\s*", flags=re.DOTALL)
+_CHINESE_RE = re.compile(r"[\u4e00-\u9fff]+")
+
+
+def _remove_chinese(text: str) -> str:
+    """중국어 문자를 제거한다."""
+    return _CHINESE_RE.sub("", text).strip()
 
 
 def _build_system_prompt() -> str:
@@ -179,6 +185,7 @@ def generate_answer(
     generated_ids = outputs[0][inputs["input_ids"].shape[1] :]
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
     answer = _strip_think_tags(answer)
+    answer = _remove_chinese(answer)
 
     if not used_tool:
         answer += _format_sources(final_urls)
@@ -253,8 +260,9 @@ def generate_answer_stream(
 
     thread.join()
 
-    # 최종 정리: think 태그 제거 + 출처 추가
+    # 최종 정리: think 태그 제거 + 중국어 제거 + 출처 추가
     final = _strip_think_tags(accumulated)
+    final = _remove_chinese(final)
     if not used_tool:
         final += _format_sources(final_urls)
     yield final
