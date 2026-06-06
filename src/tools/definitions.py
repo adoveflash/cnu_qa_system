@@ -432,15 +432,29 @@ def get_notices(count: int = 5) -> str:
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        article_links: list[str] = []
-        for a in soup.find_all("a", href=True):
-            href = a["href"]
-            if "articleNo" in href:
-                from urllib.parse import urljoin
+        from urllib.parse import urljoin
 
-                full_url = urljoin(board_url, href).split("#")[0]
-                if full_url not in article_links:
-                    article_links.append(full_url)
+        # 게시글 링크 + 날짜 추출
+        article_items: list[tuple[str, str]] = []  # (url, date_str)
+        rows = soup.find_all("tr")
+        for row in rows:
+            a_tag = row.find("a", href=True)
+            if not a_tag or "articleNo" not in a_tag["href"]:
+                continue
+            full_url = urljoin(board_url, a_tag["href"]).split("#")[0]
+            # 날짜 추출: td 중 날짜 패턴 찾기
+            date_str = "0000.00.00"
+            for td in row.find_all("td"):
+                td_text = td.get_text(strip=True)
+                if re.match(r"\d{4}\.\d{2}\.\d{2}", td_text):
+                    date_str = td_text[:10]
+                    break
+            if full_url not in [x[0] for x in article_items]:
+                article_items.append((full_url, date_str))
+
+        # 날짜 내림차순 정렬 (최신 우선)
+        article_items.sort(key=lambda x: x[1], reverse=True)
+        article_links = [url for url, _ in article_items]
 
         results: list[str] = []
         for url in article_links[:count]:
