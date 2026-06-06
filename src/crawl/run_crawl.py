@@ -3,6 +3,7 @@
 from datetime import datetime
 from pathlib import Path
 
+from .crawl_academic import crawl_academic
 from .crawl_meal import crawl_meal
 from .crawl_shuttle import crawl_shuttle
 from .pdf_crawler import crawl_pdf
@@ -10,6 +11,7 @@ from .static_crawler import crawl_board_offset, crawl_static
 
 try:
     from .js_crawler import crawl_js_boards
+
     _HAS_PLAYWRIGHT = True
 except ImportError:
     _HAS_PLAYWRIGHT = False
@@ -139,7 +141,15 @@ def main() -> None:
         total += n
 
     print("\n" + "=" * 60)
-    print("5단계: 식단 크롤링 (plus, cnucoop, mobileadmin)")
+    print("5단계: 학사일정/졸업요건 크롤링")
+    print("=" * 60)
+    out = RAW_DIR / f"academic_{TODAY}.jsonl"
+    n = crawl_academic(out)
+    print(f"  저장 완료: {n}건")
+    total += n
+
+    print("\n" + "=" * 60)
+    print("6단계: 식단 크롤링 (plus, cnucoop, mobileadmin)")
     print("=" * 60)
     out = RAW_DIR / f"meal_{TODAY}.jsonl"
     n = crawl_meal(out)
@@ -147,7 +157,7 @@ def main() -> None:
     total += n
 
     print("\n" + "=" * 60)
-    print("6단계: 셔틀버스/교통 크롤링 (plus)")
+    print("7단계: 셔틀버스/교통 크롤링 (plus)")
     print("=" * 60)
     out = RAW_DIR / f"shuttle_{TODAY}.jsonl"
     n = crawl_shuttle(out)
