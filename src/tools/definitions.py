@@ -28,14 +28,19 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "get_meal_menu",
-            "description": "충남대학교 교내 식당의 오늘 또는 이번 주 식단 메뉴를 조회합니다.",
+            "description": "충남대학교 교내 식당의 오늘 식단 메뉴를 조회합니다. 기숙사 식당과 학생회관 식당을 구분하여 조회 가능합니다.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "date": {
                         "type": "string",
                         "description": "조회할 날짜 (YYYY-MM-DD). 생략 시 오늘 날짜.",
-                    }
+                    },
+                    "location": {
+                        "type": "string",
+                        "enum": ["all", "dormitory", "student_hall"],
+                        "description": "조회할 식당. dormitory=기숙사 식당, student_hall=학생회관(1~4학생회관), all=전체. 생략 시 all.",
+                    },
                 },
                 "required": [],
             },
@@ -218,13 +223,12 @@ def _fetch_student_hall_meal(date: str) -> str:
         return f"[학생회관] 조회 실패: {e}"
 
 
-def get_meal_menu(date: str | None = None) -> str:
+def get_meal_menu(date: str | None = None, location: str = "all") -> str:
     """교내 식당 식단을 크롤링하여 반환한다.
-
-    기숙사 식단(dorm.cnu.ac.kr)과 학생회관 식단(mobileadmin.cnu.ac.kr)을 조회한다.
 
     Args:
         date: 조회 날짜 (YYYY-MM-DD). None이면 오늘.
+        location: 조회 식당 (all/dormitory/student_hall). 기본 all.
 
     Returns:
         식단 정보 텍스트
@@ -234,17 +238,24 @@ def get_meal_menu(date: str | None = None) -> str:
 
     results: list[str] = []
 
-    # 1) 기숙사 식단
-    dorm = _fetch_dorm_meal(date)
-    if dorm:
-        results.append(dorm)
+    # 기숙사 식단
+    if location in ("all", "dormitory"):
+        dorm = _fetch_dorm_meal(date)
+        if dorm:
+            results.append(dorm)
+        elif location == "dormitory":
+            results.append(f"[기숙사] {date} 식단 정보를 찾을 수 없습니다.")
 
-    time.sleep(CRAWL_DELAY)
+    if location == "all":
+        time.sleep(CRAWL_DELAY)
 
-    # 2) 학생회관 식단
-    hall = _fetch_student_hall_meal(date)
-    if hall:
-        results.append(hall)
+    # 학생회관 식단
+    if location in ("all", "student_hall"):
+        hall = _fetch_student_hall_meal(date)
+        if hall:
+            results.append(hall)
+        elif location == "student_hall":
+            results.append(f"[학생회관] {date} 식단 정보를 찾을 수 없습니다. 학생회관 식단은 https://mobileadmin.cnu.ac.kr/food/index.jsp 에서 직접 확인해주세요.")
 
     if not results:
         return f"{date} 식단 정보를 가져올 수 없습니다. 주말이거나 운영하지 않는 날일 수 있습니다."
