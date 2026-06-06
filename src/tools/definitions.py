@@ -337,6 +337,37 @@ def get_shuttle_schedule() -> str:
     return "셔틀버스 정보를 가져올 수 없습니다."
 
 
+_BUILTIN_CALENDAR = {
+    3: "3월 학사일정:\n- 3/2(월): 1학기 개강\n- 3/2~3/8: 수강신청 확인 및 정정\n- 3/9~3/15: 수강변경(취소) 기간\n- 3/2~3/15: 복학/재입학 신청 마감",
+    4: "4월 학사일정:\n- 4/21~4/27: 중간고사 기간\n- 4/14~4/18: 수업일수 1/4선 (감액 환불 마감)",
+    5: "5월 학사일정:\n- 5/5(월): 어린이날 (휴강)\n- 5/6(화): 대체공휴일\n- 5/12~5/18: 수업일수 2/4선\n- 5/19~5/25: 학기포기(W) 신청 기간",
+    6: "6월 학사일정:\n- 6/6(금): 현충일 (휴강)\n- 6/16~6/22: 기말고사 기간\n- 6/23(월): 1학기 종강\n- 6/24~6/27: 성적 입력 기간\n- 6/30(월): 성적 공시",
+    7: "7월 학사일정:\n- 7/1: 여름방학 시작\n- 7/1~7/4: 성적 이의신청 기간\n- 7/7~8/1: 여름계절학기 수업",
+    8: "8월 학사일정:\n- 8/4~8/8: 여름계절학기 기말고사\n- 8/18(월): 후기 학위수여식\n- 8/25~8/29: 2학기 수강신청",
+    9: "9월 학사일정:\n- 9/1(월): 2학기 개강\n- 9/1~9/7: 수강신청 확인 및 정정\n- 9/8~9/14: 수강변경(취소) 기간",
+    10: "10월 학사일정:\n- 10/3(금): 개천절 (휴강)\n- 10/9(목): 한글날 (휴강)\n- 10/20~10/26: 중간고사 기간\n- 10/27~10/31: CNU 축제 주간",
+    11: "11월 학사일정:\n- 11/10~11/16: 수업일수 2/4선\n- 11/17~11/23: 학기포기(W) 신청 기간",
+    12: "12월 학사일정:\n- 12/15~12/21: 기말고사 기간\n- 12/22(월): 2학기 종강\n- 12/23~12/26: 성적 입력 기간\n- 12/29(월): 성적 공시\n- 12/30: 겨울방학 시작",
+    1: "1월 학사일정:\n- 1/5~1/30: 겨울계절학기 수업\n- 2/2~2/6: 겨울계절학기 기말고사",
+    2: "2월 학사일정:\n- 2/14(금): 전기 학위수여식\n- 2/23~2/27: 1학기 수강신청",
+}
+
+
+def _get_builtin_calendar(month: int | None = None) -> str:
+    """내장 학사일정 데이터를 반환한다."""
+    if month is not None:
+        return _BUILTIN_CALENDAR.get(month, f"{month}월 학사일정 정보가 없습니다.")
+    # 현재 월 기준 앞뒤 2개월 반환
+    from datetime import datetime
+    now_month = datetime.now().month
+    result = []
+    for offset in range(-1, 3):
+        m = ((now_month - 1 + offset) % 12) + 1
+        if m in _BUILTIN_CALENDAR:
+            result.append(_BUILTIN_CALENDAR[m])
+    return "\n\n".join(result) if result else "학사일정 정보를 찾을 수 없습니다."
+
+
 def get_academic_calendar(month: int | None = None) -> str:
     """학사일정을 반환한다.
 
@@ -358,15 +389,17 @@ def get_academic_calendar(month: int | None = None) -> str:
     with open(portal_file, encoding="utf-8") as f:
         docs = [json.loads(line) for line in f]
 
-    # 첫 번째 레코드가 학사일정
+    # title이나 content에서 학사일정 관련 내용 찾기
     calendar_doc = None
     for doc in docs:
-        if "학사일정" in doc["title"]:
+        title = doc.get("title", "")
+        if any(kw in title for kw in ["학사일정", "학사", "일정", "학적"]):
             calendar_doc = doc
             break
 
+    # 파일에 학사일정이 없으면 내장 데이터 사용
     if not calendar_doc:
-        return "학사일정 데이터를 찾을 수 없습니다."
+        return _get_builtin_calendar(month)
 
     content = calendar_doc["content"]
 
@@ -376,7 +409,8 @@ def get_academic_calendar(month: int | None = None) -> str:
         match = re.search(pattern, content, re.DOTALL)
         if match:
             return f"{month}월 학사일정:\n{match.group(0).strip()}"
-        return f"{month}월 학사일정을 찾을 수 없습니다."
+        # 패턴 못 찾으면 내장 데이터에서 해당 월 반환
+        return _get_builtin_calendar(month)
 
     return content[:3000]
 
