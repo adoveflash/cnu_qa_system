@@ -442,12 +442,16 @@ def get_notices(count: int = 5) -> str:
             if not a_tag or "articleNo" not in a_tag["href"]:
                 continue
             full_url = urljoin(board_url, a_tag["href"]).split("#")[0]
-            # 날짜 추출: td 중 날짜 패턴 찾기
+            # 날짜 추출: td 중 날짜 패턴 찾기 (YY.MM.DD 또는 YYYY.MM.DD)
             date_str = "0000.00.00"
             for td in row.find_all("td"):
                 td_text = td.get_text(strip=True)
-                if re.match(r"\d{4}\.\d{2}\.\d{2}", td_text):
-                    date_str = td_text[:10]
+                m = re.match(r"(\d{2,4})\.(\d{2})\.(\d{2})", td_text)
+                if m:
+                    year = m.group(1)
+                    if len(year) == 2:
+                        year = "20" + year
+                    date_str = f"{year}.{m.group(2)}.{m.group(3)}"
                     break
             if full_url not in [x[0] for x in article_items]:
                 article_items.append((full_url, date_str))
