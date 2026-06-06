@@ -346,9 +346,11 @@ def get_academic_calendar(month: int | None = None) -> str:
     Returns:
         학사일정 텍스트
     """
-    # 가장 최신 portal 파일 사용
+    # 가장 최신 academic 파일 사용 (academic_ 또는 portal_ 접두사)
     raw_dir = Path("data/corpus/raw")
-    portal_files = sorted(raw_dir.glob("portal_*.jsonl"), reverse=True)
+    portal_files = sorted(raw_dir.glob("academic_*.jsonl"), reverse=True)
+    if not portal_files:
+        portal_files = sorted(raw_dir.glob("portal_*.jsonl"), reverse=True)
     if not portal_files:
         return "학사일정 데이터를 찾을 수 없습니다."
     portal_file = portal_files[0]
