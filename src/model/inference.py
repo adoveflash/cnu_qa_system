@@ -227,13 +227,11 @@ def generate_answer(
             result = execute_tool(tc["name"], tc["arguments"])
             tool_results.append(f"[{tc['name']} 결과]\n{result}")
 
-        # tool 결과를 RAG 컨텍스트와 합쳐서 일반 user 메시지로 재구성
-        # (LoRA는 tool role을 학습한 적 없으므로 참고자료 형식으로 전달)
+        # tool 결과만 사용 (RAG 컨텍스트 제외 — 실시간 데이터와 옛날 데이터 혼동 방지)
         tool_context = "\n\n".join(tool_results)
-        combined_context = f"{context}\n\n{tool_context}" if context else tool_context
         final_messages = [
             {"role": "system", "content": _SYSTEM_PROMPT},
-            {"role": "user", "content": f"참고 자료:\n{combined_context}\n\n질문: {question}"},
+            {"role": "user", "content": f"참고 자료:\n{tool_context}\n\n질문: {question}"},
         ]
         final_raw = _generate_once(final_messages, model, tokenizer, max_new_tokens, tools=None)
         answer = _strip_think_tags(final_raw)
@@ -305,12 +303,11 @@ def generate_answer_stream(
             result = execute_tool(tc["name"], tc["arguments"])
             tool_results.append(f"[{tc['name']} 결과]\n{result}")
 
-        # tool 결과를 RAG 컨텍스트와 합쳐서 일반 user 메시지로 재구성
+        # tool 결과만 사용 (RAG 컨텍스트 제외)
         tool_context = "\n\n".join(tool_results)
-        combined_context = f"{context}\n\n{tool_context}" if context else tool_context
         final_messages = [
             {"role": "system", "content": _SYSTEM_PROMPT},
-            {"role": "user", "content": f"참고 자료:\n{combined_context}\n\n질문: {question}"},
+            {"role": "user", "content": f"참고 자료:\n{tool_context}\n\n질문: {question}"},
         ]
 
         # 2단계: tool 결과로 최종 답변 스트리밍

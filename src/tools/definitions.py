@@ -140,19 +140,47 @@ def _fetch_dorm_meal(date: str) -> str:
             line = line.strip()
             if not line:
                 continue
-            # 해당 날짜 시작
             if target_label in line:
                 capture = True
-                day_lines.append(f"--- {date} ({weekday_kr}) ---")
                 continue
-            # 다음 날짜가 시작되면 중단
             if capture and re.match(r"^\d{1,2}\([월화수목금토일]\)", line):
                 break
             if capture:
                 day_lines.append(line)
 
-        if day_lines:
-            return "[기숙사 식단]\n" + "\n".join(day_lines[:40])
+        if not day_lines:
+            return ""
+
+        # 아침/점심/저녁 구분하여 구조화
+        meals: dict[str, list[str]] = {"아침": [], "점심": [], "저녁": []}
+        current_meal = ""
+        for line in day_lines:
+            lower = line.lower()
+            if "아침" in lower or "breakfast" in lower or "조식" in lower:
+                current_meal = "아침"
+                continue
+            elif "점심" in lower or "lunch" in lower or "중식" in lower:
+                current_meal = "점심"
+                continue
+            elif "저녁" in lower or "dinner" in lower or "석식" in lower:
+                current_meal = "저녁"
+                continue
+            # 영문 메뉴, kcal 라벨, 원산지 표시 등 불필요한 줄 필터링
+            if re.match(r"^[A-Za-z\s,]+$", line):
+                continue
+            if "kcal" in line and "[" in line:
+                continue
+            if current_meal and line:
+                meals[current_meal].append(line)
+
+        result_parts = [f"[기숙사 식단 {date} ({weekday_kr})]"]
+        for meal_name, items in meals.items():
+            if items:
+                result_parts.append(f"\n■ {meal_name}")
+                result_parts.extend(items[:10])
+
+        if len(result_parts) > 1:
+            return "\n".join(result_parts)
     except Exception as e:
         return f"[기숙사] 조회 실패: {e}"
     return ""
