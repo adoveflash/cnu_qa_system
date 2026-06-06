@@ -12,7 +12,7 @@ from collections.abc import Iterator
 
 import torch
 from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer, LogitsProcessor
 
 from src.model.base import load_model, load_tokenizer
 from src.tools.definitions import execute_tool
@@ -26,6 +26,27 @@ _CHINESE_RE = re.compile(r"[\u4e00-\u9fff]+")
 def _remove_chinese(text: str) -> str:
     """중국어 문자를 제거한다."""
     return _CHINESE_RE.sub("", text).strip()
+
+
+class SuppressChineseLogitsProcessor(LogitsProcessor):
+    """중국어 토큰의 생성 확률을 -inf로 설정하여 중국어 출력을 차단한다."""
+
+    def __init__(self, tokenizer: AutoTokenizer):
+        self._bad_ids: list[int] = []
+        chinese_re = re.compile(r"[\u4e00-\u9fff]")
+        for token_id in range(tokenizer.vocab_size):
+            token = tokenizer.decode([token_id])
+            if chinese_re.search(token):
+                self._bad_ids.append(token_id)
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
+        scores[:, self._bad_ids] = float("-inf")
+        return scores
+
+
+def _build_chinese_suppressor(tokenizer: AutoTokenizer) -> list:
+    """중국어 억제 LogitsProcessor 리스트를 생성한다."""
+    return [SuppressChineseLogitsProcessor(tokenizer)]
 
 
 def _build_system_prompt() -> str:
@@ -128,15 +149,22 @@ def _resolve_context(
     return rag_context, urls, False
 
 
+_chinese_suppressor: list | None = None
+
+
 def load_model_with_lora(
     model_name: str = "Qwen/Qwen3-8B",
     adapter_path: str = "models/lora_adapter",
 ) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     """베이스 모델에 LoRA 어댑터를 합쳐서 로드한다."""
+    global _chinese_suppressor
     tokenizer = load_tokenizer(model_name)
     base_model = load_model(model_name)
     model = PeftModel.from_pretrained(base_model, adapter_path)
     model.eval()
+    print("[inference] 중국어 토큰 억제 필터 구축 중...")
+    _chinese_suppressor = _build_chinese_suppressor(tokenizer)
+    print(f"[inference] 중국어 토큰 {len(_chinese_suppressor[0]._bad_ids)}개 차단 설정 완료")
     return model, tokenizer
 
 
@@ -173,19 +201,22 @@ def generate_answer(
     )
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
+    gen_kwargs = {
+        **inputs,
+        "max_new_tokens": max_new_tokens,
+        "do_sample": False,
+        "repetition_penalty": 1.2,
+    }
+    if _chinese_suppressor:
+        gen_kwargs["logits_processor"] = _chinese_suppressor
+
     torch.manual_seed(_SEED)
     with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            do_sample=False,
-            repetition_penalty=1.2,
-        )
+        outputs = model.generate(**gen_kwargs)
 
     generated_ids = outputs[0][inputs["input_ids"].shape[1] :]
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
     answer = _strip_think_tags(answer)
-    answer = _remove_chinese(answer)
 
     if not used_tool:
         answer += _format_sources(final_urls)
@@ -248,6 +279,8 @@ def generate_answer_stream(
         "repetition_penalty": 1.2,
         "streamer": streamer,
     }
+    if _chinese_suppressor:
+        gen_kwargs["logits_processor"] = _chinese_suppressor
 
     torch.manual_seed(_SEED)
     thread = threading.Thread(target=model.generate, kwargs=gen_kwargs)
