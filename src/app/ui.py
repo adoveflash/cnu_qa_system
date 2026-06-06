@@ -12,8 +12,10 @@ import gradio as gr
 
 from src.model.inference import fallback_answer, generate_answer_stream
 
-# Gradio 5+ 는 messages 형식, 4.x는 tuples 형식
-_USE_MESSAGES = int(gr.__version__.split(".")[0]) >= 5
+# Gradio 5.x는 type="messages" 필요, 6.x는 기본이 messages (파라미터 제거됨), 4.x는 tuples
+_GRADIO_MAJOR = int(gr.__version__.split(".")[0])
+_USE_MESSAGES = _GRADIO_MAJOR >= 5
+_NEED_TYPE_PARAM = _GRADIO_MAJOR == 5  # 6.x는 type 파라미터 없음
 
 
 def _extract_text(content: Any) -> str:
@@ -36,7 +38,7 @@ def create_app(
         gr.Markdown("# 충남대학교 학내 정보 Q&A\n졸업요건 | 공지사항 | 학사일정 | 식단 | 셔틀버스")
 
         chatbot_kwargs = {"height": 500}
-        if _USE_MESSAGES:
+        if _NEED_TYPE_PARAM:
             chatbot_kwargs["type"] = "messages"
         chatbot = gr.Chatbot(**chatbot_kwargs)
         msg = gr.Textbox(placeholder="질문을 입력하세요...", show_label=False)
