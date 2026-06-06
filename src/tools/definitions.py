@@ -176,7 +176,15 @@ def _fetch_student_hall_meal(date: str) -> str:
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--single-process",
+                ],
+            )
             page = browser.new_page()
             page.goto(url, timeout=30000)
             # JS 렌더링 대기 — 식단 테이블이 로드될 때까지
