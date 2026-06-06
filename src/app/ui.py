@@ -17,6 +17,51 @@ _GRADIO_MAJOR = int(gr.__version__.split(".")[0])
 _USE_MESSAGES = _GRADIO_MAJOR >= 5
 _NEED_TYPE_PARAM = _GRADIO_MAJOR == 5  # 6.x는 type 파라미터 없음
 
+_CSS = """
+.gradio-container {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif !important;
+}
+.title-area {
+    text-align: center;
+    padding: 20px 0 10px 0;
+}
+.title-area h1 {
+    font-size: 1.8em;
+    margin-bottom: 4px;
+}
+.title-area p {
+    color: #666;
+    font-size: 0.95em;
+    margin-top: 0;
+}
+.category-badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+.category-badges span {
+    background: #e8f4f8;
+    color: #1a6b8a;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+footer {visibility: hidden}
+"""
+
+_EXAMPLES = [
+    "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
+    "이번 학기 수강신청은 언제야?",
+    "오늘 기숙사 점심 메뉴 뭐야?",
+    "셔틀버스 시간표 알려줘",
+    "최근 공지사항 보여줘",
+]
+
 
 def _extract_text(content: Any) -> str:
     """Gradio content에서 순수 텍스트를 추출한다."""
@@ -34,18 +79,45 @@ def create_app(
 ) -> gr.Blocks:
     """Gradio 챗봇 UI를 생성한다."""
 
-    with gr.Blocks() as app:
-        gr.Markdown("# 충남대학교 학내 정보 Q&A\n졸업요건 | 공지사항 | 학사일정 | 식단 | 셔틀버스")
+    with gr.Blocks(css=_CSS, title="CNU Q&A 챗봇") as app:
+        gr.HTML(
+            """
+            <div class="title-area">
+                <h1>충남대학교 학내 정보 Q&A</h1>
+                <p>궁금한 점을 자유롭게 질문하세요</p>
+            </div>
+            <div class="category-badges">
+                <span>졸업요건</span>
+                <span>공지사항</span>
+                <span>학사일정</span>
+                <span>식단 안내</span>
+                <span>셔틀버스</span>
+            </div>
+            """
+        )
 
-        chatbot_kwargs = {"height": 500}
+        chatbot_kwargs = {"height": 480, "show_label": False, "container": False}
         if _NEED_TYPE_PARAM:
             chatbot_kwargs["type"] = "messages"
         chatbot = gr.Chatbot(**chatbot_kwargs)
-        msg = gr.Textbox(placeholder="질문을 입력하세요...", show_label=False)
 
         with gr.Row():
-            submit_btn = gr.Button("전송", variant="primary")
-            clear_btn = gr.Button("대화 초기화")
+            msg = gr.Textbox(
+                placeholder="질문을 입력하세요...",
+                show_label=False,
+                scale=9,
+                container=False,
+            )
+            submit_btn = gr.Button("전송", variant="primary", scale=1, min_width=80)
+
+        with gr.Row():
+            gr.Examples(
+                examples=_EXAMPLES,
+                inputs=msg,
+                label="이런 질문을 해보세요",
+            )
+
+        clear_btn = gr.Button("대화 초기화", variant="secondary", size="sm")
 
         def respond(message: str, history: list):
             if not message.strip():
@@ -55,7 +127,6 @@ def create_app(
             question = _extract_text(message)
             context, urls = retriever.build_context(question, top_k=5)
 
-            # 사용자 메시지 추가
             if _USE_MESSAGES:
                 history = history + [
                     {"role": "user", "content": question},
