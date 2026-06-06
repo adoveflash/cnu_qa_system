@@ -81,15 +81,21 @@ def _build_system_prompt() -> str:
 
 _SYSTEM_PROMPT = _build_system_prompt()
 
-# URL → 출처 라벨 매핑
-_SOURCE_LABELS: dict[str, str] = {
-    "computer.cnu.ac.kr": "컴퓨터융합학부",
-    "plus.cnu.ac.kr": "충남대 공식",
-    "job.cnu.ac.kr": "인재개발원",
-    "sugang.cnu.ac.kr": "수강신청",
-    "www.cnucoop.co.kr": "생활협동조합",
-    "mobileadmin.cnu.ac.kr": "충남대 식단",
-    "portal.cnu.ac.kr": "학사포털",
+# URL → (라벨, 아이콘) 매핑
+_SOURCE_LABELS: dict[str, tuple[str, str]] = {
+    "computer.cnu.ac.kr": ("컴퓨터융합학부", "💻"),
+    "plus.cnu.ac.kr": ("충남대 공식", "🏫"),
+    "job.cnu.ac.kr": ("인재개발원", "💼"),
+    "sugang.cnu.ac.kr": ("수강신청", "📝"),
+    "www.cnucoop.co.kr": ("생활협동조합", "🍽️"),
+    "mobileadmin.cnu.ac.kr": ("충남대 식단", "🍱"),
+    "portal.cnu.ac.kr": ("학사포털", "🎓"),
+    "biz.cnu.ac.kr": ("경영학부", "📊"),
+    "economics.cnu.ac.kr": ("경제학과", "📈"),
+    "chem.cnu.ac.kr": ("화학과", "🧪"),
+    "math.cnu.ac.kr": ("수학과", "🔢"),
+    "pharm.cnu.ac.kr": ("약학대학", "💊"),
+    "archi.cnu.ac.kr": ("건축학과", "🏛️"),
 }
 
 
@@ -99,24 +105,29 @@ def _strip_think_tags(text: str) -> str:
 
 
 def _format_sources(urls: list[str]) -> str:
-    """URL 리스트를 출처 텍스트로 변환한다."""
+    """URL 리스트를 HTML 배지 형태로 변환한다."""
     if not urls:
         return ""
-    seen: list[str] = []
+    seen: list[tuple[str, str]] = []  # (label, icon)
     for url in urls:
-        for domain, label in _SOURCE_LABELS.items():
+        for domain, (label, icon) in _SOURCE_LABELS.items():
             if domain in url:
-                if label not in seen:
-                    seen.append(label)
+                if label not in [s[0] for s in seen]:
+                    seen.append((label, icon))
                 break
         else:
             from urllib.parse import urlparse
 
             host = urlparse(url).hostname or url
             short = host.replace("www.", "").split(".")[0]
-            if short not in seen:
-                seen.append(short)
-    return "\n\n📌 " + ", ".join(seen) + " 정보를 참고했습니다."
+            if short not in [s[0] for s in seen]:
+                seen.append((short, "🔗"))
+
+    badges = " ".join(
+        f'<span class="source-chip">{icon} {label}</span>'
+        for label, icon in seen
+    )
+    return f'\n\n<div class="source-row"><span class="source-label">참고</span>{badges}</div>'
 
 
 def _build_messages(question: str, context: str) -> list[dict]:

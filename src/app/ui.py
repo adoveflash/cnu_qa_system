@@ -52,6 +52,33 @@ _CSS = """
     font-weight: 500;
 }
 footer {visibility: hidden}
+.source-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e0e0e0;
+}
+.source-label {
+    font-size: 0.75em;
+    color: #888;
+    font-weight: 600;
+    margin-right: 4px;
+}
+.source-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #f0f4f8;
+    border: 1px solid #d8e2ea;
+    color: #2d5a7b;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78em;
+    font-weight: 500;
+}
 """
 
 _EXAMPLES = [
