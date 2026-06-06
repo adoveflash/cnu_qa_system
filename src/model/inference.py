@@ -94,7 +94,10 @@ def _format_sources(urls: list[str]) -> str:
 
 def _build_messages(question: str, context: str) -> list[dict]:
     """시스템 프롬프트 + 참고자료 + 질문으로 메시지를 구성한다."""
-    user_content = f"참고 자료:\n{context}\n\n질문: {question}" if context else question
+    user_content = (
+        f"아래 참고 자료를 반드시 읽고, 참고 자료에 있는 내용만으로 답변해.\n\n"
+        f"참고 자료:\n{context}\n\n질문: {question}"
+    ) if context else question
     return [
         {"role": "system", "content": _SYSTEM_PROMPT},
         {"role": "user", "content": user_content},
