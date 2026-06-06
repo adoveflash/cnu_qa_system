@@ -33,7 +33,7 @@ def _infer_meal_args(question: str) -> dict:
 
     if "기숙사" in question:
         args["location"] = "dormitory"
-    elif "학생회관" in question or "학생 회관" in question:
+    elif any(kw in question for kw in ["학생회관", "학생 회관", "학식", "학생식당"]):
         args["location"] = "student_hall"
 
     # 날짜 추출: "6월 5일", "6/5" 등
