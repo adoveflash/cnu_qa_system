@@ -57,12 +57,6 @@ BOARD_OFFSET_TARGETS: list[dict] = [
         "output_path": RAW_DIR / f"computer_{TODAY}.jsonl",
         "max_articles": 200,
     },
-    {
-        "board_url": "https://computer.cnu.ac.kr/computer/scholarship/list.do",
-        "source_name": "computer",
-        "output_path": RAW_DIR / f"computer_{TODAY}.jsonl",
-        "max_articles": 200,
-    },
 ]
 
 # ── 3단계: JS 게시판 크롤링 (job - AJAX 동적 로딩) ───────────────────────
