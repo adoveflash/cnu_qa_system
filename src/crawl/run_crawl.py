@@ -27,6 +27,13 @@ RAW_DIR = Path("data/corpus/raw")
 HTML_TARGETS: list[tuple[str, str, str, int]] = [
     ("https://computer.cnu.ac.kr", "https://computer.cnu.ac.kr", "computer", 200),
     ("https://job.cnu.ac.kr", "https://job.cnu.ac.kr", "job", 200),
+    # 추가 학과 (졸업요건/공지 중심, 50페이지 제한)
+    ("https://biz.cnu.ac.kr", "https://biz.cnu.ac.kr", "biz", 50),
+    ("https://economics.cnu.ac.kr", "https://economics.cnu.ac.kr", "economics", 50),
+    ("https://chem.cnu.ac.kr", "https://chem.cnu.ac.kr", "chem", 50),
+    ("https://math.cnu.ac.kr", "https://math.cnu.ac.kr", "math", 50),
+    ("https://pharm.cnu.ac.kr", "https://pharm.cnu.ac.kr", "pharm", 50),
+    ("https://archi.cnu.ac.kr", "https://archi.cnu.ac.kr", "archi", 50),
 ]
 
 # ── 2단계: article.offset 게시판 크롤링 (computer - 정적 HTML로 가능) ────
