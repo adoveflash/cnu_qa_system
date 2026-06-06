@@ -218,20 +218,26 @@ def generate_answer(
         model.enable_adapter_layers()
 
     if tool_calls:
-        # tool 실행 후 결과 + RAG 컨텍스트 합쳐서 최종 답변 생성
-        messages.append({"role": "assistant", "content": raw_tool})
-
+        # tool 실행
+        tool_results: list[str] = []
         for tc in tool_calls:
             print(f"  [tool] {tc['name']}({tc['arguments']})")
             result = execute_tool(tc["name"], tc["arguments"])
-            messages.append({"role": "tool", "name": tc["name"], "content": result})
+            tool_results.append(f"[{tc['name']} 결과]\n{result}")
 
-        # tool 결과를 포함하여 최종 답변 생성 (LoRA 활성화 상태)
-        final_raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=None)
+        # tool 결과를 RAG 컨텍스트와 합쳐서 일반 user 메시지로 재구성
+        # (LoRA는 tool role을 학습한 적 없으므로 참고자료 형식으로 전달)
+        tool_context = "\n\n".join(tool_results)
+        combined_context = f"{context}\n\n{tool_context}" if context else tool_context
+        final_messages = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": f"참고 자료:\n{combined_context}\n\n질문: {question}"},
+        ]
+        final_raw = _generate_once(final_messages, model, tokenizer, max_new_tokens, tools=None)
         answer = _strip_think_tags(final_raw)
     else:
         # Tool call 없음 — LoRA로 일반 RAG 답변 생성
-        raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=tools)
+        raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=None)
         answer = _strip_think_tags(raw)
 
     answer += _format_sources(urls)
@@ -290,11 +296,20 @@ def generate_answer_stream(
         tool_names = ", ".join(tc["name"] for tc in tool_calls)
         yield f"🔍 실시간 정보 조회 중... ({tool_names})"
 
-        messages.append({"role": "assistant", "content": raw_tool})
+        # tool 실행
+        tool_results: list[str] = []
         for tc in tool_calls:
             print(f"  [tool] {tc['name']}({tc['arguments']})")
             result = execute_tool(tc["name"], tc["arguments"])
-            messages.append({"role": "tool", "name": tc["name"], "content": result})
+            tool_results.append(f"[{tc['name']} 결과]\n{result}")
+
+        # tool 결과를 RAG 컨텍스트와 합쳐서 일반 user 메시지로 재구성
+        tool_context = "\n\n".join(tool_results)
+        combined_context = f"{context}\n\n{tool_context}" if context else tool_context
+        final_messages = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": f"참고 자료:\n{combined_context}\n\n질문: {question}"},
+        ]
 
         # 2단계: tool 결과로 최종 답변 스트리밍
         template_kwargs = {
@@ -302,7 +317,7 @@ def generate_answer_stream(
             "add_generation_prompt": True,
             "enable_thinking": False,
         }
-        text = tokenizer.apply_chat_template(messages, **template_kwargs)
+        text = tokenizer.apply_chat_template(final_messages, **template_kwargs)
         inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
         streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
