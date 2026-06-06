@@ -235,13 +235,14 @@ def generate_answer(
         ]
         final_raw = _generate_once(final_messages, model, tokenizer, max_new_tokens, tools=None)
         answer = _strip_think_tags(final_raw)
+        # tool 사용 시 RAG 출처 대신 tool 출처 표시
+        return answer
     else:
         # Tool call 없음 — LoRA로 일반 RAG 답변 생성
         raw = _generate_once(messages, model, tokenizer, max_new_tokens, tools=None)
         answer = _strip_think_tags(raw)
-
-    answer += _format_sources(urls)
-    return answer
+        answer += _format_sources(urls)
+        return answer
 
 
 def generate_answer_stream(
@@ -339,10 +340,8 @@ def generate_answer_stream(
 
         thread.join()
 
-        final = _strip_think_tags(accumulated)
-        source_text = _format_sources(urls)
-        if source_text:
-            yield final + source_text
+        # tool 사용 시 RAG 출처 안 붙임
+        yield _strip_think_tags(accumulated)
     else:
         # Tool call 없음 — LoRA로 일반 답변 스트리밍
         template_kwargs = {

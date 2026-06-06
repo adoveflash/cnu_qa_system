@@ -151,36 +151,45 @@ def _fetch_dorm_meal(date: str) -> str:
         if not day_lines:
             return ""
 
-        # 아침/점심/저녁 구분하여 구조화
-        meals: dict[str, list[str]] = {"아침": [], "점심": [], "저녁": []}
-        current_meal = ""
+        # 메인A(kcal) 블록 단위로 분리 + 영문/원산지/알레르기 필터링
+        menus: list[list[str]] = []
+        current: list[str] = []
         for line in day_lines:
-            lower = line.lower()
-            if "아침" in lower or "breakfast" in lower or "조식" in lower:
-                current_meal = "아침"
+            # 영문 메뉴 줄 건너뛰기 (알파벳+공백+기호만으로 구성)
+            if re.match(r"^[A-Za-z\s,&.()*]+$", line):
                 continue
-            elif "점심" in lower or "lunch" in lower or "중식" in lower:
-                current_meal = "점심"
+            # 원산지 표시만 있는 줄 건너뛰기
+            if re.match(r"^\[.+:.+\]$", line):
                 continue
-            elif "저녁" in lower or "dinner" in lower or "석식" in lower:
-                current_meal = "저녁"
+            # 메인A/C(kcal) — 새 메뉴 세트 시작
+            if re.match(r"^메인[A-Z]?\(\d+kcal\)$", line):
+                if current:
+                    menus.append(current)
+                current = []
                 continue
-            # 영문 메뉴, kcal 라벨, 원산지 표시 등 불필요한 줄 필터링
-            if re.match(r"^[A-Za-z\s,]+$", line):
-                continue
-            if "kcal" in line and "[" in line:
-                continue
-            if current_meal and line:
-                meals[current_meal].append(line)
+            if line:
+                # 알레르기 번호 제거 (예: "콩나물김치국 5,6,9" → "콩나물김치국")
+                cleaned = re.sub(r"\s+[\d,]+$", "", line)
+                # 우유 등 공통 항목
+                cleaned = cleaned.strip("*")
+                # 원산지 표시 제거 (예: "쌀밥[쌀:국내산]" → "쌀밥")
+                cleaned = re.sub(r"\[.+?\]", "", cleaned).strip()
+                if cleaned:
+                    current.append(cleaned)
+        if current:
+            menus.append(current)
 
+        if not menus:
+            return ""
+
+        # 메뉴 세트를 식사 시간에 매핑 (보통 3세트: 아침/점심/저녁)
+        meal_labels = ["아침", "점심", "저녁"]
         result_parts = [f"[기숙사 식단 {date} ({weekday_kr})]"]
-        for meal_name, items in meals.items():
-            if items:
-                result_parts.append(f"\n■ {meal_name}")
-                result_parts.extend(items[:10])
+        for i, menu_items in enumerate(menus):
+            label = meal_labels[i] if i < len(meal_labels) else f"메뉴{i + 1}"
+            result_parts.append(f"\n■ {label}: {', '.join(menu_items)}")
 
-        if len(result_parts) > 1:
-            return "\n".join(result_parts)
+        return "\n".join(result_parts)
     except Exception as e:
         return f"[기숙사] 조회 실패: {e}"
     return ""
