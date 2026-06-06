@@ -476,13 +476,14 @@ def get_notices(count: int = 5) -> str:
                 text = (body or art_soup.find("body")).get_text(separator="\n", strip=True)
                 text = re.sub(r"\n{3,}", "\n\n", text)
 
-                results.append(f"[{title}]\n{text[:500]}\n출처: {url}")
+                rank = len(results) + 1
+                results.append(f"[{rank}번째 최신 공지] {title}\n{text[:500]}\n출처: {url}")
             except Exception:
                 pass
             time.sleep(CRAWL_DELAY)
 
         if results:
-            return "\n\n---\n\n".join(results)
+            return f"최신순 정렬 (1번이 가장 최근):\n\n" + "\n\n---\n\n".join(results)
     except Exception as e:
         return f"공지사항 조회 실패: {e}"
 
