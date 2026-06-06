@@ -47,13 +47,21 @@ def _infer_meal_args(question: str) -> dict:
 
 
 def _infer_calendar_args(question: str) -> dict:
-    """학사일정 질문에서 month 인자를 추론한다."""
+    """학사일정 질문에서 month, year 인자를 추론한다."""
+    args: dict = {}
+    year_match = re.search(r"(20\d{2})년", question)
+    if year_match:
+        args["year"] = int(year_match.group(1))
+    elif "작년" in question or "지난해" in question:
+        args["year"] = datetime.now().year - 1
+    elif "내년" in question:
+        args["year"] = datetime.now().year + 1
     month_match = re.search(r"(\d{1,2})월", question)
     if month_match:
         month = int(month_match.group(1))
         if 1 <= month <= 12:
-            return {"month": month}
-    return {}
+            args["month"] = month
+    return args
 
 
 def _infer_notice_args(question: str) -> dict:

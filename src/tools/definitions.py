@@ -456,51 +456,78 @@ def _get_builtin_calendar(month: int | None = None) -> str:
     return "\n\n".join(result) if result else "학사일정 정보를 찾을 수 없습니다."
 
 
-def get_academic_calendar(month: int | None = None) -> str:
+def _fetch_calendar_from_web(year: int, month: int | None = None) -> str | None:
+    """plus.cnu.ac.kr에서 학사일정을 실시간으로 가져온다."""
+    url = (
+        f"https://plus.cnu.ac.kr/_prog/academic_calendar/"
+        f"?site_dvs_cd=kr&menu_dvs_cd=05020101&year={year}"
+    )
+    try:
+        resp = _SESSION.get(url, timeout=15)
+        if resp.status_code != 200:
+            return None
+        resp.encoding = resp.apparent_encoding
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # 월별 일정 추출
+        results: list[str] = []
+        current_month = None
+        month_events: list[str] = []
+
+        # 테이블 또는 리스트에서 일정 추출
+        for row in soup.find_all(["tr", "li", "dl"]):
+            text = row.get_text(separator=" ", strip=True)
+            # "1월", "2월" 등 월 헤더 감지
+            month_header = re.search(r"^(\d{1,2})월$", text)
+            if month_header:
+                if current_month and month_events:
+                    if month is None or current_month == month:
+                        results.append(
+                            f"{current_month}월 학사일정:\n" + "\n".join(month_events)
+                        )
+                current_month = int(month_header.group(1))
+                month_events = []
+                continue
+            # 일정 항목 (날짜 패턴 포함)
+            if current_month and re.search(r"\d{2}\.\d{2}", text):
+                month_events.append(f"- {text}")
+
+        # 마지막 월 처리
+        if current_month and month_events:
+            if month is None or current_month == month:
+                results.append(f"{current_month}월 학사일정:\n" + "\n".join(month_events))
+
+        if results:
+            header = f"{year}학년도 학사일정\n\n"
+            return header + "\n\n".join(results)
+    except Exception:
+        pass
+    return None
+
+
+def get_academic_calendar(month: int | None = None, year: int | None = None) -> str:
     """학사일정을 반환한다.
 
     Args:
-        month: 조회할 월 (1-12). None이면 전체.
+        month: 조회할 월 (1-12). None이면 현재 월 기준 앞뒤.
+        year: 조회할 연도. None이면 현재 연도.
 
     Returns:
         학사일정 텍스트
     """
-    # 가장 최신 academic 파일 사용 (academic_ 또는 portal_ 접두사)
-    raw_dir = Path("data/corpus/raw")
-    portal_files = sorted(raw_dir.glob("academic_*.jsonl"), reverse=True)
-    if not portal_files:
-        portal_files = sorted(raw_dir.glob("portal_*.jsonl"), reverse=True)
-    if not portal_files:
-        return "학사일정 데이터를 찾을 수 없습니다."
-    portal_file = portal_files[0]
+    if year is None:
+        year = datetime.now().year
 
-    with open(portal_file, encoding="utf-8") as f:
-        docs = [json.loads(line) for line in f]
+    # 1순위: 실시간 크롤링
+    web_result = _fetch_calendar_from_web(year, month)
+    if web_result:
+        return web_result
 
-    # title이나 content에서 학사일정 관련 내용 찾기
-    calendar_doc = None
-    for doc in docs:
-        title = doc.get("title", "")
-        if any(kw in title for kw in ["학사일정", "학사", "일정", "학적"]):
-            calendar_doc = doc
-            break
-
-    # 파일에 학사일정이 없으면 내장 데이터 사용
-    if not calendar_doc:
+    # 2순위: 내장 데이터 (2026년만)
+    if year == 2026:
         return _get_builtin_calendar(month)
 
-    content = calendar_doc["content"]
-
-    if month is not None:
-        # 해당 월 섹션만 추출
-        pattern = rf"## \d{{4}}년 {month}월\n(.*?)(?=## \d{{4}}년 \d+월|\Z)"
-        match = re.search(pattern, content, re.DOTALL)
-        if match:
-            return f"{month}월 학사일정:\n{match.group(0).strip()}"
-        # 패턴 못 찾으면 내장 데이터에서 해당 월 반환
-        return _get_builtin_calendar(month)
-
-    return content[:3000]
+    return f"{year}년 학사일정을 가져올 수 없습니다. 충남대 홈페이지를 확인해주세요."
 
 
 def get_notices(count: int = 5) -> str:
