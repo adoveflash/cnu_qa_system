@@ -152,7 +152,7 @@ def create_app(
                 return
 
             question = _extract_text(message)
-            context, urls = retriever.build_context(question, top_k=5)
+            context, urls = retriever.build_context(question)
 
             if _USE_MESSAGES:
                 history = history + [

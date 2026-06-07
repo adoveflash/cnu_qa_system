@@ -63,7 +63,7 @@ class Retriever:
         static_collection: str = _STATIC_COLLECTION,
         live_collection: str = _LIVE_COLLECTION,
         embedding_model_name: str = "BAAI/bge-m3",
-        top_k: int = 5,
+        top_k: int = 3,
     ) -> None:
         """검색기를 초기화한다.
 

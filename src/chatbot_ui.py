@@ -78,7 +78,7 @@ def run_chat_batch(
     results = []
     for item in test_data:
         question = item["user"]
-        context, urls = retriever.build_context(question, top_k=5)
+        context, urls = retriever.build_context(question)
 
         if model is not None and tokenizer is not None:
             answer = generate_answer(question, context, urls, model, tokenizer)
