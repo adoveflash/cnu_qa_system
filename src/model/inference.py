@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 import threading
 from collections.abc import Iterator
+from pathlib import Path
 
 import torch
 from peft import PeftModel
@@ -177,15 +178,24 @@ def load_model_with_lora(
     model_name: str | None = None,
     adapter_path: str = "models/lora_adapter",
 ) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
-    """베이스 모델에 LoRA 어댑터를 합쳐서 로드한다."""
+    """모델을 로드한다. LoRA 어댑터가 있으면 합치고, 없으면 base만 로드."""
     global _chinese_suppressor
     if model_name is None:
         model_name = _DEFAULT_MODEL
     is_qwen = "qwen" in model_name.lower()
     tokenizer = load_tokenizer(model_name)
     base_model = load_model(model_name)
-    model = PeftModel.from_pretrained(base_model, adapter_path)
-    model.eval()
+
+    # LoRA 어댑터가 존재하고 Qwen 모델일 때만 적용
+    adapter = Path(adapter_path)
+    if adapter.exists() and (adapter / "adapter_config.json").exists() and is_qwen:
+        print(f"[inference] LoRA 어댑터 로드: {adapter_path}")
+        model = PeftModel.from_pretrained(base_model, adapter_path)
+        model.eval()
+    else:
+        print(f"[inference] Base 모델만 사용: {model_name}")
+        model = base_model
+
     if is_qwen:
         print("[inference] 중국어 토큰 억제 필터 구축 중...")
         _chinese_suppressor = _build_chinese_suppressor(tokenizer)
