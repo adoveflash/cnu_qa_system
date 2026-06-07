@@ -318,5 +318,769 @@
   {
     "question": "교통카드로 셔틀 탈 수 있나요?",
     "label": 4
+  },
+  {
+    "question": "졸업하려면 총 몇 학점을 이수해야 하나요?",
+    "label": 0
+  },
+  {
+    "question": "전공필수 과목 목록이 어떻게 되나요?",
+    "label": 0
+  },
+  {
+    "question": "복수전공 졸업 요건이 따로 있나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업논문 대신 졸업시험도 가능한가요?",
+    "label": 0
+  },
+  {
+    "question": "컴퓨터융합학부 졸업 이수체계가 어떻게 되나요?",
+    "label": 0
+  },
+  {
+    "question": "부전공 졸업요건도 알려주세요",
+    "label": 0
+  },
+  {
+    "question": "졸업에 필요한 영어 성적 기준이 있나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업 인증제가 뭐예요?",
+    "label": 0
+  },
+  {
+    "question": "4학년인데 졸업요건 충족 여부를 어디서 확인하나요?",
+    "label": 0
+  },
+  {
+    "question": "전공선택 과목은 몇 학점 들어야 졸업이 되나요?",
+    "label": 0
+  },
+  {
+    "question": "교양 영역별로 꼭 들어야 하는 과목이 있나요?",
+    "label": 0
+  },
+  {
+    "question": "공학인증 졸업요건이 따로 있나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업요건 미충족 시 유예 신청이 가능한가요?",
+    "label": 0
+  },
+  {
+    "question": "편입생 졸업요건은 다른가요?",
+    "label": 0
+  },
+  {
+    "question": "졸업학점에 계절학기 학점도 포함되나요?",
+    "label": 0
+  },
+  {
+    "question": "교직이수 졸업조건이 어떻게 되나요?",
+    "label": 0
+  },
+  {
+    "question": "연계전공 졸업요건 알려줘",
+    "label": 0
+  },
+  {
+    "question": "졸업 평점 기준이 있나요?",
+    "label": 0
+  },
+  {
+    "question": "전공 트랙별 졸업요건 차이가 있나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업요건에 사회봉사 과목이 포함되나요?",
+    "label": 0
+  },
+  {
+    "question": "교양 필수 과목이 뭐가 있어요?",
+    "label": 0
+  },
+  {
+    "question": "졸업하려면 외국어 시험을 꼭 봐야 하나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업 이수학점 중 전공은 최소 몇 학점이에요?",
+    "label": 0
+  },
+  {
+    "question": "캡스톤디자인이 졸업필수인가요?",
+    "label": 0
+  },
+  {
+    "question": "학점 부족하면 초과학기 신청 가능한가요?",
+    "label": 0
+  },
+  {
+    "question": "졸업시험은 언제 보나요?",
+    "label": 0
+  },
+  {
+    "question": "학석사 연계과정 졸업요건이 어떻게 되나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업요건 확인서 발급은 어디서 하나요?",
+    "label": 0
+  },
+  {
+    "question": "이중전공하면 졸업학점이 늘어나나요?",
+    "label": 0
+  },
+  {
+    "question": "교양 학점 초과해서 들으면 졸업에 인정되나요?",
+    "label": 0
+  },
+  {
+    "question": "전공기초 과목도 졸업요건에 포함인가요?",
+    "label": 0
+  },
+  {
+    "question": "마이크로전공 졸업요건 알려줘",
+    "label": 0
+  },
+  {
+    "question": "졸업유예 신청 기간이 언제예요?",
+    "label": 0
+  },
+  {
+    "question": "재수강 과목도 졸업학점에 들어가나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업요건 관련 상담은 어디서 받나요?",
+    "label": 0
+  },
+  {
+    "question": "코딩 역량 인증도 졸업조건인가요?",
+    "label": 0
+  },
+  {
+    "question": "졸업 예정자 확인은 언제 할 수 있나요?",
+    "label": 0
+  },
+  {
+    "question": "졸업에 필요한 최소 이수 학기가 있나요?",
+    "label": 0
+  },
+  {
+    "question": "오늘 학교 공지사항 뭐 올라왔어?",
+    "label": 1
+  },
+  {
+    "question": "장학금 신청 공지 어디서 볼 수 있어?",
+    "label": 1
+  },
+  {
+    "question": "학과 공지사항 확인하는 방법 알려줘",
+    "label": 1
+  },
+  {
+    "question": "도서관 운영시간 변경 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "등록금 납부 관련 공지 알려줘",
+    "label": 1
+  },
+  {
+    "question": "교내 채용 공고 어디서 확인해?",
+    "label": 1
+  },
+  {
+    "question": "학생회 공지사항 어디서 봐?",
+    "label": 1
+  },
+  {
+    "question": "기숙사 입사 공지 언제 나와?",
+    "label": 1
+  },
+  {
+    "question": "최근 학과 공지 3개만 보여줘",
+    "label": 1
+  },
+  {
+    "question": "학교 홈페이지 공지 게시판 주소가 어떻게 돼?",
+    "label": 1
+  },
+  {
+    "question": "컴퓨터융합학부 공지사항 보여줘",
+    "label": 1
+  },
+  {
+    "question": "교내 알바 모집 공지 있나요?",
+    "label": 1
+  },
+  {
+    "question": "학생 포탈에서 공지 보는 법 알려줘",
+    "label": 1
+  },
+  {
+    "question": "봉사활동 관련 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "졸업식 관련 공지사항 나왔어?",
+    "label": 1
+  },
+  {
+    "question": "수강신청 관련 공지 알려줘",
+    "label": 1
+  },
+  {
+    "question": "교환학생 모집 공지 어디서 봐?",
+    "label": 1
+  },
+  {
+    "question": "학교 행사 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "등록금 환불 공지 있나요?",
+    "label": 1
+  },
+  {
+    "question": "장학생 선발 결과 공지 어디서 확인해?",
+    "label": 1
+  },
+  {
+    "question": "학과 세미나 공지 알려줘",
+    "label": 1
+  },
+  {
+    "question": "연구실 모집 공지 어디서 보나요?",
+    "label": 1
+  },
+  {
+    "question": "대학원 입학 공지 나왔어?",
+    "label": 1
+  },
+  {
+    "question": "학교 긴급 공지 확인하는 방법 있어?",
+    "label": 1
+  },
+  {
+    "question": "방역 관련 공지사항 있나요?",
+    "label": 1
+  },
+  {
+    "question": "주차장 이용 관련 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "학생증 재발급 공지 어디서 봐?",
+    "label": 1
+  },
+  {
+    "question": "교내 대회 공지 알려줘",
+    "label": 1
+  },
+  {
+    "question": "인재개발원 프로그램 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "캠퍼스 공사 관련 공지 나왔어?",
+    "label": 1
+  },
+  {
+    "question": "시험 일정 변경 공지 있나요?",
+    "label": 1
+  },
+  {
+    "question": "학교 셔틀 변경 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "신입생 오리엔테이션 공지 알려줘",
+    "label": 1
+  },
+  {
+    "question": "교수 채용 공고 어디서 확인해?",
+    "label": 1
+  },
+  {
+    "question": "학생 상담센터 공지 있어?",
+    "label": 1
+  },
+  {
+    "question": "교내 동아리 모집 공지 보여줘",
+    "label": 1
+  },
+  {
+    "question": "학교 앱에서 공지 알림 받을 수 있어?",
+    "label": 1
+  },
+  {
+    "question": "이번 주 중요 공지 정리해줘",
+    "label": 1
+  },
+  {
+    "question": "이번 학기 종강일이 언제야?",
+    "label": 2
+  },
+  {
+    "question": "다음 학기 개강일 알려줘",
+    "label": 2
+  },
+  {
+    "question": "중간고사 기간이 언제인가요?",
+    "label": 2
+  },
+  {
+    "question": "기말고사 일정 알려줘",
+    "label": 2
+  },
+  {
+    "question": "수강정정 기간이 며칠까지야?",
+    "label": 2
+  },
+  {
+    "question": "계절학기 신청 기간 알려줘",
+    "label": 2
+  },
+  {
+    "question": "학기 중 휴강일이 있나요?",
+    "label": 2
+  },
+  {
+    "question": "여름방학 시작일이 언제야?",
+    "label": 2
+  },
+  {
+    "question": "겨울방학은 언제부터인가요?",
+    "label": 2
+  },
+  {
+    "question": "복학 신청 기간 알려줘",
+    "label": 2
+  },
+  {
+    "question": "휴학 신청은 언제까지 가능해요?",
+    "label": 2
+  },
+  {
+    "question": "수강신청 날짜가 언제야?",
+    "label": 2
+  },
+  {
+    "question": "학사일정표 어디서 볼 수 있어?",
+    "label": 2
+  },
+  {
+    "question": "성적 발표일이 언제인가요?",
+    "label": 2
+  },
+  {
+    "question": "추가 수강신청 기간이 있나요?",
+    "label": 2
+  },
+  {
+    "question": "졸업식이 언제예요?",
+    "label": 2
+  },
+  {
+    "question": "신입생 등록 기간 알려줘",
+    "label": 2
+  },
+  {
+    "question": "학기 개시일과 개강일이 다른가요?",
+    "label": 2
+  },
+  {
+    "question": "중간고사 대체 과제 기간이 따로 있나요?",
+    "label": 2
+  },
+  {
+    "question": "수강 포기 기간이 언제까지야?",
+    "label": 2
+  },
+  {
+    "question": "전공 변경 신청 기간 알려줘",
+    "label": 2
+  },
+  {
+    "question": "재입학 신청 기간이 언제예요?",
+    "label": 2
+  },
+  {
+    "question": "학위 수여식 일정 알려줘",
+    "label": 2
+  },
+  {
+    "question": "하계 계절학기 기간이 어떻게 돼?",
+    "label": 2
+  },
+  {
+    "question": "동계 계절학기는 언제야?",
+    "label": 2
+  },
+  {
+    "question": "수강신청 정정 마감이 언제까지야?",
+    "label": 2
+  },
+  {
+    "question": "이번 달 학사일정 알려줘",
+    "label": 2
+  },
+  {
+    "question": "대학원 학사일정도 같나요?",
+    "label": 2
+  },
+  {
+    "question": "국가공휴일에 보강 있나요?",
+    "label": 2
+  },
+  {
+    "question": "중간고사 끝나고 바로 수업 있어?",
+    "label": 2
+  },
+  {
+    "question": "학기말 성적 이의신청 기간 알려줘",
+    "label": 2
+  },
+  {
+    "question": "1학기 종강 후 바로 계절학기 시작해?",
+    "label": 2
+  },
+  {
+    "question": "편입학 전형 일정 알려줘",
+    "label": 2
+  },
+  {
+    "question": "등록금 분납 신청 기간이 언제예요?",
+    "label": 2
+  },
+  {
+    "question": "다전공 신청 기간 알려줘",
+    "label": 2
+  },
+  {
+    "question": "교생실습 기간이 언제야?",
+    "label": 2
+  },
+  {
+    "question": "이번 학기 공휴일 대체 수업일이 있어?",
+    "label": 2
+  },
+  {
+    "question": "수강신청 예비번호 배정일이 언제야?",
+    "label": 2
+  },
+  {
+    "question": "오늘 점심 메뉴가 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "내일 기숙사 아침 메뉴 알려줘",
+    "label": 3
+  },
+  {
+    "question": "학생회관 저녁 메뉴 뭐 나와?",
+    "label": 3
+  },
+  {
+    "question": "이번 주 기숙사 식단표 보여줘",
+    "label": 3
+  },
+  {
+    "question": "학식 가격이 얼마야?",
+    "label": 3
+  },
+  {
+    "question": "오늘 학생식당 메뉴 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 조식 메뉴 알려줘",
+    "label": 3
+  },
+  {
+    "question": "제1학생회관 점심 메뉴 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "학교 식당 운영시간이 어떻게 돼?",
+    "label": 3
+  },
+  {
+    "question": "채식 메뉴가 있는 식당이 있나요?",
+    "label": 3
+  },
+  {
+    "question": "교직원 식당 메뉴도 볼 수 있어?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 식당 주말에도 운영해?",
+    "label": 3
+  },
+  {
+    "question": "오늘 중식 뭐 나오는지 알려줘",
+    "label": 3
+  },
+  {
+    "question": "학생회관 식당이 몇 개야?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 석식 메뉴 알려줘",
+    "label": 3
+  },
+  {
+    "question": "생협 식당 메뉴 있어?",
+    "label": 3
+  },
+  {
+    "question": "학식 영양 정보도 알 수 있나요?",
+    "label": 3
+  },
+  {
+    "question": "오늘 기숙사 점심 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "내일 학생회관 점심 메뉴 알려줘",
+    "label": 3
+  },
+  {
+    "question": "학교 식당에서 카드 결제 되나요?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 식단 가격이 얼마야?",
+    "label": 3
+  },
+  {
+    "question": "이번 주 학생회관 메뉴 알려줘",
+    "label": 3
+  },
+  {
+    "question": "모레 기숙사 식단 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "학교 카페테리아 메뉴도 있어?",
+    "label": 3
+  },
+  {
+    "question": "점심시간 식당 혼잡한 시간대가 언제야?",
+    "label": 3
+  },
+  {
+    "question": "알레르기 정보도 식단에 나와 있어?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 식당 위치가 어디야?",
+    "label": 3
+  },
+  {
+    "question": "학생회관 아침 메뉴도 있어?",
+    "label": 3
+  },
+  {
+    "question": "오늘 기숙사 저녁 메뉴 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "주말 학생회관 운영하나요?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 식단 어디서 확인해?",
+    "label": 3
+  },
+  {
+    "question": "학생식당 라면도 파나요?",
+    "label": 3
+  },
+  {
+    "question": "오늘 급식 메뉴 뭐야?",
+    "label": 3
+  },
+  {
+    "question": "다음 주 식단 미리 볼 수 있어?",
+    "label": 3
+  },
+  {
+    "question": "학교 식당 할인 있어?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 식당 메뉴가 매일 바뀌나요?",
+    "label": 3
+  },
+  {
+    "question": "제2학생회관 메뉴 알려줘",
+    "label": 3
+  },
+  {
+    "question": "학교 밥 맛있어?",
+    "label": 3
+  },
+  {
+    "question": "기숙사 식사 신청은 어떻게 해?",
+    "label": 3
+  },
+  {
+    "question": "셔틀버스 첫차가 몇 시야?",
+    "label": 4
+  },
+  {
+    "question": "통학버스 노선 알려줘",
+    "label": 4
+  },
+  {
+    "question": "셔틀 정류장이 어디에 있어?",
+    "label": 4
+  },
+  {
+    "question": "주말에도 셔틀 운행해?",
+    "label": 4
+  },
+  {
+    "question": "방학 중 셔틀버스 시간표 알려줘",
+    "label": 4
+  },
+  {
+    "question": "셔틀 배차 간격이 어떻게 돼?",
+    "label": 4
+  },
+  {
+    "question": "충남대 셔틀 노선도 보여줘",
+    "label": 4
+  },
+  {
+    "question": "대전역에서 학교 가는 셔틀 있어?",
+    "label": 4
+  },
+  {
+    "question": "시내버스로 학교 가려면 몇 번 타야 해?",
+    "label": 4
+  },
+  {
+    "question": "기숙사에서 정문까지 셔틀 있어?",
+    "label": 4
+  },
+  {
+    "question": "셔틀버스 막차 시간 알려줘",
+    "label": 4
+  },
+  {
+    "question": "시험 기간에 셔틀 추가 운행해?",
+    "label": 4
+  },
+  {
+    "question": "버스 정류장에서 학교까지 얼마나 걸려?",
+    "label": 4
+  },
+  {
+    "question": "통학버스 예약제인가요?",
+    "label": 4
+  },
+  {
+    "question": "셔틀 실시간 위치 확인할 수 있어?",
+    "label": 4
+  },
+  {
+    "question": "학교 근처 지하철역이 있나요?",
+    "label": 4
+  },
+  {
+    "question": "정문에서 공대까지 교내 순환버스 있어?",
+    "label": 4
+  },
+  {
+    "question": "세종캠퍼스 셔틀도 있나요?",
+    "label": 4
+  },
+  {
+    "question": "셔틀 타는 곳이 어디야?",
+    "label": 4
+  },
+  {
+    "question": "월요일 셔틀 시간표 알려줘",
+    "label": 4
+  },
+  {
+    "question": "우천 시 셔틀 정상 운행해?",
+    "label": 4
+  },
+  {
+    "question": "교내 이동할 때 셔틀 이용 가능해?",
+    "label": 4
+  },
+  {
+    "question": "대전 유성구에서 학교 가는 버스 알려줘",
+    "label": 4
+  },
+  {
+    "question": "셔틀버스 노선이 몇 개야?",
+    "label": 4
+  },
+  {
+    "question": "통학 시간 가장 빠른 경로 알려줘",
+    "label": 4
+  },
+  {
+    "question": "학교 주차장 이용할 수 있어?",
+    "label": 4
+  },
+  {
+    "question": "셔틀 중간 정차하는 곳 알려줘",
+    "label": 4
+  },
+  {
+    "question": "오후에 셔틀 운행 있어?",
+    "label": 4
+  },
+  {
+    "question": "등교 시간대 셔틀 몇 분 간격이야?",
+    "label": 4
+  },
+  {
+    "question": "퇴근 시간 셔틀 마지막이 몇 시야?",
+    "label": 4
+  },
+  {
+    "question": "학교에서 대전역까지 셔틀 있어?",
+    "label": 4
+  },
+  {
+    "question": "자전거 타고 통학할 수 있어?",
+    "label": 4
+  },
+  {
+    "question": "교내 전동킥보드 대여 가능해?",
+    "label": 4
+  },
+  {
+    "question": "택시비 학교까지 얼마 정도 나와?",
+    "label": 4
+  },
+  {
+    "question": "학교 앞 버스 정류장 이름이 뭐야?",
+    "label": 4
+  },
+  {
+    "question": "셔틀 탑승 시 학생증 필요해?",
+    "label": 4
+  },
+  {
+    "question": "통학버스 좌석이 부족할 때 어떻게 해?",
+    "label": 4
+  },
+  {
+    "question": "기숙사 입사자도 셔틀 이용 가능해?",
+    "label": 4
   }
 ]
