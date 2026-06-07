@@ -232,7 +232,6 @@ def generate_answer(
         "max_new_tokens": max_new_tokens,
         "do_sample": False,
         "repetition_penalty": 1.3,
-        "no_repeat_ngram_size": 3,
     }
     if _chinese_suppressor:
         gen_kwargs["logits_processor"] = _chinese_suppressor
@@ -307,7 +306,6 @@ def generate_answer_stream(
         "max_new_tokens": max_new_tokens,
         "do_sample": False,
         "repetition_penalty": 1.3,
-        "no_repeat_ngram_size": 3,
         "streamer": streamer,
     }
     if _chinese_suppressor:
