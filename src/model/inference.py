@@ -153,10 +153,15 @@ def _build_messages(
     return msgs
 
 
+_TOOL_FAIL_KEYWORDS = ["찾을 수 없습니다", "가져올 수 없습니다", "조회 실패"]
+
+
 def _resolve_context(
     question: str, rag_context: str, urls: list[str], use_tools: bool
 ) -> tuple[str, list[str], bool]:
     """질문에 대해 tool 또는 RAG 컨텍스트를 결정한다.
+
+    tool 결과가 실패 메시지면 RAG fallback으로 전환한다.
 
     Returns:
         (final_context, final_urls, used_tool)
@@ -166,6 +171,10 @@ def _resolve_context(
         if tool_name:
             print(f"  [tool] {tool_name}({tool_args})")
             result = execute_tool(tool_name, tool_args)
+            # tool 실패 시 RAG fallback
+            if any(kw in result for kw in _TOOL_FAIL_KEYWORDS):
+                print(f"  [tool] 실패 → RAG fallback")
+                return rag_context, urls, False
             tool_context = f"[{tool_name} 결과]\n{result}"
             return tool_context, [], True
     return rag_context, urls, False
