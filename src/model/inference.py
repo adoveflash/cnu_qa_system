@@ -209,7 +209,7 @@ def generate_answer(
     urls: list[str],
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
-    max_new_tokens: int = 512,
+    max_new_tokens: int = 1024,
     use_tools: bool = True,
 ) -> str:
     """답변을 생성한다 (배치 추론용).
@@ -265,7 +265,7 @@ def generate_answer_stream(
     urls: list[str],
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
-    max_new_tokens: int = 512,
+    max_new_tokens: int = 1024,
     use_tools: bool = True,
     history: list[dict] | None = None,
 ) -> Iterator[str]:
