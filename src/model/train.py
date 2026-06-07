@@ -17,7 +17,7 @@ from datasets import Dataset
 from peft import LoraConfig, get_peft_model, TaskType
 from transformers import TrainingArguments, Trainer
 
-from src.model.base import load_model, load_tokenizer
+from src.model.base import load_model, load_tokenizer, _DEFAULT_MODEL
 
 _SEED = 42
 _SYSTEM_PROMPT = (
@@ -117,9 +117,10 @@ def _find_assistant_start(tokenizer: Any, messages: list[dict[str, str]]) -> int
         assistant 응답 시작 토큰 인덱스
     """
     prompt_only = messages[:2]  # system + user
-    prompt_text = tokenizer.apply_chat_template(
-        prompt_only, tokenize=False, add_generation_prompt=True, enable_thinking=False
-    )
+    tpl_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
+    if "qwen" in _DEFAULT_MODEL.lower():
+        tpl_kwargs["enable_thinking"] = False
+    prompt_text = tokenizer.apply_chat_template(prompt_only, **tpl_kwargs)
     prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
     return len(prompt_ids)
 
@@ -153,9 +154,10 @@ def prepare_dataset(
         messages = format_chat_messages(qa, chunk_text)
 
         # 전체 시퀀스 토크나이즈
-        full_text = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=False, enable_thinking=False
-        )
+        tpl_kwargs2: dict = {"tokenize": False, "add_generation_prompt": False}
+        if "qwen" in _DEFAULT_MODEL.lower():
+            tpl_kwargs2["enable_thinking"] = False
+        full_text = tokenizer.apply_chat_template(messages, **tpl_kwargs2)
         tokenized = tokenizer(
             full_text,
             truncation=True,
@@ -198,7 +200,7 @@ def train(
     eval_path: Path = Path("data/qa/eval.jsonl"),
     chunks_path: Path = Path("data/corpus/chunks.jsonl"),
     output_dir: Path = Path("models/lora_adapter"),
-    model_name: str = "Qwen/Qwen3-8B",
+    model_name: str = _DEFAULT_MODEL,
     num_epochs: int = 5,
     batch_size: int = 4,
     learning_rate: float = 2e-4,

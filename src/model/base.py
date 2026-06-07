@@ -1,15 +1,18 @@
 """베이스 모델 로드 모듈.
 
-Qwen3-8B를 4bit NF4 양자화로 로드한다.
-모델 교체는 이 파일의 `_DEFAULT_MODEL` 한 줄 변경으로 가능하다.
+4bit NF4 양자화로 모델을 로드한다.
+환경변수 BASE_MODEL로 모델 선택 가능 (기본: Qwen/Qwen3-8B).
+예: BASE_MODEL=google/gemma-4-12b-it python ...
 """
 
 from __future__ import annotations
 
+import os
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-_DEFAULT_MODEL = "Qwen/Qwen3-8B"
+_DEFAULT_MODEL = os.environ.get("BASE_MODEL", "Qwen/Qwen3-8B")
 _SEED = 42
 
 

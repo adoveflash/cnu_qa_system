@@ -14,11 +14,12 @@ import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer, LogitsProcessor
 
-from src.model.base import load_model, load_tokenizer
+from src.model.base import load_model, load_tokenizer, _DEFAULT_MODEL
 from src.tools.definitions import execute_tool
 from src.tools.detector import detect_tool
 
 _SEED = 42
+_IS_QWEN = "qwen" in _DEFAULT_MODEL.lower()
 _THINK_TAG_RE = re.compile(r"<think>.*?</think>\s*", flags=re.DOTALL)
 _CHINESE_RE = re.compile(r"[\u4e00-\u9fff]+")
 
@@ -173,18 +174,22 @@ _chinese_suppressor: list | None = None
 
 
 def load_model_with_lora(
-    model_name: str = "Qwen/Qwen3-8B",
+    model_name: str | None = None,
     adapter_path: str = "models/lora_adapter",
 ) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     """베이스 모델에 LoRA 어댑터를 합쳐서 로드한다."""
     global _chinese_suppressor
+    if model_name is None:
+        model_name = _DEFAULT_MODEL
+    is_qwen = "qwen" in model_name.lower()
     tokenizer = load_tokenizer(model_name)
     base_model = load_model(model_name)
     model = PeftModel.from_pretrained(base_model, adapter_path)
     model.eval()
-    print("[inference] 중국어 토큰 억제 필터 구축 중...")
-    _chinese_suppressor = _build_chinese_suppressor(tokenizer)
-    print(f"[inference] 중국어 토큰 {len(_chinese_suppressor[0]._bad_ids)}개 차단 설정 완료")
+    if is_qwen:
+        print("[inference] 중국어 토큰 억제 필터 구축 중...")
+        _chinese_suppressor = _build_chinese_suppressor(tokenizer)
+        print(f"[inference] 중국어 토큰 {len(_chinese_suppressor[0]._bad_ids)}개 차단 설정 완료")
     return model, tokenizer
 
 
@@ -216,9 +221,10 @@ def generate_answer(
     )
     messages = _build_messages(question, final_context, history=None)
 
-    text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-    )
+    tpl_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
+    if _IS_QWEN:
+        tpl_kwargs["enable_thinking"] = False
+    text = tokenizer.apply_chat_template(messages, **tpl_kwargs)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     gen_kwargs = {
@@ -288,9 +294,10 @@ def generate_answer_stream(
 
     messages = _build_messages(question, final_context, history=history)
 
-    text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-    )
+    tpl_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
+    if _IS_QWEN:
+        tpl_kwargs["enable_thinking"] = False
+    text = tokenizer.apply_chat_template(messages, **tpl_kwargs)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
@@ -311,16 +318,17 @@ def generate_answer_stream(
     accumulated = ""
     for chunk in streamer:
         accumulated += chunk
-        # 스트리밍 중에도 think 태그/중국어 정리
         cleaned = _strip_think_tags(accumulated)
-        cleaned = _remove_chinese(cleaned)
+        if _IS_QWEN:
+            cleaned = _remove_chinese(cleaned)
         yield cleaned
 
     thread.join()
 
     # 최종 정리 + 출처 추가
     final = _strip_think_tags(accumulated)
-    final = _remove_chinese(final)
+    if _IS_QWEN:
+        final = _remove_chinese(final)
     if not used_tool:
         final += _format_sources(final_urls)
     yield final
