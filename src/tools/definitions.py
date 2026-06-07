@@ -160,64 +160,75 @@ def _fetch_dorm_meal(date: str) -> str:
             return item.strip()
 
         # 한국어 메뉴 블록만 추출 (영어 번역 블록 제거)
-        # 구조: 메인A(822kcal) + 한국어 메뉴들 + 메인A(822kcal) + 영어 메뉴들 (같은 kcal)
-        meal_blocks: list[list[str]] = []
+        # 구조: 메인A(kcal) + 한국어 → 메인A(kcal) + 영어(중복, 스킵)
+        #        메인C(kcal) + 한국어 → 메인C(kcal) + 영어(중복, 스킵)
+        # 각 끼니(아침/점심/저녁)에 A, C 두 가지 타입이 있음
+        meal_blocks: list[tuple[str, list[str]]] = []  # (타입명, 메뉴라인들)
         current_block: list[str] = []
-        seen_kcals: list[str] = []
+        current_type: str = ""
+        seen_headers: set[str] = set()  # "메인A(822kcal)" 전체를 키로
         skip_mode = False
 
         for line in day_lines:
-            m = re.match(r"^메인[A-Z]?\s*\((\d+)\s*kcal\)", line)
+            m = re.match(r"^(메인[A-Z]?)\s*\((\d+)\s*kcal\)", line)
             if m:
-                kcal = m.group(1)
-                if kcal in seen_kcals:
-                    # 같은 kcal → 영어 번역 블록 시작, 스킵
+                header_key = f"{m.group(1)}({m.group(2)})"
+                if header_key in seen_headers:
+                    # 같은 헤더 반복 → 영어 번역 블록, 스킵
                     if current_block:
-                        meal_blocks.append(current_block)
+                        meal_blocks.append((current_type, current_block))
                         current_block = []
                     skip_mode = True
                     continue
                 else:
                     if current_block:
-                        meal_blocks.append(current_block)
+                        meal_blocks.append((current_type, current_block))
                     current_block = []
-                    seen_kcals.append(kcal)
+                    current_type = m.group(1)  # "메인A" or "메인C"
+                    seen_headers.add(header_key)
                     skip_mode = False
                     continue
             if not skip_mode:
                 current_block.append(line)
 
         if current_block:
-            meal_blocks.append(current_block)
+            meal_blocks.append((current_type, current_block))
 
-        # 영어/원산지 줄 제거 후 블록→끼니 배정
-        meals: dict[str, list[str]] = {"아침": [], "점심": [], "저녁": []}
+        # 블록→끼니 배정: 매 2블록이 1끼니 (A타입 + C타입)
+        # 블록 순서: 아침A, 아침C, 점심A, 점심C, 저녁A, 저녁C
+        meals: dict[str, dict[str, list[str]]] = {
+            "아침": {}, "점심": {}, "저녁": {}
+        }
         meal_order = ["아침", "점심", "저녁"]
 
-        for idx, block in enumerate(meal_blocks):
-            if idx >= len(meal_order):
+        for idx, (type_name, block) in enumerate(meal_blocks):
+            meal_idx = idx // 2  # 0,1→아침, 2,3→점심, 4,5→저녁
+            if meal_idx >= len(meal_order):
                 break
-            label = meal_order[idx]
+            label = meal_order[meal_idx]
+            menu_items: list[str] = []
             for line in block:
-                # 영문 전용 줄 건너뛰기
                 if re.match(r"^[A-Za-z\s,&.()*]+$", line):
                     continue
-                # 원산지 표시만 있는 줄 건너뛰기
                 if re.match(r"^\[.+:.+\]$", line):
                     continue
-                # 우유(공통)
                 if "우유(공통)" in line or "우유 (공통)" in line:
-                    meals[label].append("우유")
+                    menu_items.append("우유")
                     continue
                 cleaned = _clean_menu_item(line)
                 if cleaned and len(cleaned) > 1:
-                    meals[label].append(cleaned)
+                    menu_items.append(cleaned)
+            if menu_items:
+                meals[label][type_name] = menu_items
 
         # 결과 구성
         result_parts = [f"[기숙사 식단 {date} ({weekday_kr})]"]
         for label in ["아침", "점심", "저녁"]:
             if meals[label]:
-                result_parts.append(f"\n■ {label}: {', '.join(meals[label])}")
+                type_strs = []
+                for type_name, items in meals[label].items():
+                    type_strs.append(f"{type_name}: {', '.join(items)}")
+                result_parts.append(f"\n■ {label}\n  " + "\n  ".join(type_strs))
             else:
                 result_parts.append(f"\n■ {label}: 운영 안 함")
 
