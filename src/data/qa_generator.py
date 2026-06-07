@@ -132,7 +132,9 @@ def _parse_qa_response(response_text: str) -> list[dict[str, str]]:
     except json.JSONDecodeError:
         # 개별 객체라도 추출 시도
         valid = []
-        for m in re.finditer(r'\{"question"\s*:\s*"[^"]+"\s*,\s*"answer"\s*:\s*"[^"]+"\}', candidate):
+        for m in re.finditer(
+            r'\{"question"\s*:\s*"[^"]+"\s*,\s*"answer"\s*:\s*"[^"]+"\}', candidate
+        ):
             try:
                 obj = json.loads(m.group())
                 valid.append(obj)

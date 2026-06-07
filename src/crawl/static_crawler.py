@@ -189,20 +189,22 @@ def crawl_board_offset(
                     resp.raise_for_status()
                     break
                 except Exception as e:
-                    print(f"  [LIST RETRY {attempt+1}] offset={offset}: {e}")
+                    print(f"  [LIST RETRY {attempt + 1}] offset={offset}: {e}")
                     time.sleep(5)
             if resp is None:
                 break
 
             soup = BeautifulSoup(resp.text, "lxml")
             article_hrefs = [
-                a["href"]
-                for a in soup.find_all("a", href=True)
-                if "articleNo" in a.get("href", "")
+                a["href"] for a in soup.find_all("a", href=True) if "articleNo" in a.get("href", "")
             ]
 
             # offset=0의 고정 공지글 수 기억 (이후 페이지에서 제외할 기준)
-            all_nos = set(_re.search(r"articleNo=(\d+)", h).group(1) for h in article_hrefs if _re.search(r"articleNo=(\d+)", h))
+            all_nos = set(
+                _re.search(r"articleNo=(\d+)", h).group(1)
+                for h in article_hrefs
+                if _re.search(r"articleNo=(\d+)", h)
+            )
             new_nos = all_nos - visited
             if not new_nos:
                 consecutive_empty += 1
@@ -233,7 +235,7 @@ def crawl_board_offset(
                         art_resp.raise_for_status()
                         break
                     except Exception as e:
-                        print(f"  [ART RETRY {attempt+1}] {article_url}: {e}")
+                        print(f"  [ART RETRY {attempt + 1}] {article_url}: {e}")
                         time.sleep(5)
                 if art_resp is None:
                     continue

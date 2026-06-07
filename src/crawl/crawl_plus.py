@@ -29,8 +29,24 @@ SITEMAP_URL = f"{BASE_URL}/html/kr/guide/guide_0801.html"
 OUTPUT_DIR = Path("data/corpus/raw")
 
 # 크롤링 제외 확장자 / 패턴
-_SKIP_EXTENSIONS = {".hwp", ".pdf", ".zip", ".xlsx", ".xls", ".doc", ".docx", ".ppt", ".pptx",
-                    ".jpg", ".jpeg", ".png", ".gif", ".svg", ".mp4", ".mp3"}
+_SKIP_EXTENSIONS = {
+    ".hwp",
+    ".pdf",
+    ".zip",
+    ".xlsx",
+    ".xls",
+    ".doc",
+    ".docx",
+    ".ppt",
+    ".pptx",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".svg",
+    ".mp4",
+    ".mp3",
+}
 _SKIP_PATTERNS = {"#", "javascript:", "mailto:", "tel:"}
 
 
@@ -51,7 +67,9 @@ def _is_plus_cnu(url: str) -> bool:
     if parsed.netloc != "plus.cnu.ac.kr":
         return False
     path = parsed.path
-    return path.startswith("/html/kr/") or path.startswith("/html/hub/") or path.startswith("/_prog/")
+    return (
+        path.startswith("/html/kr/") or path.startswith("/html/hub/") or path.startswith("/_prog/")
+    )
 
 
 def _clean_text(soup: BeautifulSoup) -> str:

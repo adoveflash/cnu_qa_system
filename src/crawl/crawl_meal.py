@@ -147,15 +147,16 @@ def crawl_mobileadmin_meal(fout) -> int:
 
             # 실질 메뉴가 없는 경우 (직원만 있거나 운영안함만 있는 경우) 건너뛰기
             has_real_menu = any(
-                kw in menu_text
-                for kw in ["정식", "백반", "밥", "국", "찌개", "볶음", "탕", "덮밥"]
+                kw in menu_text for kw in ["정식", "백반", "밥", "국", "찌개", "볶음", "탕", "덮밥"]
             )
             if not menu_text or not has_real_menu:
                 print("운영안함 (빈 식단)")
                 time.sleep(CRAWL_DELAY)
                 continue
 
-            week_str = monday.strftime("%m/%d") + "~" + (monday + timedelta(days=5)).strftime("%m/%d")
+            week_str = (
+                monday.strftime("%m/%d") + "~" + (monday + timedelta(days=5)).strftime("%m/%d")
+            )
             title = f"{cafeteria} 주간식단 ({week_str})"
 
             if _save_record(fout, base_url, title, menu_text, "mobileadmin", "식단"):
@@ -183,8 +184,7 @@ def crawl_mobileadmin_meal(fout) -> int:
             if table:
                 menu_text = _format_weekly_menu(table, "전체")
                 has_real = any(
-                    kw in menu_text
-                    for kw in ["정식", "백반", "밥", "국", "찌개", "볶음"]
+                    kw in menu_text for kw in ["정식", "백반", "밥", "국", "찌개", "볶음"]
                 )
                 if menu_text and has_real:
                     week_str = (
@@ -314,7 +314,9 @@ def _extract_cnucoop_restaurant_info(soup: BeautifulSoup) -> str:
 
         if has_restaurant_info and len(rows) > 2:
             for row in rows:
-                cells = [td.get_text(separator=" ", strip=True) for td in row.find_all(["td", "th"])]
+                cells = [
+                    td.get_text(separator=" ", strip=True) for td in row.find_all(["td", "th"])
+                ]
                 cells = [c for c in cells if c]  # 빈 셀 제거
                 if cells:
                     lines.append(" | ".join(cells))

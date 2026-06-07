@@ -80,9 +80,7 @@ def load_chunks_map(chunks_path: Path) -> dict[str, str]:
     return chunks_map
 
 
-def format_chat_messages(
-    qa: dict[str, Any], chunk_text: str = ""
-) -> list[dict[str, str]]:
+def format_chat_messages(qa: dict[str, Any], chunk_text: str = "") -> list[dict[str, str]]:
     """Q&A 레코드를 chat 메시지 형식으로 변환한다.
 
     추론 시와 동일한 형식: 시스템 프롬프트 + "참고 자료:\n{context}\n\n질문:" + 답변
@@ -172,13 +170,10 @@ def prepare_dataset(
         # assistant 시작점 찾기 → 그 이전은 labels=-100
         assistant_start = _find_assistant_start(tokenizer, messages)
         labels = [-100] * min(assistant_start, len(input_ids))
-        labels += input_ids[len(labels):]
+        labels += input_ids[len(labels) :]
 
         # padding 부분도 -100
-        labels = [
-            lb if am == 1 else -100
-            for lb, am in zip(labels, attention_mask)
-        ]
+        labels = [lb if am == 1 else -100 for lb, am in zip(labels, attention_mask)]
 
         # max_length 맞추기
         if len(labels) < max_length:
@@ -189,11 +184,13 @@ def prepare_dataset(
         all_attention_mask.append(attention_mask)
         all_labels.append(labels)
 
-    return Dataset.from_dict({
-        "input_ids": all_input_ids,
-        "attention_mask": all_attention_mask,
-        "labels": all_labels,
-    })
+    return Dataset.from_dict(
+        {
+            "input_ids": all_input_ids,
+            "attention_mask": all_attention_mask,
+            "labels": all_labels,
+        }
+    )
 
 
 def train(
