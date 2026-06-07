@@ -104,6 +104,8 @@ TOOLS = [
 def _fetch_dorm_meal(date: str) -> str:
     """기숙사 식단을 크롤링한다 (dorm.cnu.ac.kr).
 
+    테이블 구조: 행=요일, 열=아침/점심/저녁
+
     Args:
         date: YYYY-MM-DD 형식 날짜
 
@@ -117,82 +119,51 @@ def _fetch_dorm_meal(date: str) -> str:
         )
         resp.encoding = resp.apparent_encoding or "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
-        for tag in soup.find_all(["script", "style", "nav", "footer", "header"]):
-            tag.decompose()
 
-        # 날짜에서 일(day) 추출 — 페이지는 "6(금)" 같은 형식 사용
         dt = datetime.strptime(date, "%Y-%m-%d")
         day_num = dt.day
         weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][dt.weekday()]
         target_label = f"{day_num}({weekday_kr})"
 
-        body = soup.find("body")
-        if not body:
-            return ""
+        # 테이블에서 해당 날짜 행 찾기
+        for table in soup.find_all("table"):
+            for tr in table.find_all("tr"):
+                th = tr.find("th")
+                if not th:
+                    continue
+                th_text = th.get_text(strip=True)
+                if target_label not in th_text:
+                    continue
 
-        text = body.get_text(separator="\n", strip=True)
-        lines = text.split("\n")
+                # 해당 행의 td들이 아침/점심/저녁
+                tds = tr.find_all("td")
+                meal_labels = ["아침", "점심", "저녁"]
+                result_parts = [f"[기숙사 식단 {date} ({weekday_kr})]"]
 
-        # 해당 날짜 섹션 찾기
-        capture = False
-        day_lines: list[str] = []
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-            if target_label in line:
-                capture = True
-                continue
-            if capture and re.match(r"^\d{1,2}\([월화수목금토일]\)", line):
-                break
-            if capture:
-                day_lines.append(line)
+                for i, td in enumerate(tds):
+                    if i >= len(meal_labels):
+                        break
+                    raw = td.get_text(separator=", ", strip=True)
+                    if not raw:
+                        continue
+                    # 알레르기 번호 제거
+                    cleaned = re.sub(r"\s*[\d,]+(?=,|$)", "", raw)
+                    # 원산지 표시 제거
+                    cleaned = re.sub(r"\[.+?\]", "", cleaned)
+                    # 영문 메뉴 제거
+                    cleaned = re.sub(r"[A-Za-z&()]+\s*", "", cleaned)
+                    # 정리
+                    items = [item.strip() for item in cleaned.split(",") if item.strip()]
+                    if items:
+                        result_parts.append(f"\n■ {meal_labels[i]}: {', '.join(items)}")
 
-        if not day_lines:
-            return ""
+                if len(result_parts) > 1:
+                    return "\n".join(result_parts)
 
-        # 메인A(kcal) 블록 단위로 분리 + 영문/원산지/알레르기 필터링
-        menus: list[list[str]] = []
-        current: list[str] = []
-        for line in day_lines:
-            # 영문 메뉴 줄 건너뛰기 (알파벳+공백+기호만으로 구성)
-            if re.match(r"^[A-Za-z\s,&.()*]+$", line):
-                continue
-            # 원산지 표시만 있는 줄 건너뛰기
-            if re.match(r"^\[.+:.+\]$", line):
-                continue
-            # 메인A/C(kcal) — 새 메뉴 세트 시작
-            if re.match(r"^메인[A-Z]?\(\d+kcal\)$", line):
-                if current:
-                    menus.append(current)
-                current = []
-                continue
-            if line:
-                # 알레르기 번호 제거 (예: "콩나물김치국 5,6,9" → "콩나물김치국")
-                cleaned = re.sub(r"\s+[\d,]+$", "", line)
-                # 우유 등 공통 항목
-                cleaned = cleaned.strip("*")
-                # 원산지 표시 제거 (예: "쌀밥[쌀:국내산]" → "쌀밥")
-                cleaned = re.sub(r"\[.+?\]", "", cleaned).strip()
-                if cleaned:
-                    current.append(cleaned)
-        if current:
-            menus.append(current)
-
-        if not menus:
-            return ""
-
-        # 메뉴 세트를 식사 시간에 매핑 (보통 3세트: 아침/점심/저녁)
-        meal_labels = ["아침", "점심", "저녁"]
-        result_parts = [f"[기숙사 식단 {date} ({weekday_kr})]"]
-        for i, menu_items in enumerate(menus):
-            label = meal_labels[i] if i < len(meal_labels) else f"메뉴{i + 1}"
-            result_parts.append(f"\n■ {label}: {', '.join(menu_items)}")
-
-        return "\n".join(result_parts)
+        return ""
     except Exception as e:
-        return f"[기숙사] 조회 실패: {e}"
-    return ""
+        print(f"  [tool] 기숙사 식단 오류: {e}")
+        return f"[기숙사] 식단 정보를 가져올 수 없어요."
 
 
 def _fetch_student_hall_meal(date: str) -> str:

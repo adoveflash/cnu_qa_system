@@ -165,12 +165,7 @@ def _resolve_context(
             print(f"  [tool] {tool_name}({tool_args})")
             result = execute_tool(tool_name, tool_args)
             tool_context = f"[{tool_name} 결과]\n{result}"
-            # RAG 컨텍스트도 보조로 합산 (tool 결과 부족 시 보완)
-            if rag_context:
-                combined = f"{tool_context}\n\n[추가 참고자료]\n{rag_context}"
-            else:
-                combined = tool_context
-            return combined, urls, True
+            return tool_context, [], True
     return rag_context, urls, False
 
 
