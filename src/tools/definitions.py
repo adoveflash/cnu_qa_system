@@ -159,50 +159,59 @@ def _fetch_dorm_meal(date: str) -> str:
             item = item.strip("* ")
             return item.strip()
 
-        # 조식/중식/석식 키워드로 분리
-        meals: dict[str, list[str]] = {"아침": [], "점심": [], "저녁": []}
-        current_meal = None
+        # 한국어 메뉴 블록만 추출 (영어 번역 블록 제거)
+        # 구조: 메인A(822kcal) + 한국어 메뉴들 + 메인A(822kcal) + 영어 메뉴들 (같은 kcal)
+        meal_blocks: list[list[str]] = []
+        current_block: list[str] = []
+        seen_kcals: list[str] = []
+        skip_mode = False
 
         for line in day_lines:
-            # 영문 메뉴 줄 건너뛰기
-            if re.match(r"^[A-Za-z\s,&.()*]+$", line):
-                continue
-            # 원산지 표시만 있는 줄 건너뛰기
-            if re.match(r"^\[.+:.+\]$", line):
-                continue
+            m = re.match(r"^메인[A-Z]?\s*\((\d+)\s*kcal\)", line)
+            if m:
+                kcal = m.group(1)
+                if kcal in seen_kcals:
+                    # 같은 kcal → 영어 번역 블록 시작, 스킵
+                    if current_block:
+                        meal_blocks.append(current_block)
+                        current_block = []
+                    skip_mode = True
+                    continue
+                else:
+                    if current_block:
+                        meal_blocks.append(current_block)
+                    current_block = []
+                    seen_kcals.append(kcal)
+                    skip_mode = False
+                    continue
+            if not skip_mode:
+                current_block.append(line)
 
-            # 식사 구분: 조식/중식/석식 또는 아침/점심/저녁
-            if re.search(r"조식|아침", line) and "메인" not in line:
-                current_meal = "아침"
-                continue
-            elif re.search(r"중식|점심", line) and "메인" not in line:
-                current_meal = "점심"
-                continue
-            elif re.search(r"석식|저녁", line) and "메인" not in line:
-                current_meal = "저녁"
-                continue
+        if current_block:
+            meal_blocks.append(current_block)
 
-            # 메인A(kcal) 등 블록 헤더 — 식사 구분이 없으면 순서대로 배정
-            if re.match(r"^메인[A-Z]?\s*\(\d+\s*kcal\)", line):
-                if current_meal is None:
-                    if not meals["아침"]:
-                        current_meal = "아침"
-                    elif not meals["점심"]:
-                        current_meal = "점심"
-                    else:
-                        current_meal = "저녁"
-                continue
+        # 영어/원산지 줄 제거 후 블록→끼니 배정
+        meals: dict[str, list[str]] = {"아침": [], "점심": [], "저녁": []}
+        meal_order = ["아침", "점심", "저녁"]
 
-            # 우유(공통) 등 공통 항목
-            if "우유(공통)" in line or "우유 (공통)" in line:
-                if current_meal:
-                    meals[current_meal].append("우유")
-                continue
-
-            if current_meal and line:
+        for idx, block in enumerate(meal_blocks):
+            if idx >= len(meal_order):
+                break
+            label = meal_order[idx]
+            for line in block:
+                # 영문 전용 줄 건너뛰기
+                if re.match(r"^[A-Za-z\s,&.()*]+$", line):
+                    continue
+                # 원산지 표시만 있는 줄 건너뛰기
+                if re.match(r"^\[.+:.+\]$", line):
+                    continue
+                # 우유(공통)
+                if "우유(공통)" in line or "우유 (공통)" in line:
+                    meals[label].append("우유")
+                    continue
                 cleaned = _clean_menu_item(line)
                 if cleaned and len(cleaned) > 1:
-                    meals[current_meal].append(cleaned)
+                    meals[label].append(cleaned)
 
         # 결과 구성
         result_parts = [f"[기숙사 식단 {date} ({weekday_kr})]"]
