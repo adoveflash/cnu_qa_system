@@ -131,16 +131,24 @@ def _format_sources(urls: list[str]) -> str:
     return f'\n\n<div class="source-row"><span class="source-label">참고</span>{badges}</div>'
 
 
-def _build_messages(question: str, context: str) -> list[dict]:
-    """시스템 프롬프트 + 참고자료 + 질문으로 메시지를 구성한다."""
+def _build_messages(
+    question: str, context: str, history: list[dict] | None = None
+) -> list[dict]:
+    """시스템 프롬프트 + 대화 이력 + 참고자료 + 질문으로 메시지를 구성한다."""
+    system_prompt = _build_system_prompt()
+    msgs: list[dict] = [{"role": "system", "content": system_prompt}]
+
+    # 최근 3턴(6메시지)의 대화 이력 포함
+    if history:
+        for turn in history[-6:]:
+            msgs.append(turn)
+
     user_content = (
         f"아래 참고 자료를 반드시 읽고, 참고 자료에 있는 내용만으로 답변해.\n\n"
         f"참고 자료:\n{context}\n\n질문: {question}"
     ) if context else question
-    return [
-        {"role": "system", "content": _SYSTEM_PROMPT},
-        {"role": "user", "content": user_content},
-    ]
+    msgs.append({"role": "user", "content": user_content})
+    return msgs
 
 
 def _resolve_context(
@@ -157,7 +165,12 @@ def _resolve_context(
             print(f"  [tool] {tool_name}({tool_args})")
             result = execute_tool(tool_name, tool_args)
             tool_context = f"[{tool_name} 결과]\n{result}"
-            return tool_context, [], True
+            # RAG 컨텍스트도 보조로 합산 (tool 결과 부족 시 보완)
+            if rag_context:
+                combined = f"{tool_context}\n\n[추가 참고자료]\n{rag_context}"
+            else:
+                combined = tool_context
+            return combined, urls, True
     return rag_context, urls, False
 
 
@@ -206,7 +219,7 @@ def generate_answer(
     final_context, final_urls, used_tool = _resolve_context(
         question, context, urls, use_tools
     )
-    messages = _build_messages(question, final_context)
+    messages = _build_messages(question, final_context, history=None)
 
     text = tokenizer.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
@@ -243,6 +256,7 @@ def generate_answer_stream(
     tokenizer: AutoTokenizer,
     max_new_tokens: int = 512,
     use_tools: bool = True,
+    history: list[dict] | None = None,
 ) -> Iterator[str]:
     """답변을 스트리밍 생성한다 (UI용).
 
@@ -254,6 +268,7 @@ def generate_answer_stream(
         tokenizer: 토크나이저
         max_new_tokens: 최대 생성 토큰 수
         use_tools: tool 사용 여부
+        history: 이전 대화 이력 (멀티턴 지원)
 
     Yields:
         누적된 답변 문자열
@@ -276,7 +291,7 @@ def generate_answer_stream(
         final_context = context
         final_urls = urls
 
-    messages = _build_messages(question, final_context)
+    messages = _build_messages(question, final_context, history=history)
 
     text = tokenizer.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
@@ -301,11 +316,14 @@ def generate_answer_stream(
     accumulated = ""
     for chunk in streamer:
         accumulated += chunk
-        yield accumulated
+        # 스트리밍 중에도 think 태그/중국어 정리
+        cleaned = _strip_think_tags(accumulated)
+        cleaned = _remove_chinese(cleaned)
+        yield cleaned
 
     thread.join()
 
-    # 최종 정리: think 태그 제거 + 중국어 제거 + 출처 추가
+    # 최종 정리 + 출처 추가
     final = _strip_think_tags(accumulated)
     final = _remove_chinese(final)
     if not used_tool:

@@ -163,7 +163,17 @@ def create_app(
                 history = history + [[question, ""]]
 
             if model is not None and tokenizer is not None:
-                for partial in generate_answer_stream(question, context, urls, model, tokenizer):
+                # 멀티턴: 이전 대화 이력을 모델에 전달
+                chat_history = None
+                if _USE_MESSAGES and len(history) > 2:
+                    chat_history = [
+                        {"role": h["role"], "content": h["content"]}
+                        for h in history[:-2]
+                        if isinstance(h, dict) and h.get("content")
+                    ]
+                for partial in generate_answer_stream(
+                    question, context, urls, model, tokenizer, history=chat_history
+                ):
                     if _USE_MESSAGES:
                         history[-1]["content"] = partial
                     else:

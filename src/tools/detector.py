@@ -7,23 +7,32 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# 키워드 → tool 매핑 (순서 중요: 먼저 매칭되는 tool이 선택됨)
+# 키워드 → tool 매핑
 TOOL_KEYWORDS: dict[str, list[str]] = {
     "get_meal_menu": [
-        "식단", "메뉴", "학식", "밥", "점심", "저녁", "아침",
-        "조식", "중식", "석식", "기숙사 식당", "학생회관", "급식",
+        "식단", "메뉴", "학식", "학생식당", "기숙사 식당", "학생회관",
+        "조식", "중식", "석식", "급식",
+        "점심 메뉴", "저녁 메뉴", "아침 메뉴", "오늘 밥",
     ],
     "get_shuttle_schedule": [
-        "셔틀", "버스", "통학", "노선", "시간표", "정류장",
+        "셔틀", "셔틀버스", "통학버스", "통학",
     ],
     "get_academic_calendar": [
-        "학사일정", "기말", "중간", "방학", "개강", "종강", "휴강",
+        "학사일정", "방학", "개강", "종강", "휴강",
+        "기말고사", "중간고사", "계절학기",
+        "수강신청 기간", "수강정정", "성적발표",
     ],
     "get_notices": [
         "공지", "알림", "공지사항",
     ],
+}
+
+# 특정 tool로 잘못 매칭되는 것을 방지하는 부정 키워드
+NEGATIVE_KEYWORDS: dict[str, list[str]] = {
+    "get_shuttle_schedule": ["시내버스", "시내 버스", "수업 시간표", "수강 시간표", "강의 시간표"],
+    "get_academic_calendar": ["기말 레포트", "기말 과제", "중간 레포트", "중간 과제", "중간 정도"],
 }
 
 
@@ -36,12 +45,31 @@ def _infer_meal_args(question: str) -> dict:
     elif any(kw in question for kw in ["학생회관", "학생 회관", "학식", "학생식당"]):
         args["location"] = "student_hall"
 
-    # 날짜 추출: "6월 5일", "6/5" 등
-    date_match = re.search(r"(\d{1,2})월\s*(\d{1,2})일", question)
-    if date_match:
-        month, day = int(date_match.group(1)), int(date_match.group(2))
-        year = datetime.now().year
-        args["date"] = f"{year}-{month:02d}-{day:02d}"
+    # 상대적 날짜 처리
+    if "내일" in question:
+        target = datetime.now() + timedelta(days=1)
+        args["date"] = target.strftime("%Y-%m-%d")
+    elif "모레" in question:
+        target = datetime.now() + timedelta(days=2)
+        args["date"] = target.strftime("%Y-%m-%d")
+    elif "어제" in question:
+        target = datetime.now() - timedelta(days=1)
+        args["date"] = target.strftime("%Y-%m-%d")
+    else:
+        # 절대 날짜: "6월 5일" 형태
+        date_match = re.search(r"(\d{1,2})월\s*(\d{1,2})일", question)
+        if date_match:
+            month, day = int(date_match.group(1)), int(date_match.group(2))
+            year = datetime.now().year
+            args["date"] = f"{year}-{month:02d}-{day:02d}"
+        else:
+            # "6/5", "6.5" 형태
+            slash_match = re.search(r"(\d{1,2})[/.](\d{1,2})", question)
+            if slash_match:
+                month, day = int(slash_match.group(1)), int(slash_match.group(2))
+                if 1 <= month <= 12 and 1 <= day <= 31:
+                    year = datetime.now().year
+                    args["date"] = f"{year}-{month:02d}-{day:02d}"
 
     return args
 
@@ -90,9 +118,23 @@ def detect_tool(question: str) -> tuple[str | None, dict]:
     Returns:
         (tool_name, arguments) 튜플. tool이 불필요하면 (None, {}).
     """
+    matched: list[tuple[str, dict, int]] = []  # (tool_name, args, keyword_len)
+
     for tool_name, keywords in TOOL_KEYWORDS.items():
+        # 부정 키워드 체크
+        neg_keywords = NEGATIVE_KEYWORDS.get(tool_name, [])
+        if any(neg in question for neg in neg_keywords):
+            continue
+
         for keyword in keywords:
             if keyword in question:
                 args = _ARG_INFERRERS[tool_name](question)
-                return tool_name, args
-    return None, {}
+                matched.append((tool_name, args, len(keyword)))
+                break
+
+    if not matched:
+        return None, {}
+
+    # 가장 긴 키워드가 매칭된 tool 우선 (더 구체적인 매칭)
+    matched.sort(key=lambda x: x[2], reverse=True)
+    return matched[0][0], matched[0][1]

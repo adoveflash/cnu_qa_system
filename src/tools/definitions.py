@@ -576,27 +576,34 @@ def get_notices(count: int = 5) -> str:
         article_items.sort(key=lambda x: x[1], reverse=True)
         article_links = [url for url, _ in article_items]
 
+        # 목록에서 제목+날짜 빠르게 추출 (상세 페이지 접근 최소화)
         results: list[str] = []
-        for url in article_links[:count]:
+        for i, (url, date_str) in enumerate(article_items[:count]):
+            rank = i + 1
+            # 목록 페이지의 a 태그에서 제목 추출
+            for row in rows:
+                a_tag = row.find("a", href=True)
+                if a_tag and url.endswith(a_tag["href"].split("#")[0].split("?")[-1]):
+                    title = a_tag.get_text(strip=True)
+                    results.append(f"[{rank}번째 최신 공지] ({date_str}) {title}\n출처: {url}")
+                    break
+
+        # 첫 번째 공지만 상세 내용 가져오기 (응답 속도 위해)
+        if article_items:
             try:
-                resp = _SESSION.get(url, timeout=30)
+                first_url = article_items[0][0]
+                resp = _SESSION.get(first_url, timeout=30)
                 resp.raise_for_status()
                 art_soup = BeautifulSoup(resp.text, "html.parser")
-
                 for tag in art_soup.find_all(["script", "style", "nav", "footer"]):
                     tag.decompose()
-
-                title_tag = art_soup.find("h1") or art_soup.find("title")
-                title = title_tag.get_text(strip=True) if title_tag else ""
                 body = art_soup.find("div", class_=re.compile(r"content|view|body", re.I))
                 text = (body or art_soup.find("body")).get_text(separator="\n", strip=True)
                 text = re.sub(r"\n{3,}", "\n\n", text)
-
-                rank = len(results) + 1
-                results.append(f"[{rank}번째 최신 공지] {title}\n{text[:500]}\n출처: {url}")
+                if results:
+                    results[0] += f"\n\n[상세 내용]\n{text[:500]}"
             except Exception:
                 pass
-            time.sleep(CRAWL_DELAY)
 
         if results:
             return f"최신순 정렬 (1번이 가장 최근):\n\n" + "\n\n---\n\n".join(results)
