@@ -53,9 +53,10 @@ def _build_chinese_suppressor(tokenizer: AutoTokenizer) -> list:
 
 def _build_system_prompt() -> str:
     """오늘 날짜와 현재 학기를 포함한 시스템 프롬프트를 생성한다."""
-    from datetime import datetime
+    from datetime import datetime, timezone, timedelta
 
-    now = datetime.now()
+    KST = timezone(timedelta(hours=9))
+    now = datetime.now(KST)
     today = now.strftime("%Y-%m-%d (%A)")
     month = now.month
     if 3 <= month <= 8:

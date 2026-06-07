@@ -316,7 +316,9 @@ def get_meal_menu(date: str | None = None, location: str = "all") -> str:
         식단 정보 텍스트
     """
     if date is None:
-        date = datetime.now().strftime("%Y-%m-%d")
+        from datetime import timezone, timedelta
+        KST = timezone(timedelta(hours=9))
+        date = datetime.now(KST).strftime("%Y-%m-%d")
 
     results: list[str] = []
 

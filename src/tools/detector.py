@@ -7,7 +7,13 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+KST = timezone(timedelta(hours=9))
+
+
+def _now() -> datetime:
+    return datetime.now(KST)
 
 # 키워드 → tool 매핑
 TOOL_KEYWORDS: dict[str, list[str]] = {
@@ -47,20 +53,20 @@ def _infer_meal_args(question: str) -> dict:
 
     # 상대적 날짜 처리
     if "내일" in question:
-        target = datetime.now() + timedelta(days=1)
+        target = _now() + timedelta(days=1)
         args["date"] = target.strftime("%Y-%m-%d")
     elif "모레" in question:
-        target = datetime.now() + timedelta(days=2)
+        target = _now() + timedelta(days=2)
         args["date"] = target.strftime("%Y-%m-%d")
     elif "어제" in question:
-        target = datetime.now() - timedelta(days=1)
+        target = _now() - timedelta(days=1)
         args["date"] = target.strftime("%Y-%m-%d")
     else:
         # 절대 날짜: "6월 5일" 형태
         date_match = re.search(r"(\d{1,2})월\s*(\d{1,2})일", question)
         if date_match:
             month, day = int(date_match.group(1)), int(date_match.group(2))
-            year = datetime.now().year
+            year = _now().year
             args["date"] = f"{year}-{month:02d}-{day:02d}"
         else:
             # "6/5", "6.5" 형태
@@ -68,7 +74,7 @@ def _infer_meal_args(question: str) -> dict:
             if slash_match:
                 month, day = int(slash_match.group(1)), int(slash_match.group(2))
                 if 1 <= month <= 12 and 1 <= day <= 31:
-                    year = datetime.now().year
+                    year = _now().year
                     args["date"] = f"{year}-{month:02d}-{day:02d}"
 
     return args
@@ -81,9 +87,9 @@ def _infer_calendar_args(question: str) -> dict:
     if year_match:
         args["year"] = int(year_match.group(1))
     elif "작년" in question or "지난해" in question:
-        args["year"] = datetime.now().year - 1
+        args["year"] = _now().year - 1
     elif "내년" in question:
-        args["year"] = datetime.now().year + 1
+        args["year"] = _now().year + 1
     month_match = re.search(r"(\d{1,2})월", question)
     if month_match:
         month = int(month_match.group(1))
