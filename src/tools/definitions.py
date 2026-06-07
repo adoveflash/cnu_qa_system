@@ -209,6 +209,8 @@ def _fetch_dorm_meal(date: str) -> str:
         for label in ["아침", "점심", "저녁"]:
             if meals[label]:
                 result_parts.append(f"\n■ {label}: {', '.join(meals[label])}")
+            else:
+                result_parts.append(f"\n■ {label}: 운영 안 함")
 
         if len(result_parts) > 1:
             return "\n".join(result_parts)
