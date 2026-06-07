@@ -339,36 +339,25 @@ def get_shuttle_schedule() -> str:
     Returns:
         셔틀버스 시간표 텍스트
     """
-    # 크롤링 데이터에서 로드 (가장 최신 파일)
-    raw_dir = Path("data/corpus/raw")
-    shuttle_files = sorted(raw_dir.glob("shuttle_*.jsonl"), reverse=True)
-
-    if shuttle_files:
-        results: list[str] = []
-        with open(shuttle_files[0], encoding="utf-8") as f:
-            for line in f:
-                doc = json.loads(line)
-                results.append(f"[{doc['title']}]\n{doc['content'][:2000]}")
-        if results:
-            return "\n\n".join(results)
-
-    # 파일 없으면 실시간 크롤링
-    try:
-        url = "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html"
-        resp = _SESSION.get(url, timeout=30)
-        resp.encoding = resp.apparent_encoding or "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for tag in soup.find_all(["script", "style", "nav", "footer", "header"]):
-            tag.decompose()
-        body = soup.find("body")
-        if body:
-            text = body.get_text(separator="\n", strip=True)
-            text = re.sub(r"\n{3,}", "\n\n", text)
-            return f"[셔틀버스 시간표]\n{text[:3000]}"
-    except Exception as e:
-        return f"셔틀버스 정보 조회 실패: {e}"
-
-    return "셔틀버스 정보를 가져올 수 없습니다."
+    schedule = (
+        "충남대학교 셔틀버스 운행 안내\n"
+        "운영기준: 학기 중 평일 주간 운영 (야간/주말/공휴일/방학 미운영)\n\n"
+        "■ 교내 순환 (유성캠퍼스 내)\n"
+        "- 첫차 08:30, 막차 17:30 (1시간 간격, 하루 10회)\n"
+        "- 08:20 월평역 출발 등교편 1회 운행\n"
+        "- 운행시간: 08:30, 09:30, 10:30, 11:30, 13:30, 14:30, 15:30, 16:30, 17:30\n"
+        "- 노선: 정심화 국제문화회관 → 사회과학대학 입구 → 서문 → 음악2호관 → "
+        "공동동물실험센터(회차) → 체육관 입구 → 예술대학 → 도서관 → "
+        "학생생활관 3거리 → 농업생명과학대학 → 동문주차장 → 도서관 → "
+        "예술대학 → 서문 → 사회과학대학 입구 → 산학연교육연구관 → 정심화 국제문화회관\n\n"
+        "■ 캠퍼스 순환 (대덕캠퍼스 ↔ 보운캠퍼스)\n"
+        "- 하루 1회(회차), 오전만 운행\n"
+        "- 08:10 골프연습장 출발 → 중앙도서관 → 산학연교육연구관 → "
+        "충남대입구 버스정류장 → 월평역 → 보운캠퍼스(08:50 회차) → 복귀\n\n"
+        "※ 교통 상황에 따라 5분 내외 오차 발생 가능\n"
+        "※ 문의: 총무과(배차/운행) ☏042-821-5115"
+    )
+    return schedule
 
 
 _BUILTIN_CALENDAR = {
