@@ -19,6 +19,32 @@ _DEFAULT_DB_PATH = Path("data/vector_db")
 _STATIC_COLLECTION = "cnu_chunks"
 _LIVE_COLLECTION = "cnu_live"
 
+# 질문 키워드 → source 매핑 (학과 부스팅용)
+_DEPARTMENT_KEYWORDS: dict[str, list[str]] = {
+    "computer": [
+        "컴퓨터", "컴융", "컴공", "소프트웨어", "인공지능학부", "컴퓨터융합",
+        "컴퓨터인공지능", "SW", "AI학부",
+    ],
+    "plus_kr": [
+        "학교", "충남대", "대학교", "캠퍼스",
+    ],
+    "job": [
+        "취업", "인재개발원", "채용", "진로",
+    ],
+}
+
+# source 부스팅 가중치 (distance에서 이만큼 차감)
+_BOOST_WEIGHT = 0.15
+
+
+def _detect_source(query: str) -> str | None:
+    """질문에서 학과/부서 키워드를 감지하여 source를 반환한다."""
+    for source, keywords in _DEPARTMENT_KEYWORDS.items():
+        for kw in keywords:
+            if kw in query:
+                return source
+    return None
+
 
 class Retriever:
     """벡터 DB 검색기. static + live 컬렉션을 동시에 검색한다."""
@@ -86,6 +112,7 @@ class Retriever:
         """static + live 컬렉션에서 질문과 유사한 청크를 검색한다.
 
         두 컬렉션 결과를 합쳐 거리순으로 정렬 후 top_k개 반환한다.
+        질문에 학과 키워드가 있으면 해당 source 결과를 우선 부스팅한다.
 
         Args:
             query: 검색 질문
@@ -97,13 +124,23 @@ class Retriever:
         k = top_k or self.top_k
         query_embedding = self.model.encode(query).tolist()
 
+        # 넓게 검색 (부스팅 후 재정렬을 위해 2배로)
+        fetch_k = k * 2
+
         # static 컬렉션 검색
-        results = self._query_collection(self.static, query_embedding, k)
+        results = self._query_collection(self.static, query_embedding, fetch_k)
 
         # live 컬렉션 검색 (있으면)
         if self.live is not None:
-            live_results = self._query_collection(self.live, query_embedding, k)
+            live_results = self._query_collection(self.live, query_embedding, fetch_k)
             results.extend(live_results)
+
+        # 학과 부스팅: 매칭 source의 distance를 낮춰서 우선 정렬
+        preferred_source = _detect_source(query)
+        if preferred_source:
+            for r in results:
+                if r["source"] == preferred_source:
+                    r["distance"] = max(0, r["distance"] - _BOOST_WEIGHT)
 
         # 거리순 정렬 후 top_k
         results.sort(key=lambda x: x["distance"])
