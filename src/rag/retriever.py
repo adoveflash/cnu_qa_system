@@ -20,6 +20,7 @@ _STATIC_COLLECTION = "cnu_chunks"
 _LIVE_COLLECTION = "cnu_live"
 
 # 질문 키워드 → source 매핑 (학과 부스팅용)
+# 값은 부스팅할 source 리스트 (manual은 수동 추가 데이터이므로 항상 포함)
 _DEPARTMENT_KEYWORDS: dict[str, list[str]] = {
     "computer": [
         "컴퓨터", "컴융", "컴공", "소프트웨어", "인공지능학부", "컴퓨터융합",
@@ -33,17 +34,24 @@ _DEPARTMENT_KEYWORDS: dict[str, list[str]] = {
     ],
 }
 
+# source 그룹: 특정 source 감지 시 함께 부스팅할 source 목록
+_SOURCE_GROUP: dict[str, list[str]] = {
+    "computer": ["computer", "manual"],
+    "plus_kr": ["plus_kr", "manual"],
+    "job": ["job"],
+}
+
 # source 부스팅 가중치 (distance에서 이만큼 차감)
 _BOOST_WEIGHT = 0.15
 
 
-def _detect_source(query: str) -> str | None:
-    """질문에서 학과/부서 키워드를 감지하여 source를 반환한다."""
+def _detect_sources(query: str) -> list[str]:
+    """질문에서 키워드를 감지하여 부스팅할 source 리스트를 반환한다."""
     for source, keywords in _DEPARTMENT_KEYWORDS.items():
         for kw in keywords:
             if kw in query:
-                return source
-    return None
+                return _SOURCE_GROUP.get(source, [source])
+    return []
 
 
 class Retriever:
@@ -136,10 +144,10 @@ class Retriever:
             results.extend(live_results)
 
         # 학과 부스팅: 매칭 source의 distance를 낮춰서 우선 정렬
-        preferred_source = _detect_source(query)
-        if preferred_source:
+        preferred_sources = _detect_sources(query)
+        if preferred_sources:
             for r in results:
-                if r["source"] == preferred_source:
+                if r["source"] in preferred_sources:
                     r["distance"] = max(0, r["distance"] - _BOOST_WEIGHT)
 
         # 거리순 정렬 후 top_k
