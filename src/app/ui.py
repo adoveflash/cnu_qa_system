@@ -19,20 +19,31 @@ _NEED_TYPE_PARAM = _GRADIO_MAJOR == 5  # 6.x는 type 파라미터 없음
 
 _CSS = """
 .gradio-container {
-    max-width: 800px !important;
+    max-width: 850px !important;
     margin: 0 auto !important;
-    font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif !important;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, sans-serif !important;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%) !important;
 }
 .title-area {
     text-align: center;
-    padding: 20px 0 10px 0;
+    padding: 28px 0 14px 0;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d6da3 100%);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(30, 58, 95, 0.15);
 }
 .title-area h1 {
-    font-size: 1.8em;
+    font-size: 1.9em;
+    margin-bottom: 6px;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+.title-area .logo-icon {
+    font-size: 2.2em;
     margin-bottom: 4px;
 }
 .title-area p {
-    color: #666;
+    color: #c8ddf0;
     font-size: 0.95em;
     margin-top: 0;
 }
@@ -41,43 +52,83 @@ _CSS = """
     justify-content: center;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 .category-badges span {
-    background: #e8f4f8;
-    color: #1a6b8a;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.85em;
+    background: #eef6ff;
+    color: #1a5276;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.83em;
     font-weight: 500;
+    border: 1px solid #cce0f0;
+    transition: all 0.2s;
+}
+.category-badges span:hover {
+    background: #d4ebff;
+    transform: translateY(-1px);
 }
 footer {visibility: hidden}
+/* 채팅 영역 스타일 */
+.chatbot {
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+}
+/* 전송 버튼 */
+button.primary {
+    background: linear-gradient(135deg, #1e3a5f, #2d6da3) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+}
+button.primary:hover {
+    opacity: 0.9 !important;
+}
+/* 입력창 */
+textarea {
+    border-radius: 10px !important;
+    border: 1.5px solid #d0dbe6 !important;
+}
+textarea:focus {
+    border-color: #2d6da3 !important;
+    box-shadow: 0 0 0 3px rgba(45, 109, 163, 0.1) !important;
+}
+/* 출처 배지 */
 .source-row {
     display: flex;
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #e0e0e0;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e8edf2;
 }
 .source-label {
-    font-size: 0.75em;
-    color: #888;
+    font-size: 0.73em;
+    color: #8899aa;
     font-weight: 600;
     margin-right: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .source-chip {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    background: #f0f4f8;
-    border: 1px solid #d8e2ea;
-    color: #2d5a7b;
-    padding: 3px 10px;
+    gap: 4px;
+    background: linear-gradient(135deg, #f0f7ff, #e8f2fc);
+    border: 1px solid #d0e3f4;
+    color: #1e4a6e;
+    padding: 4px 11px;
     border-radius: 20px;
-    font-size: 0.78em;
+    font-size: 0.76em;
     font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+/* 예시 질문 */
+.examples-row button {
+    border-radius: 8px !important;
+    font-size: 0.88em !important;
 }
 """
 
@@ -110,27 +161,28 @@ def create_app(
         gr.HTML(
             """
             <div class="title-area">
-                <h1>충남대학교 학내 정보 Q&A</h1>
-                <p>궁금한 점을 자유롭게 질문하세요</p>
+                <div class="logo-icon">🎓</div>
+                <h1>CNU Campus AI</h1>
+                <p>충남대학교 학내 정보 Q&A 챗봇</p>
             </div>
             <div class="category-badges">
-                <span>졸업요건</span>
-                <span>공지사항</span>
-                <span>학사일정</span>
-                <span>식단 안내</span>
-                <span>셔틀버스</span>
+                <span>🎯 졸업요건</span>
+                <span>📢 공지사항</span>
+                <span>📅 학사일정</span>
+                <span>🍽️ 식단</span>
+                <span>🚌 셔틀버스</span>
             </div>
             """
         )
 
-        chatbot_kwargs = {"height": 480, "show_label": False, "container": False}
+        chatbot_kwargs = {"height": 520, "show_label": False, "container": False}
         if _NEED_TYPE_PARAM:
             chatbot_kwargs["type"] = "messages"
-        chatbot = gr.Chatbot(**chatbot_kwargs)
+        chatbot = gr.Chatbot(**chatbot_kwargs, elem_classes=["chatbot"])
 
         with gr.Row():
             msg = gr.Textbox(
-                placeholder="질문을 입력하세요...",
+                placeholder="궁금한 점을 물어보세요! (예: 졸업요건, 수강신청, 식단 등)",
                 show_label=False,
                 scale=9,
                 container=False,
@@ -141,10 +193,11 @@ def create_app(
             gr.Examples(
                 examples=_EXAMPLES,
                 inputs=msg,
-                label="이런 질문을 해보세요",
+                label="💡 이런 질문을 해보세요",
             )
 
-        clear_btn = gr.Button("대화 초기화", variant="secondary", size="sm")
+        with gr.Row():
+            clear_btn = gr.Button("🗑️ 대화 초기화", variant="secondary", size="sm")
 
         def respond(message: str, history: list):
             if not message.strip():
