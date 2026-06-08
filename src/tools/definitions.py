@@ -241,9 +241,9 @@ def _fetch_dorm_meal(date: str) -> str:
 
 
 def _fetch_student_hall_meal(date: str) -> str:
-    """학생회관 식단을 playwright로 크롤링한다 (mobileadmin.cnu.ac.kr).
+    """학생회관 식단을 requests로 크롤링한다 (mobileadmin.cnu.ac.kr).
 
-    JS 렌더링이 필요하므로 playwright를 사용한다.
+    서버사이드 렌더링이므로 requests + BeautifulSoup만으로 추출 가능.
 
     Args:
         date: YYYY-MM-DD 형식 날짜
@@ -251,53 +251,87 @@ def _fetch_student_hall_meal(date: str) -> str:
     Returns:
         정리된 학생회관 식단 텍스트
     """
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print("  [tool] playwright 미설치 — pip install playwright && playwright install chromium")
-        return "[학생회관] playwright 미설치. 학생회관 식단 조회 불가."
-
-    date_str = date.replace("-", "")
-    url = f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_str}"
+    date_dot = date.replace("-", ".")
+    url = f"https://mobileadmin.cnu.ac.kr/food/index.jsp?searchYmd={date_dot}"
     print(f"  [tool] 학생회관 식단 크롤링: {url}")
 
     try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                    "--single-process",
-                ],
-            )
-            page = browser.new_page()
-            page.goto(url, timeout=30000)
-            # JS 렌더링 대기 — 식단 테이블이 로드될 때까지
-            page.wait_for_timeout(5000)
+        resp = _SESSION.get(url, timeout=15)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
 
-            # 전체 페이지 텍스트 추출 (테이블 포함)
-            content = page.content()
-            browser.close()
+        table = soup.find("table", class_="menu-tbl")
+        if not table:
+            return f"[학생회관] {date} 식단 테이블을 찾을 수 없습니다."
 
-        soup = BeautifulSoup(content, "html.parser")
-        for tag in soup.find_all(["script", "style"]):
-            tag.decompose()
+        # 헤더: ["구분", "제1학생회관", "제2학생회관", ...]
+        ths = table.find("thead").find_all("th", scope="col")
+        hall_names = [th.get_text(strip=True) for th in ths]
+        # "구분" 제거 → 식당 이름만
+        hall_names = [h for h in hall_names if h and h != "구분"]
 
-        tables = soup.find_all("table")
+        meal_map = {"조식": "아침", "중식": "점심", "석식": "저녁"}
         parts: list[str] = []
-        for table in tables:
-            for tr in table.find_all("tr"):
-                cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
-                line = " | ".join(c for c in cells if c)
-                if line and "운영안함" not in line:
-                    parts.append(line)
+        current_meal = ""
+        current_type = ""  # 직원/학생
+
+        for tr in table.find("tbody").find_all("tr"):
+            tds = tr.find_all("td")
+            if not tds:
+                continue
+
+            building_td = tr.find("td", class_="building")
+            if building_td:
+                raw_meal = building_td.get_text(strip=True)
+                current_meal = meal_map.get(raw_meal, raw_meal)
+
+            # 메뉴 td만 추출 (building, 직원/학생, rowspan td 제외)
+            menu_tds = []
+            for td in tds:
+                if "building" in td.get("class", []):
+                    continue
+                text = td.get_text(strip=True)
+                if text in ("직원", "학생"):
+                    current_type = text
+                    continue
+                if td.get("rowspan", "") == "100":
+                    continue
+                menu_tds.append(td)
+
+            # menu_tds를 식당에 매핑 (제1학생회관은 rowspan으로 빠짐)
+            # 직원행: 2~4학+생활과학 = 4개, 학생행: 2~4학+생활과학 = 4개
+            offset = 1  # 제1학생회관은 rowspan=100으로 스킵
+            for i, td in enumerate(menu_tds):
+                hall_idx = offset + i
+                if hall_idx >= len(hall_names):
+                    break
+                hall_name = hall_names[hall_idx]
+
+                text = td.get_text(strip=True)
+                if not text or "운영안함" in text or "메뉴운영" in text:
+                    continue
+
+                menu_items = []
+                for li in td.find_all("li"):
+                    title_tag = li.find("h3")
+                    title = title_tag.get_text(strip=True) if title_tag else ""
+                    p_tag = li.find("p")
+                    if p_tag:
+                        items = [s.strip() for s in p_tag.stripped_strings if s.strip()]
+                        if title:
+                            menu_items.append(f"  {title}: {', '.join(items)}")
+                        else:
+                            menu_items.append(f"  {', '.join(items)}")
+
+                if menu_items:
+                    label = f"■ {current_meal} ({hall_name}, {current_type})"
+                    parts.append(label)
+                    parts.extend(menu_items)
 
         print(f"  [tool] 학생회관 식단: {len(parts)}행 추출")
 
         if parts:
-            return f"[학생회관 식단 {date}]\n" + "\n".join(parts[:50])
+            return f"[학생회관 식단 {date}]\n" + "\n".join(parts)
         else:
             return f"[학생회관] {date} 식단 데이터 없음 (주말 또는 미운영)"
     except Exception as e:
