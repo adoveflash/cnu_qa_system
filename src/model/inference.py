@@ -262,7 +262,7 @@ def generate_answer(
 
     generated_ids = outputs[0][inputs["input_ids"].shape[1] :]
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
-    answer = _strip_think_tags(answer).replace("\r", "")
+    answer = _strip_think_tags(answer).replace("\r", "").replace("~", r"\~")
 
     if not used_tool:
         answer += _format_sources(final_urls)
@@ -338,7 +338,7 @@ def generate_answer_stream(
     accumulated = ""
     for chunk in streamer:
         accumulated += chunk
-        cleaned = _strip_think_tags(accumulated)
+        cleaned = _strip_think_tags(accumulated).replace("~", r"\~")
         if _IS_QWEN:
             cleaned = _remove_chinese(cleaned)
         yield cleaned
@@ -346,7 +346,7 @@ def generate_answer_stream(
     thread.join()
 
     # 최종 정리 + 출처 추가
-    final = _strip_think_tags(accumulated).replace("\r", "")
+    final = _strip_think_tags(accumulated).replace("\r", "").replace("~", r"\~")
     if _IS_QWEN:
         final = _remove_chinese(final)
     if not used_tool:
