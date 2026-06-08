@@ -118,8 +118,6 @@ def _find_assistant_start(tokenizer: Any, messages: list[dict[str, str]]) -> int
     """
     prompt_only = messages[:2]  # system + user
     tpl_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
-    if "qwen" in _DEFAULT_MODEL.lower():
-        tpl_kwargs["enable_thinking"] = False
     prompt_text = tokenizer.apply_chat_template(prompt_only, **tpl_kwargs)
     prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
     return len(prompt_ids)
@@ -155,8 +153,6 @@ def prepare_dataset(
 
         # 전체 시퀀스 토크나이즈
         tpl_kwargs2: dict = {"tokenize": False, "add_generation_prompt": False}
-        if "qwen" in _DEFAULT_MODEL.lower():
-            tpl_kwargs2["enable_thinking"] = False
         full_text = tokenizer.apply_chat_template(messages, **tpl_kwargs2)
         tokenized = tokenizer(
             full_text,

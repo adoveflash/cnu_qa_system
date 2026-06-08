@@ -2,7 +2,9 @@
 
 Run on SSH: python tests/test_quick.py
 """
+
 import sys
+
 sys.path.insert(0, ".")
 
 from src.model.inference import load_model_with_lora, generate_answer
@@ -22,11 +24,11 @@ questions = [
 ]
 
 for label, q in questions:
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"[{label}] {q}")
     print("-" * 60)
     answer = generate_answer(q, "", [], model, tokenizer, use_tools=True)
     print(answer)
 
-print(f"\n{'='*60}")
+print(f"\n{'=' * 60}")
 print("DONE")

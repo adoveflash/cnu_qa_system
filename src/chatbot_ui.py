@@ -14,11 +14,8 @@ import json
 from pathlib import Path
 
 
-def _load_pipeline(adapter_path: str = "models/lora_adapter") -> tuple:
+def _load_pipeline() -> tuple:
     """Retriever + (model, tokenizer)를 로드한다.
-
-    Args:
-        adapter_path: LoRA 어댑터 경로
 
     Returns:
         (retriever, model_or_None, tokenizer_or_None) 튜플
@@ -30,15 +27,13 @@ def _load_pipeline(adapter_path: str = "models/lora_adapter") -> tuple:
 
     model = None
     tokenizer = None
-    adapter = Path(adapter_path)
-    if adapter.exists():
-        try:
-            from src.model.inference import load_model_with_lora
+    try:
+        from src.model.inference import load_inference_model
 
-            print("[chat] LoRA 모델 로드 중...")
-            model, tokenizer = load_model_with_lora(adapter_path=str(adapter))
-        except Exception as e:
-            print(f"[chat] 모델 로드 실패 (RAG만 사용): {e}")
+        print("[chat] 모델 로드 중...")
+        model, tokenizer = load_inference_model()
+    except Exception as e:
+        print(f"[chat] 모델 로드 실패 (RAG만 사용): {e}")
 
     return retriever, model, tokenizer
 
@@ -46,14 +41,12 @@ def _load_pipeline(adapter_path: str = "models/lora_adapter") -> tuple:
 def run_chat_batch(
     test_path: str = "data/test_chat.json",
     output_path: str = "outputs/chat_output.json",
-    adapter_path: str = "models/lora_adapter",
 ) -> None:
     """test_chat.json에 대한 배치 추론을 수행한다.
 
     Args:
         test_path: 테스트 입력 JSON 경로
         output_path: 결과 출력 JSON 경로
-        adapter_path: LoRA 어댑터 경로
     """
     test_file = Path(test_path)
     if not test_file.exists():
@@ -67,7 +60,7 @@ def run_chat_batch(
         print("[chat] 테스트 데이터 비어있음 — 건너뜀")
         return
 
-    retriever, model, tokenizer = _load_pipeline(adapter_path)
+    retriever, model, tokenizer = _load_pipeline()
 
     from src.model.inference import fallback_answer
 
@@ -96,13 +89,9 @@ def run_chat_batch(
     print(f"[chat] 결과 저장: {output_path} ({len(results)}건)")
 
 
-def launch_ui(adapter_path: str = "models/lora_adapter") -> None:
-    """Gradio 챗봇 UI를 실행한다.
-
-    Args:
-        adapter_path: LoRA 어댑터 경로
-    """
-    retriever, model, tokenizer = _load_pipeline(adapter_path)
+def launch_ui() -> None:
+    """Gradio 챗봇 UI를 실행한다."""
+    retriever, model, tokenizer = _load_pipeline()
 
     from src.app.ui import launch
 
@@ -115,23 +104,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Task 2 챗봇 배치 추론 + UI")
     parser.add_argument("--batch-only", action="store_true", help="배치 추론만 실행")
     parser.add_argument("--ui-only", action="store_true", help="UI만 실행")
-    parser.add_argument("--adapter", default="models/lora_adapter", help="LoRA 어댑터 경로")
     parser.add_argument("--test", default="data/test_chat.json", help="테스트 파일 경로")
     parser.add_argument("--output", default="outputs/chat_output.json", help="출력 파일 경로")
     args = parser.parse_args()
 
     if args.ui_only:
-        launch_ui(adapter_path=args.adapter)
+        launch_ui()
     elif args.batch_only:
-        run_chat_batch(
-            test_path=args.test,
-            output_path=args.output,
-            adapter_path=args.adapter,
-        )
+        run_chat_batch(test_path=args.test, output_path=args.output)
     else:
-        run_chat_batch(
-            test_path=args.test,
-            output_path=args.output,
-            adapter_path=args.adapter,
-        )
-        launch_ui(adapter_path=args.adapter)
+        run_chat_batch(test_path=args.test, output_path=args.output)
+        launch_ui()

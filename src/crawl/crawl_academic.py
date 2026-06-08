@@ -160,7 +160,7 @@ def crawl_academic(output_path: Path | None = None) -> int:
                     content = content + "\n\n[일정표/표 데이터]\n" + table_text
 
                 if len(content) < 50:
-                    print(f"    건너뜀 — 내용 부족")
+                    print("    건너뜀 — 내용 부족")
                     time.sleep(CRAWL_DELAY)
                     continue
 

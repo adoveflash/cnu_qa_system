@@ -12,12 +12,13 @@ import json
 import os
 import random
 import re
-import shutil
 
+import chromadb
 import torch
 from datasets import Dataset
 from huggingface_hub import HfApi, snapshot_download
 from peft import LoraConfig, TaskType, get_peft_model
+from sentence_transformers import SentenceTransformer
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -205,7 +206,9 @@ print(f"검증 데이터셋: {len(eval_dataset)}건")
 sample_labels = train_dataset[0]["labels"]
 loss_tokens = sum(1 for lb in sample_labels if lb != -100)
 total_tokens = sum(1 for a in train_dataset[0]["attention_mask"] if a == 1)
-print(f"샘플 — 전체 토큰: {total_tokens}, loss 토큰: {loss_tokens} ({loss_tokens/max(total_tokens,1)*100:.1f}%)")
+print(
+    f"샘플 — 전체 토큰: {total_tokens}, loss 토큰: {loss_tokens} ({loss_tokens / max(total_tokens, 1) * 100:.1f}%)"
+)
 
 
 # ── 5. 학습 ──────────────────────────────────────────────────────────────────
@@ -361,9 +364,6 @@ for q in test_questions:
 print("\n" + "=" * 60)
 print("8. 벡터 DB 재구축")
 print("=" * 60)
-
-import chromadb
-from sentence_transformers import SentenceTransformer
 
 # LLM 메모리 해제
 del model, trainer

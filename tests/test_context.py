@@ -1,5 +1,7 @@
 """수강신청 질문에 대해 모델이 context를 읽는지 테스트."""
+
 import sys
+
 sys.path.insert(0, ".")
 from src.model.inference import load_model_with_lora, generate_answer
 

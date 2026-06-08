@@ -2,18 +2,19 @@
 
 Run on SSH: python tests/test_tool_calling.py
 """
+
 import sys
-sys.path.insert(0, ".")
+
+sys.path.insert(0, ".")  # noqa: E402
 
 print("1. importing modules...")
-from src.model.inference import (
-    load_model_with_lora,
+from src.model.inference import (  # noqa: E402
+    load_inference_model,
     generate_answer,
-    _SYSTEM_PROMPT,
 )
 
-print("2. loading model + LoRA adapter...")
-model, tokenizer = load_model_with_lora()
+print("2. loading model...")
+model, tokenizer = load_inference_model()
 print(f"   model device: {model.device}")
 
 # --- Test 1: food question (should trigger tool call) ---

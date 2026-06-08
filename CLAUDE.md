@@ -48,15 +48,15 @@
 - User-Agent를 검색엔진 봇(Googlebot 등)으로 위장하지 않는다
 - 수집한 데이터에 본인 또는 타인의 개인정보(학번, 이름, 성적 등)를 남기지 않는다 — 반드시 마스킹
 - Colab 무료 T4 (15GB VRAM)에서 OOM 나는 설정으로 제출하지 않는다
-- base 모델 전체 가중치를 저장소에 커밋하지 않는다 (LoRA 어댑터만)
+- base 모델 전체 가중치를 저장소에 커밋하지 않는다
 - 도메인 범위를 사용자 승인 없이 확장하지 않는다
 
 ## 고정된 기술 결정
 
 | 항목                             | 값                                                             |
 | -------------------------------- | -------------------------------------------------------------- |
-| Base 모델                        | `Qwen/Qwen3-8B` (4bit NF4 양자화) — Qwen2.5-7B에서 업그레이드  |
-| 파인튜닝                         | QLoRA, r=32, alpha=64, dropout=0.1, target=q/k/v/o/up/down_proj |
+| Base 모델                        | `google/gemma-4-12b-it` (4bit NF4 양자화) — Qwen3-8B에서 교체   |
+| 파인튜닝                         | 없음 (LoRA 제거, base 모델 직접 사용)                            |
 | 임베딩                           | `BAAI/bge-m3`                                                  |
 | 벡터 DB                          | ChromaDB (로컬)                                                |
 | 웹 UI                            | Gradio (`share=True`)                                          |
@@ -143,10 +143,10 @@ Termproject_{이름}/
 │   ├── crawl/                  # 크롤러, HTML/PDF 정제
 │   ├── data/                   # 청킹, Q&A 자동 생성, 개인정보 마스킹
 │   ├── rag/                    # 임베딩, 벡터 DB, 검색
-│   ├── model/                  # base 로드, LoRA 학습, 추론
+│   ├── model/                  # base 로드, 추론
 │   └── eval/                   # 평가 스크립트
-├── model/
-│   └── model.bin               # 학습된 모델/어댑터
+├── models/
+│   └── lora_adapter/           # (레거시, 현재 미사용)
 ├── outputs/                    # 실행 결과 (자동 생성)
 │   ├── cls_output.json         # Task 1 결과
 │   ├── chat_output.json        # Task 2 결과
@@ -205,7 +205,7 @@ Termproject_{이름}/
 
 ```
 질문 → bge-m3 임베딩 → ChromaDB top-5 검색 →
-[시스템 프롬프트 + 컨텍스트 + 질문] → Qwen3-8B + LoRA → 답변 + 출처 URL
+[시스템 프롬프트 + 컨텍스트 + 질문] → Gemma 4 12B (4bit) → 답변 + 출처 URL
 ```
 
 - **모든 답변에 출처 URL을 함께 반환**한다
@@ -247,7 +247,7 @@ Colab에서 실행. `data/test_cls.json`을 읽어 `outputs/cls_output.json` 생
 
 ### 현재까지의 결정
 
-- `001-base-model-검증.md`: Qwen2.5-7B 4bit 채택 (T4 VRAM 5.33GB 검증)
+- `001-base-model-검증.md`: Qwen2.5-7B 4bit 채택 (T4 VRAM 5.33GB 검증) → 이후 Gemma 4 12B로 교체
 - `002-크롤링-범위.md`: plus.cnu.ac.kr/html/, computer, job 도메인 한정
 
 ## 제출 체크리스트

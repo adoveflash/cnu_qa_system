@@ -91,9 +91,7 @@ def main():
     valid_dataset = QuestionDataset(valid_data, tokenizer)
 
     # 모델
-    model = AutoModelForSequenceClassification.from_pretrained(
-        MODEL_NAME, num_labels=NUM_LABELS
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=NUM_LABELS)
     print(f"파라미터: {sum(p.numel() for p in model.parameters()):,}")
 
     # 학습
@@ -137,7 +135,9 @@ def main():
     preds = trainer.predict(valid_dataset)
     pred_labels = np.argmax(preds.predictions, axis=-1)
     true_labels = np.array([d["label"] for d in valid_data])
-    print("\n" + classification_report(true_labels, pred_labels, target_names=LABEL_NAMES, digits=4))
+    print(
+        "\n" + classification_report(true_labels, pred_labels, target_names=LABEL_NAMES, digits=4)
+    )
 
     # 모델 저장
     trainer.save_model(MODEL_SAVE_DIR)
@@ -159,12 +159,14 @@ def main():
         all_preds = []
         for i in range(0, len(questions), BATCH_SIZE):
             batch = questions[i : i + BATCH_SIZE]
-            enc = cls_tokenizer(batch, truncation=True, max_length=MAX_LENGTH, padding=True, return_tensors="pt").to(device)
+            enc = cls_tokenizer(
+                batch, truncation=True, max_length=MAX_LENGTH, padding=True, return_tensors="pt"
+            ).to(device)
             with torch.no_grad():
                 out = cls_model(**enc)
                 all_preds.extend(torch.argmax(out.logits, dim=-1).cpu().tolist())
 
-        cls_output = [{"question": q, "label": l} for q, l in zip(questions, all_preds)]
+        cls_output = [{"question": q, "label": lb} for q, lb in zip(questions, all_preds)]
         output_path = os.path.join(OUTPUT_DIR, "cls_output.json")
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(cls_output, f, ensure_ascii=False, indent=2)

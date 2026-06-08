@@ -17,7 +17,6 @@ from pathlib import Path
 def run_realtime_batch(
     test_path: str = "data/test_realtime.json",
     output_path: str = "outputs/realtime_output.json",
-    adapter_path: str = "models/lora_adapter",
     skip_refresh: bool = False,
 ) -> None:
     """실시간 정보 질문에 대한 배치 추론을 수행한다.
@@ -25,7 +24,6 @@ def run_realtime_batch(
     Args:
         test_path: 테스트 입력 JSON 경로
         output_path: 결과 출력 JSON 경로
-        adapter_path: LoRA 어댑터 경로
         skip_refresh: True면 live 컬렉션 갱신을 건너뜀
     """
     test_file = Path(test_path)
@@ -53,18 +51,16 @@ def run_realtime_batch(
 
     retriever = Retriever()
 
-    # 3) 모델 로드 시도
+    # 3) 모델 로드
     model = None
     tokenizer = None
-    adapter = Path(adapter_path)
-    if adapter.exists():
-        try:
-            from src.model.inference import load_model_with_lora
+    try:
+        from src.model.inference import load_inference_model
 
-            print("[realtime] LoRA 모델 로드 중...")
-            model, tokenizer = load_model_with_lora(adapter_path=str(adapter))
-        except Exception as e:
-            print(f"[realtime] 모델 로드 실패 (RAG만 사용): {e}")
+        print("[realtime] 모델 로드 중...")
+        model, tokenizer = load_inference_model()
+    except Exception as e:
+        print(f"[realtime] 모델 로드 실패 (RAG만 사용): {e}")
 
     from src.model.inference import fallback_answer
 
@@ -102,12 +98,10 @@ if __name__ == "__main__":
     parser.add_argument("--skip-refresh", action="store_true", help="live 컬렉션 갱신 건너뛰기")
     parser.add_argument("--test", default="data/test_realtime.json", help="테스트 파일 경로")
     parser.add_argument("--output", default="outputs/realtime_output.json", help="출력 파일 경로")
-    parser.add_argument("--adapter", default="models/lora_adapter", help="LoRA 어댑터 경로")
     args = parser.parse_args()
 
     run_realtime_batch(
         test_path=args.test,
         output_path=args.output,
-        adapter_path=args.adapter,
         skip_refresh=args.skip_refresh,
     )

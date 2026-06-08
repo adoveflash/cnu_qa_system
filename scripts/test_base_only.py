@@ -1,4 +1,5 @@
 """Base 모델(LoRA 없이) 추론 테스트."""
+
 from src.rag.retriever import Retriever
 from src.model.base import load_model, load_tokenizer
 from src.model.inference import generate_answer

@@ -6,49 +6,17 @@ RAG 컨텍스트와 질문을 받아 답변을 생성한다.
 
 from __future__ import annotations
 
-import re
 import threading
 from collections.abc import Iterator
-from pathlib import Path
 
 import torch
-from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer, LogitsProcessor
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
 
 from src.model.base import load_model, load_tokenizer, _DEFAULT_MODEL
 from src.tools.definitions import execute_tool
 from src.tools.detector import detect_tool
 
 _SEED = 42
-_IS_QWEN = "qwen" in _DEFAULT_MODEL.lower()
-_THINK_TAG_RE = re.compile(r"<think>.*?</think>\s*", flags=re.DOTALL)
-_CHINESE_RE = re.compile(r"[\u4e00-\u9fff]+")
-
-
-def _remove_chinese(text: str) -> str:
-    """중국어 문자를 제거한다."""
-    return _CHINESE_RE.sub("", text).strip()
-
-
-class SuppressChineseLogitsProcessor(LogitsProcessor):
-    """중국어 토큰의 생성 확률을 -inf로 설정하여 중국어 출력을 차단한다."""
-
-    def __init__(self, tokenizer: AutoTokenizer):
-        self._bad_ids: list[int] = []
-        chinese_re = re.compile(r"[\u4e00-\u9fff]")
-        for token_id in range(tokenizer.vocab_size):
-            token = tokenizer.decode([token_id])
-            if chinese_re.search(token):
-                self._bad_ids.append(token_id)
-
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
-        scores[:, self._bad_ids] = float("-inf")
-        return scores
-
-
-def _build_chinese_suppressor(tokenizer: AutoTokenizer) -> list:
-    """중국어 억제 LogitsProcessor 리스트를 생성한다."""
-    return [SuppressChineseLogitsProcessor(tokenizer)]
 
 
 def _build_system_prompt() -> str:
@@ -103,11 +71,6 @@ _SOURCE_LABELS: dict[str, tuple[str, str]] = {
 }
 
 
-def _strip_think_tags(text: str) -> str:
-    """Qwen3 thinking mode 태그를 제거한다."""
-    return _THINK_TAG_RE.sub("", text).strip()
-
-
 def _format_sources(urls: list[str]) -> str:
     """URL 리스트를 HTML 배지 형태로 변환한다."""
     if not urls:
@@ -127,16 +90,11 @@ def _format_sources(urls: list[str]) -> str:
             if short not in [s[0] for s in seen]:
                 seen.append((short, "🔗"))
 
-    badges = " ".join(
-        f'<span class="source-chip">{icon} {label}</span>'
-        for label, icon in seen
-    )
+    badges = " ".join(f'<span class="source-chip">{icon} {label}</span>' for label, icon in seen)
     return f'\n\n<div class="source-row"><span class="source-label">참고</span>{badges}</div>'
 
 
-def _build_messages(
-    question: str, context: str, history: list[dict] | None = None
-) -> list[dict]:
+def _build_messages(question: str, context: str, history: list[dict] | None = None) -> list[dict]:
     """시스템 프롬프트 + 대화 이력 + 참고자료 + 질문으로 메시지를 구성한다."""
     system_prompt = _build_system_prompt()
     msgs: list[dict] = [{"role": "system", "content": system_prompt}]
@@ -147,9 +105,13 @@ def _build_messages(
             msgs.append(turn)
 
     user_content = (
-        f"아래 참고 자료를 반드시 읽고, 참고 자료에 있는 내용만으로 답변해.\n\n"
-        f"참고 자료:\n{context}\n\n질문: {question}"
-    ) if context else question
+        (
+            f"아래 참고 자료를 반드시 읽고, 참고 자료에 있는 내용만으로 답변해.\n\n"
+            f"참고 자료:\n{context}\n\n질문: {question}"
+        )
+        if context
+        else question
+    )
     msgs.append({"role": "user", "content": user_content})
     return msgs
 
@@ -174,42 +136,22 @@ def _resolve_context(
             result = execute_tool(tool_name, tool_args)
             # tool 실패 시 RAG fallback
             if any(kw in result for kw in _TOOL_FAIL_KEYWORDS):
-                print(f"  [tool] 실패 → RAG fallback")
+                print("  [tool] 실패 → RAG fallback")
                 return rag_context, urls, False
             tool_context = f"[{tool_name} 결과]\n{result}"
             return tool_context, [], True
     return rag_context, urls, False
 
 
-_chinese_suppressor: list | None = None
-
-
-def load_model_with_lora(
+def load_inference_model(
     model_name: str | None = None,
-    adapter_path: str = "models/lora_adapter",
 ) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
-    """모델을 로드한다. LoRA 어댑터가 있으면 합치고, 없으면 base만 로드."""
-    global _chinese_suppressor
+    """추론용 모델과 토크나이저를 로드한다."""
     if model_name is None:
         model_name = _DEFAULT_MODEL
-    is_qwen = "qwen" in model_name.lower()
     tokenizer = load_tokenizer(model_name)
-    base_model = load_model(model_name)
-
-    # LoRA 어댑터가 존재하고 Qwen 모델일 때만 적용
-    adapter = Path(adapter_path)
-    if adapter.exists() and (adapter / "adapter_config.json").exists() and is_qwen:
-        print(f"[inference] LoRA 어댑터 로드: {adapter_path}")
-        model = PeftModel.from_pretrained(base_model, adapter_path)
-        model.eval()
-    else:
-        print(f"[inference] Base 모델만 사용: {model_name}")
-        model = base_model
-
-    if is_qwen:
-        print("[inference] 중국어 토큰 억제 필터 구축 중...")
-        _chinese_suppressor = _build_chinese_suppressor(tokenizer)
-        print(f"[inference] 중국어 토큰 {len(_chinese_suppressor[0]._bad_ids)}개 차단 설정 완료")
+    model = load_model(model_name)
+    print(f"[inference] 모델 로드 완료: {model_name}")
     return model, tokenizer
 
 
@@ -236,15 +178,10 @@ def generate_answer(
     Returns:
         생성된 답변 문자열
     """
-    final_context, final_urls, used_tool = _resolve_context(
-        question, context, urls, use_tools
-    )
+    final_context, final_urls, used_tool = _resolve_context(question, context, urls, use_tools)
     messages = _build_messages(question, final_context, history=None)
 
-    tpl_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
-    if _IS_QWEN:
-        tpl_kwargs["enable_thinking"] = False
-    text = tokenizer.apply_chat_template(messages, **tpl_kwargs)
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     gen_kwargs = {
@@ -253,8 +190,6 @@ def generate_answer(
         "do_sample": False,
         "repetition_penalty": 1.3,
     }
-    if _chinese_suppressor:
-        gen_kwargs["logits_processor"] = _chinese_suppressor
 
     torch.manual_seed(_SEED)
     with torch.no_grad():
@@ -262,7 +197,7 @@ def generate_answer(
 
     generated_ids = outputs[0][inputs["input_ids"].shape[1] :]
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
-    answer = _strip_think_tags(answer).replace("\r", "").replace("~", r"\~")
+    answer = answer.replace("\r", "").replace("~", r"\~")
 
     if not used_tool:
         answer += _format_sources(final_urls)
@@ -314,10 +249,7 @@ def generate_answer_stream(
 
     messages = _build_messages(question, final_context, history=history)
 
-    tpl_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
-    if _IS_QWEN:
-        tpl_kwargs["enable_thinking"] = False
-    text = tokenizer.apply_chat_template(messages, **tpl_kwargs)
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
@@ -328,8 +260,6 @@ def generate_answer_stream(
         "repetition_penalty": 1.3,
         "streamer": streamer,
     }
-    if _chinese_suppressor:
-        gen_kwargs["logits_processor"] = _chinese_suppressor
 
     torch.manual_seed(_SEED)
     thread = threading.Thread(target=model.generate, kwargs=gen_kwargs)
@@ -338,17 +268,12 @@ def generate_answer_stream(
     accumulated = ""
     for chunk in streamer:
         accumulated += chunk
-        cleaned = _strip_think_tags(accumulated).replace("~", r"\~")
-        if _IS_QWEN:
-            cleaned = _remove_chinese(cleaned)
-        yield cleaned
+        yield accumulated.replace("~", r"\~")
 
     thread.join()
 
     # 최종 정리 + 출처 추가
-    final = _strip_think_tags(accumulated).replace("\r", "").replace("~", r"\~")
-    if _IS_QWEN:
-        final = _remove_chinese(final)
+    final = accumulated.replace("\r", "").replace("~", r"\~")
     if not used_tool:
         final += _format_sources(final_urls)
     yield final

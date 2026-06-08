@@ -5,11 +5,9 @@ Qwen3 네이티브 tool calling을 위한 tool 스키마와 실행 함수를 정
 
 from __future__ import annotations
 
-import json
 import re
 import time
 from datetime import datetime
-from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -196,9 +194,7 @@ def _fetch_dorm_meal(date: str) -> str:
 
         # 블록→끼니 배정: 매 2블록이 1끼니 (A타입 + C타입)
         # 블록 순서: 아침A, 아침C, 점심A, 점심C, 저녁A, 저녁C
-        meals: dict[str, dict[str, list[str]]] = {
-            "아침": {}, "점심": {}, "저녁": {}
-        }
+        meals: dict[str, dict[str, list[str]]] = {"아침": {}, "점심": {}, "저녁": {}}
         meal_order = ["아침", "점심", "저녁"]
 
         for idx, (type_name, block) in enumerate(meal_blocks):
@@ -237,7 +233,7 @@ def _fetch_dorm_meal(date: str) -> str:
         return ""
     except Exception as e:
         print(f"  [tool] 기숙사 식단 오류: {e}")
-        return f"[기숙사] 식단 정보를 가져올 수 없어요."
+        return "[기숙사] 식단 정보를 가져올 수 없어요."
 
 
 def _fetch_student_hall_meal(date: str) -> str:
@@ -354,6 +350,7 @@ def get_meal_menu(date: str | None = None, location: str = "all") -> str:
     """
     if date is None:
         from datetime import timezone, timedelta
+
         KST = timezone(timedelta(hours=9))
         date = datetime.now(KST).strftime("%Y-%m-%d")
 
@@ -376,7 +373,9 @@ def get_meal_menu(date: str | None = None, location: str = "all") -> str:
         if hall:
             results.append(hall)
         elif location == "student_hall":
-            results.append(f"[학생회관] {date} 식단 정보를 찾을 수 없습니다. 학생회관 식단은 https://mobileadmin.cnu.ac.kr/food/index.jsp 에서 직접 확인해주세요.")
+            results.append(
+                f"[학생회관] {date} 식단 정보를 찾을 수 없습니다. 학생회관 식단은 https://mobileadmin.cnu.ac.kr/food/index.jsp 에서 직접 확인해주세요."
+            )
 
     if not results:
         return f"{date} 식단 정보를 가져올 수 없습니다. 주말이거나 운영하지 않는 날일 수 있습니다."
@@ -441,11 +440,7 @@ _BUILTIN_CALENDAR = {
         "- 3/27(금): 수업일수 1/4선\n"
         "- 3/30(월)~4/3(금): 후기 조기졸업 신청"
     ),
-    4: (
-        "4월 학사일정:\n"
-        "- 4/6(월): 수업일수 1/3선\n"
-        "- 4/23(목): 수업일수 1/2선"
-    ),
+    4: ("4월 학사일정:\n- 4/6(월): 수업일수 1/3선\n- 4/23(목): 수업일수 1/2선"),
     5: (
         "5월 학사일정:\n"
         "- 5/1(금): 노동절\n"
@@ -521,6 +516,7 @@ def _get_builtin_calendar(month: int | None = None) -> str:
         return _BUILTIN_CALENDAR.get(month, f"{month}월 학사일정 정보가 없습니다.")
     # 현재 월 기준 앞뒤 2개월 반환
     from datetime import datetime
+
     now_month = datetime.now().month
     result = []
     for offset in range(-1, 3):
@@ -556,9 +552,7 @@ def _fetch_calendar_from_web(year: int, month: int | None = None) -> str | None:
             if month_header:
                 if current_month and month_events:
                     if month is None or current_month == month:
-                        results.append(
-                            f"{current_month}월 학사일정:\n" + "\n".join(month_events)
-                        )
+                        results.append(f"{current_month}월 학사일정:\n" + "\n".join(month_events))
                 current_month = int(month_header.group(1))
                 month_events = []
                 continue
@@ -647,8 +641,6 @@ def get_notices(count: int = 5) -> str:
 
         # 날짜 내림차순 정렬 (최신 우선)
         article_items.sort(key=lambda x: x[1], reverse=True)
-        article_links = [url for url, _ in article_items]
-
         # 목록에서 제목+날짜 빠르게 추출 (상세 페이지 접근 최소화)
         results: list[str] = []
         for i, (url, date_str) in enumerate(article_items[:count]):
@@ -679,7 +671,7 @@ def get_notices(count: int = 5) -> str:
                 pass
 
         if results:
-            return f"최신순 정렬 (1번이 가장 최근):\n\n" + "\n\n---\n\n".join(results)
+            return "최신순 정렬 (1번이 가장 최근):\n\n" + "\n\n---\n\n".join(results)
     except Exception as e:
         return f"공지사항 조회 실패: {e}"
 

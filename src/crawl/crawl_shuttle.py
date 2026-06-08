@@ -113,7 +113,6 @@ def crawl_shuttle(output_path: Path | None = None) -> int:
     with open(output_path, "w", encoding="utf-8") as fout:
         for page in SHUTTLE_PAGES:
             url = page["url"]
-            desc = page["desc"]
             print(f"  [{page['title']}] {url}")
 
             try:
@@ -131,7 +130,7 @@ def crawl_shuttle(output_path: Path | None = None) -> int:
                     content = content + "\n\n[시간표/표 데이터]\n" + table_text
 
                 if len(content) < 50:
-                    print(f"    건너뜀 — 내용 부족")
+                    print("    건너뜀 — 내용 부족")
                     time.sleep(CRAWL_DELAY)
                     continue
 
