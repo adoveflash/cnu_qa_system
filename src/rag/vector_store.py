@@ -46,6 +46,17 @@ def build_index(
         print("  청크가 없습니다.")
         return 0
 
+    # 누락 필드 자동 보완
+    for i, c in enumerate(chunks):
+        if "chunk_id" not in c:
+            c["chunk_id"] = f"{c.get('source', 'unknown')}_{i}"
+        if "title" not in c:
+            c["title"] = c["text"][:50]
+        if "url" not in c:
+            c["url"] = ""
+        if "source" not in c:
+            c["source"] = "unknown"
+
     print(f"  임베딩 모델 로드 중: {embedding_model_name}")
     model = load_embedding_model(embedding_model_name)
 
