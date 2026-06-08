@@ -330,67 +330,16 @@ def _fetch_student_hall_meal(date: str) -> str:
 
         print(f"  [tool] 학생회관 식단: {len(parts)}행 추출")
 
-        # 제1학생회관 메뉴 추가 (playwright 필요)
-        hall1 = _fetch_hall1_meal()
-        if hall1:
-            parts.insert(0, hall1)
-
         print(f"  [tool] 학생회관 식단: {len(parts)}행 추출")
 
         if parts:
-            return f"[학생회관 식단 {date}]\n" + "\n".join(parts)
+            note = "※ 제1학생회관 메뉴는 별도 시스템으로 운영되어 조회할 수 없습니다."
+            return f"[학생회관 식단 {date}]\n{note}\n" + "\n".join(parts)
         else:
             return f"[학생회관] {date} 식단 데이터 없음 (주말 또는 미운영)"
     except Exception as e:
         print(f"  [tool] 학생회관 조회 실패: {e}")
         return f"[학생회관] 조회 실패: {e}"
-
-
-def _fetch_hall1_meal() -> str:
-    """제1학생회관 식단을 playwright로 가져온다 (cnuit.cnu.ac.kr).
-
-    Returns:
-        제1학생회관 식단 텍스트. 실패 시 빈 문자열.
-    """
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print("  [tool] playwright 미설치 — 제1학생회관 스킵")
-        return ""
-
-    url = "https://cnuit.cnu.ac.kr/checkMenu.jsp?p0=B124va6F37RRI8qp"
-    print(f"  [tool] 제1학생회관 크롤링: {url}")
-
-    try:
-        with sync_playwright() as p:
-            browser = p.firefox.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, timeout=30000)
-            page.wait_for_timeout(8000)  # SPA 렌더링 대기
-
-            content = page.content()
-            browser.close()
-
-        soup = BeautifulSoup(content, "html.parser")
-        # 테이블에서 식단 추출
-        tables = soup.find_all("table")
-        lines: list[str] = []
-        for table in tables:
-            for tr in table.find_all("tr"):
-                cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
-                row = " | ".join(c for c in cells if c)
-                if row and "운영안함" not in row:
-                    lines.append(row)
-
-        if lines:
-            print(f"  [tool] 제1학생회관: {len(lines)}행 추출")
-            return "■ 제1학생회관\n" + "\n".join(lines[:30])
-        else:
-            print("  [tool] 제1학생회관: 데이터 없음")
-            return ""
-    except Exception as e:
-        print(f"  [tool] 제1학생회관 크롤링 실패: {e}")
-        return ""
 
 
 def get_meal_menu(date: str | None = None, location: str = "all") -> str:
