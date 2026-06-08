@@ -363,17 +363,7 @@ def _fetch_hall1_meal() -> str:
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                    "--disable-setuid-sandbox",
-                    "--single-process",
-                    "--no-zygote",
-                ],
-            )
+            browser = p.firefox.launch(headless=True)
             page = browser.new_page()
             page.goto(url, timeout=30000)
             page.wait_for_timeout(8000)  # SPA 렌더링 대기
