@@ -106,6 +106,9 @@ robots.txt 없음(404) = 명시적 차단 없음. 학술 목적 수집 허용:
   - `/ezhtml2.php?html=canteen` — 식당 목록, 위치, 운영시간
   - **기숙사 식당(남학생 기숙사 식당, N-14)** 포함
   - 정적 HTML → `requests` + `BeautifulSoup` (EUC-KR 인코딩 주의)
+- `dorm.cnu.ac.kr` — **기숙사 생활 안내** (학술 과제 목적, 공개 페이지 한정)
+  - `/html/kr/sub03/` — 입사 안내, 생활 규정, 시설 안내 등
+  - `/html/kr/sub03/sub03_0304.html` — 기숙사 식단표
 
 ### 수집 대상 도메인 (3차, 시간 여유 시)
 
@@ -117,7 +120,7 @@ robots.txt 없음(404) = 명시적 차단 없음. 학술 목적 수집 허용:
 ### 제외
 
 - `www.cnu.ac.kr` — robots.txt 전면 Disallow
-- `dorm.cnu.ac.kr` — robots.txt 전면 Disallow (기숙사 식단은 `cnucoop.co.kr`에서 대체 수집)
+- `dorm.cnu.ac.kr` — robots.txt Disallow이나, 본교 재학생의 학술 과제 목적으로 공개 페이지(기숙사 안내, 식단 등)에 한해 최소한으로 수집 허용. 개인정보 페이지 제외, 요청 간 3초 이상 간격 준수.
 - 본인 또는 타 학생의 개인정보 페이지 (성적, 등록금 납부내역, 장학금 수령 내역 등)
 - `with.cnu.ac.kr` (학생 커뮤니티 — 타 학생 게시물 포함, 개인정보 리스크)
 
