@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -182,11 +183,22 @@ def chunk_all(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     total_chunks = 0
+    dup_skipped = 0
+    seen_hashes: set[str] = set()
 
     with open(output_path, "w", encoding="utf-8") as out:
         for doc_idx, doc in enumerate(docs):
             text_chunks = chunk_document(doc["content"], tokenizer)
             for chunk_idx, chunk_text in enumerate(text_chunks):
+                # 청크 단위 중복 제거: 공백 정규화 후 해시 (여러 페이지에 반복되는
+                # 동일 보일러플레이트 청크 제거). 오버랩 청크는 완전동일이 아니라 보존됨.
+                norm = re.sub(r"\s+", " ", chunk_text).strip()
+                h = hashlib.md5(norm.encode()).hexdigest()
+                if h in seen_hashes:
+                    dup_skipped += 1
+                    continue
+                seen_hashes.add(h)
+
                 chunk_record = {
                     "chunk_id": f"{doc['source']}_{doc_idx}_{chunk_idx}",
                     "text": chunk_text,
@@ -198,4 +210,6 @@ def chunk_all(
                 out.write(json.dumps(chunk_record, ensure_ascii=False) + "\n")
                 total_chunks += 1
 
+    if dup_skipped:
+        print(f"  중복 청크 제거: {dup_skipped}개")
     return total_chunks

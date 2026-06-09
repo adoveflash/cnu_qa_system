@@ -17,8 +17,22 @@ _NAV_HEADER_LINES = frozenset(
         "본문 바로가기",
         "주메뉴 바로가기",
         "서브메뉴 바로가기",
+        "사이드메뉴 바로가기",
+        "주요메뉴 바로가기",
+        "코러스시스템",
+        "웹메일",
+        "CNU포털",
+        "The Strong CNU",
+        "게시글 검색",
+        "검색분류선택",
+        "교과 과정 검색 조건",
+        "년도선택",
+        "학년선택",
     }
 )
+
+# 졸업요건 페이지마다 붙는 사이드바 링크 (예: "2010~2011교과목이수체계도")
+_SIDEBAR_LINE_RE = re.compile(r"^\d{4}(\s*~\s*\d{4})?\s*교과목이수체계도$")
 
 # 페이지네이션/푸터에 등장하는 키워드
 _PAGINATION_KEYWORDS = frozenset(
@@ -88,6 +102,26 @@ def is_login_page(content: str) -> bool:
     return any(m in content for m in markers) and len(content) < 800
 
 
+def is_list_page(doc: dict[str, Any]) -> bool:
+    """게시판 목록/인덱스 페이지인지 판별한다.
+
+    목록 페이지는 글 제목·작성자·날짜·'조회수 N'만 나열되어 답변 내용이 없다.
+    실제 내용은 같은 게시판의 '게시판읽기'(상세) 페이지에 별도로 존재하므로 드롭해도
+    정보 손실이 없다.
+
+    Args:
+        doc: 문서 (title, content 키)
+
+    Returns:
+        목록 페이지이면 True
+    """
+    title = doc.get("title") or ""
+    if "게시판목록" in title:
+        return True
+    # 제목 정보가 없는 경우 본문의 '조회수' 반복으로 판별
+    return doc.get("content", "").count("조회수") >= 4
+
+
 def remove_boilerplate(content: str) -> str:
     """네비게이션 헤더, 사이드바 메뉴, 페이지네이션 등 보일러플레이트를 제거한다.
 
@@ -106,6 +140,11 @@ def remove_boilerplate(content: str) -> str:
 
         # 1) 네비게이션 헤더 줄 제거
         if line in _NAV_HEADER_LINES:
+            i += 1
+            continue
+
+        # 1-b) 졸업요건 사이드바 링크 줄 제거 (20xx교과목이수체계도)
+        if _SIDEBAR_LINE_RE.match(line):
             i += 1
             continue
 
@@ -196,6 +235,10 @@ def clean_all(
     # 로그인 페이지 필터
     docs = [d for d in docs if not is_login_page(d["content"])]
     print(f"  로그인 페이지 제거 후: {len(docs)}건")
+
+    # 게시판 목록/인덱스 페이지 필터 (알맹이 없는 인덱스 — 상세 페이지에 내용 존재)
+    docs = [d for d in docs if not is_list_page(d)]
+    print(f"  게시판 목록 페이지 제거 후: {len(docs)}건")
 
     # 보일러플레이트 제거
     for doc in docs:

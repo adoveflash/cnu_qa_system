@@ -31,6 +31,25 @@ def _clean_thinking(text: str) -> str:
     return text.strip()
 
 
+def _strip_context_markers(text: str) -> str:
+    """답변에 새어나온 내부 참고자료 마커를 제거한다.
+
+    `build_context`가 청크를 '[참고N]'으로 묶는데 모델이 이를 그대로 인용하는 경우가 있어
+    사용자에게 무의미하게 노출된다. 안전하게 제거 가능한 '[참고N]' 패턴만 지운다.
+    ('제공된 자료에 따르면' 같은 문장형 메타 표현은 문법을 깰 수 있어 프롬프트로 예방한다.)
+
+    Args:
+        text: 생성된 답변
+
+    Returns:
+        마커가 제거된 답변
+    """
+    text = re.sub(r"\[\s*참고\s*\d+\s*\]", "", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def _build_system_prompt() -> str:
     """오늘 날짜와 현재 학기를 포함한 시스템 프롬프트를 생성한다."""
     from datetime import datetime, timezone, timedelta
@@ -63,7 +82,10 @@ def _build_system_prompt() -> str:
         "9. 졸업요건·졸업학점은 학과마다 다르다(예: 건축학과 등 일부 학과는 130학점이 아님). "
         "참고 자료가 특정 학과(예: 컴퓨터융합학부·인공지능학과)에 관한 것이면 그 학과에 한정해서 답하고, "
         "사용자가 묻는 학과의 자료가 없으면 다른 학과의 수치를 끌어다 쓰지 말고 "
-        "'해당 학과의 정확한 졸업요건은 확인되지 않았어요'라고 답해."
+        "'해당 학과의 정확한 졸업요건은 확인되지 않았어요'라고 답해.\n"
+        "10. 답변에 '[참고1]', '[참고2]' 같은 자료 번호나 '제공된 자료/입력하신 데이터에 따르면' "
+        "같은 내부 참고자료 언급을 절대 쓰지 마. 참고자료의 존재를 드러내지 말고 사용자에게 "
+        "바로 자연스럽게 정보를 전달해."
     )
 
 
@@ -216,6 +238,7 @@ def generate_answer(
     generated_ids = outputs[0][inputs["input_ids"].shape[1] :]
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
     answer = _clean_thinking(answer)
+    answer = _strip_context_markers(answer)
     answer = answer.replace("\r", "").replace("~", r"\~")
 
     if not used_tool:
@@ -295,6 +318,7 @@ def generate_answer_stream(
 
     # 최종 정리 + 출처 추가
     final = _clean_thinking(accumulated)
+    final = _strip_context_markers(final)
     final = final.replace("\r", "").replace("~", r"\~")
     if not used_tool:
         final += _format_sources(final_urls)
