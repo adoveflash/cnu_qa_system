@@ -70,7 +70,7 @@ def run_realtime_batch(
     # 4) 배치 추론
     print(f"[realtime] {len(test_data)}건 추론 중...")
     results = []
-    for item in test_data:
+    for idx, item in enumerate(test_data):
         question = item["user"]
         context, urls = retriever.build_context(question)
 
@@ -79,7 +79,8 @@ def run_realtime_batch(
         else:
             answer = fallback_answer(question, context, urls)
 
-        results.append({"user": question, "model": answer})
+        # 조교 양식: id, user, model
+        results.append({"id": item.get("id", idx), "user": question, "model": answer})
         print(f"  Q: {question[:40]}... → {len(answer)}자")
 
     # 5) 저장
