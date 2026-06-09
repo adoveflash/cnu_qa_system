@@ -6,6 +6,7 @@ RAG 컨텍스트와 질문을 받아 답변을 생성한다.
 
 from __future__ import annotations
 
+import re
 import threading
 from collections.abc import Iterator
 
@@ -17,6 +18,17 @@ from src.tools.definitions import execute_tool
 from src.tools.detector import detect_tool
 
 _SEED = 42
+
+
+def _clean_thinking(text: str) -> str:
+    """Gemma 4 thinking 토큰/쓰레기 제거."""
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+    text = re.sub(r"^.*?(?=안녕하세요)", "", text, flags=re.DOTALL)
+    if text and not re.match(r"[가-힣*#\-]", text):
+        match = re.search(r"[가-힣]", text)
+        if match:
+            text = text[match.start():]
+    return text.strip()
 
 
 def _build_system_prompt() -> str:
@@ -181,7 +193,9 @@ def generate_answer(
     final_context, final_urls, used_tool = _resolve_context(question, context, urls, use_tools)
     messages = _build_messages(question, final_context, history=None)
 
-    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    text = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True, thinking=False
+    )
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     gen_kwargs = {
@@ -197,6 +211,7 @@ def generate_answer(
 
     generated_ids = outputs[0][inputs["input_ids"].shape[1] :]
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
+    answer = _clean_thinking(answer)
     answer = answer.replace("\r", "").replace("~", r"\~")
 
     if not used_tool:
@@ -249,7 +264,9 @@ def generate_answer_stream(
 
     messages = _build_messages(question, final_context, history=history)
 
-    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    text = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True, thinking=False
+    )
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
@@ -273,7 +290,8 @@ def generate_answer_stream(
     thread.join()
 
     # 최종 정리 + 출처 추가
-    final = accumulated.replace("\r", "").replace("~", r"\~")
+    final = _clean_thinking(accumulated)
+    final = final.replace("\r", "").replace("~", r"\~")
     if not used_tool:
         final += _format_sources(final_urls)
     yield final
