@@ -18,81 +18,126 @@ _USE_MESSAGES = _GRADIO_MAJOR >= 5
 _NEED_TYPE_PARAM = _GRADIO_MAJOR == 5  # 6.x는 type 파라미터 없음
 
 _CSS = """
-.gradio-container {
-    max-width: 850px !important;
-    margin: 0 auto !important;
-    font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, sans-serif !important;
-    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%) !important;
+/* ===== Claude 스타일: 따뜻한 아이보리 + 점토색(clay) 포인트 + 세리프 ===== */
+:root {
+    --clay: #D97757;          /* Claude 시그니처 점토색 */
+    --clay-deep: #C15F3C;
+    --ivory: #FAF9F5;         /* 따뜻한 배경 */
+    --cream: #F0EEE6;         /* 카드/칩 배경 */
+    --ink: #2A2A28;           /* 본문 텍스트 (웜 블랙) */
+    --muted: #6B6B63;         /* 보조 텍스트 */
+    --line: #E5E3DA;          /* 경계선 */
 }
+.gradio-container {
+    max-width: 740px !important;
+    margin: 0 auto !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif !important;
+    background: var(--ivory) !important;
+    color: var(--ink) !important;
+}
+body, .gradio-container { background: var(--ivory) !important; }
 .title-area {
     text-align: center;
-    padding: 28px 0 14px 0;
-    background: linear-gradient(135deg, #1e3a5f 0%, #2d6da3 100%);
-    border-radius: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 20px rgba(30, 58, 95, 0.15);
-}
-.title-area h1 {
-    font-size: 1.9em;
-    margin-bottom: 6px;
-    color: #ffffff;
-    letter-spacing: -0.5px;
+    padding: 44px 0 10px 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 .title-area .logo-icon {
-    font-size: 2.2em;
-    margin-bottom: 4px;
+    font-size: 2.4em;
+    color: var(--clay);
+    line-height: 1;
+    margin-bottom: 10px;
+}
+.title-area h1 {
+    font-family: 'Tiempos Text', Georgia, 'Times New Roman', serif;
+    font-size: 2.0em;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--ink);
+    letter-spacing: -0.4px;
 }
 .title-area p {
-    color: #c8ddf0;
-    font-size: 0.95em;
+    color: var(--muted);
+    font-size: 0.96em;
     margin-top: 0;
 }
 .category-badges {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     flex-wrap: wrap;
-    margin-bottom: 16px;
+    margin: 18px 0 22px 0;
 }
 .category-badges span {
-    background: #eef6ff;
-    color: #1a5276;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.83em;
+    background: var(--cream);
+    color: var(--muted);
+    padding: 5px 13px;
+    border-radius: 8px;
+    font-size: 0.82em;
     font-weight: 500;
-    border: 1px solid #cce0f0;
-    transition: all 0.2s;
+    border: 1px solid var(--line);
+    transition: all 0.18s ease;
 }
 .category-badges span:hover {
-    background: #d4ebff;
-    transform: translateY(-1px);
+    background: #fff;
+    color: var(--clay-deep);
+    border-color: var(--clay);
 }
 footer {visibility: hidden}
-/* 채팅 영역 스타일 */
+/* 채팅 영역 */
 .chatbot {
-    border-radius: 12px !important;
-    border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    border-radius: 18px !important;
+    border: 1px solid var(--line) !important;
+    background: #FFFDF9 !important;
+    box-shadow: none !important;
+}
+/* 메시지 말풍선 (Gradio 버전별 방어적 타겟팅) */
+.chatbot .message.user, .chatbot [data-testid="user"], .message-row.user-row .message {
+    background: var(--cream) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 14px !important;
+    color: var(--ink) !important;
+}
+.chatbot .message.bot, .chatbot [data-testid="bot"], .message-row.bot-row .message {
+    background: transparent !important;
+    border: none !important;
+    color: var(--ink) !important;
 }
 /* 전송 버튼 */
 button.primary {
-    background: linear-gradient(135deg, #1e3a5f, #2d6da3) !important;
+    background: var(--clay) !important;
     border: none !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
+    color: #fff !important;
+    transition: background 0.18s ease !important;
 }
 button.primary:hover {
-    opacity: 0.9 !important;
+    background: var(--clay-deep) !important;
+}
+/* 보조 버튼 (초기화) */
+button.secondary {
+    background: transparent !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 10px !important;
+    color: var(--muted) !important;
+}
+button.secondary:hover {
+    border-color: var(--clay) !important;
+    color: var(--clay-deep) !important;
 }
 /* 입력창 */
 textarea {
-    border-radius: 10px !important;
-    border: 1.5px solid #d0dbe6 !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--line) !important;
+    background: #FFFDF9 !important;
+    color: var(--ink) !important;
+    font-size: 1.0em !important;
 }
 textarea:focus {
-    border-color: #2d6da3 !important;
-    box-shadow: 0 0 0 3px rgba(45, 109, 163, 0.1) !important;
+    border-color: var(--clay) !important;
+    box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.13) !important;
 }
 /* 출처 배지 */
 .source-row {
@@ -100,13 +145,13 @@ textarea:focus {
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #e8edf2;
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
 }
 .source-label {
-    font-size: 0.73em;
-    color: #8899aa;
+    font-size: 0.72em;
+    color: var(--muted);
     font-weight: 600;
     margin-right: 4px;
     text-transform: uppercase;
@@ -116,19 +161,26 @@ textarea:focus {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: linear-gradient(135deg, #f0f7ff, #e8f2fc);
-    border: 1px solid #d0e3f4;
-    color: #1e4a6e;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    color: var(--clay-deep);
     padding: 4px 11px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-size: 0.76em;
     font-weight: 500;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    box-shadow: none;
 }
 /* 예시 질문 */
-.examples-row button {
-    border-radius: 8px !important;
-    font-size: 0.88em !important;
+.examples-row button, .examples button {
+    border-radius: 10px !important;
+    font-size: 0.86em !important;
+    background: #FFFDF9 !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink) !important;
+}
+.examples-row button:hover, .examples button:hover {
+    border-color: var(--clay) !important;
+    background: #fff !important;
 }
 """
 
@@ -139,6 +191,19 @@ _EXAMPLES = [
     "셔틀버스 시간표 알려줘",
     "최근 공지사항 보여줘",
 ]
+
+_WELCOME = (
+    "안녕하세요! 충남대학교 학내 정보를 안내하는 AI 챗봇이에요. 😊\n\n"
+    "졸업요건 · 학사일정 · 공지사항 · 식단 · 셔틀버스 등 "
+    "궁금한 걸 편하게 물어봐 주세요."
+)
+
+
+def _initial_history() -> list:
+    """Gradio 버전에 맞는 초기 환영 메시지 이력을 만든다."""
+    if _USE_MESSAGES:
+        return [{"role": "assistant", "content": _WELCOME}]
+    return [[None, _WELCOME]]
 
 
 def _extract_text(content: Any) -> str:
@@ -161,9 +226,9 @@ def create_app(
         gr.HTML(
             """
             <div class="title-area">
-                <div class="logo-icon">🎓</div>
+                <div class="logo-icon">&#10037;</div>
                 <h1>CNU Campus AI</h1>
-                <p>충남대학교 학내 정보 Q&A 챗봇</p>
+                <p>충남대학교 학내 정보를 안내해 드릴게요</p>
             </div>
             <div class="category-badges">
                 <span>🎯 졸업요건</span>
@@ -178,7 +243,9 @@ def create_app(
         chatbot_kwargs = {"height": 520, "show_label": False, "container": False}
         if _NEED_TYPE_PARAM:
             chatbot_kwargs["type"] = "messages"
-        chatbot = gr.Chatbot(**chatbot_kwargs, elem_classes=["chatbot"])
+        chatbot = gr.Chatbot(
+            **chatbot_kwargs, value=_initial_history(), elem_classes=["chatbot"]
+        )
 
         with gr.Row():
             msg = gr.Textbox(
@@ -219,11 +286,15 @@ def create_app(
                 # 멀티턴: 이전 대화 이력을 모델에 전달
                 chat_history = None
                 if _USE_MESSAGES and len(history) > 2:
-                    chat_history = [
+                    prior = [
                         {"role": h["role"], "content": h["content"]}
                         for h in history[:-2]
                         if isinstance(h, dict) and h.get("content")
                     ]
+                    # 환영 메시지 등 user 이전 메시지 제거 → 반드시 user로 시작
+                    while prior and prior[0]["role"] != "user":
+                        prior.pop(0)
+                    chat_history = prior or None
                 for partial in generate_answer_stream(
                     question, context, urls, model, tokenizer, history=chat_history
                 ):
@@ -242,7 +313,7 @@ def create_app(
 
         submit_btn.click(respond, [msg, chatbot], [msg, chatbot])
         msg.submit(respond, [msg, chatbot], [msg, chatbot])
-        clear_btn.click(lambda: ([], ""), outputs=[chatbot, msg])
+        clear_btn.click(lambda: (_initial_history(), ""), outputs=[chatbot, msg])
 
     return app
 
