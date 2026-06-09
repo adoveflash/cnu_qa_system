@@ -1,106 +1,106 @@
 bge-m3 로드 중...
-Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 16633.93it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 19401.30it/s]
 [transformers] You are using a model of type `gemma4_unified` to instantiate a model of type `gemma4`. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
 Gemma 4 로드 중... (4bit, 수십 초~수 분)
 Loading weights:   0%|          | 0/668 [00:00<?, ?it/s]/workspace/cnu_qa_system/.venv/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
   torch._check_is_size(blocksize)
-Loading weights:   0%|          | 3/668 [00:00<03:07,  3.55it/s]Loading weights:   1%|          | 8/668 [00:00<01:07,  9.79it/s]Loading weights:   3%|▎         | 21/668 [00:01<00:22, 28.55it/s]Loading weights:   5%|▌         | 34/668 [00:01<00:13, 45.53it/s]Loading weights:   6%|▋         | 42/668 [00:01<00:11, 52.17it/s]Loading weights:   7%|▋         | 50/668 [00:01<00:11, 52.84it/s]Loading weights:   9%|▉         | 63/668 [00:01<00:09, 67.19it/s]Loading weights:  11%|█▏        | 76/668 [00:01<00:07, 78.34it/s]Loading weights:  13%|█▎        | 86/668 [00:01<00:07, 77.11it/s]Loading weights:  14%|█▍        | 95/668 [00:01<00:07, 74.27it/s]Loading weights:  16%|█▌        | 104/668 [00:02<00:07, 74.62it/s]Loading weights:  18%|█▊        | 117/668 [00:02<00:06, 84.05it/s]Loading weights:  19%|█▉        | 126/668 [00:02<00:06, 84.91it/s]Loading weights:  20%|██        | 135/668 [00:02<00:06, 76.87it/s]Loading weights:  22%|██▏       | 146/668 [00:02<00:06, 81.57it/s]Loading weights:  24%|██▍       | 159/668 [00:02<00:05, 89.87it/s]Loading weights:  25%|██▌       | 169/668 [00:02<00:05, 85.02it/s]Loading weights:  27%|██▋       | 178/668 [00:02<00:06, 79.77it/s]Loading weights:  28%|██▊       | 187/668 [00:03<00:06, 78.95it/s]Loading weights:  30%|██▉       | 200/668 [00:03<00:05, 88.25it/s]Loading weights:  31%|███▏      | 209/668 [00:03<00:05, 88.50it/s]Loading weights:  33%|███▎      | 218/668 [00:03<00:05, 79.99it/s]Loading weights:  34%|███▍      | 229/668 [00:03<00:05, 84.43it/s]Loading weights:  36%|███▌      | 242/668 [00:03<00:04, 92.42it/s]Loading weights:  38%|███▊      | 252/668 [00:03<00:04, 87.52it/s]Loading weights:  39%|███▉      | 261/668 [00:03<00:04, 82.29it/s]Loading weights:  40%|████      | 270/668 [00:04<00:04, 80.59it/s]Loading weights:  42%|████▏     | 283/668 [00:04<00:04, 88.55it/s]Loading weights:  44%|████▎     | 292/668 [00:04<00:04, 86.70it/s]Loading weights:  45%|████▌     | 301/668 [00:04<00:04, 75.46it/s]Loading weights:  47%|████▋     | 312/668 [00:04<00:04, 78.56it/s]Loading weights:  49%|████▊     | 325/668 [00:04<00:04, 85.35it/s]Loading weights:  50%|█████     | 334/668 [00:04<00:04, 82.22it/s]Loading weights:  51%|█████▏    | 343/668 [00:04<00:04, 71.61it/s]Loading weights:  53%|█████▎    | 353/668 [00:05<00:04, 73.38it/s]Loading weights:  55%|█████▍    | 366/668 [00:05<00:03, 81.37it/s]Loading weights:  56%|█████▌    | 375/668 [00:05<00:03, 80.75it/s]Loading weights:  57%|█████▋    | 384/668 [00:05<00:03, 72.47it/s]Loading weights:  59%|█████▉    | 395/668 [00:05<00:03, 76.64it/s]Loading weights:  61%|██████    | 408/668 [00:05<00:03, 84.06it/s]Loading weights:  62%|██████▏   | 417/668 [00:05<00:03, 81.66it/s]Loading weights:  64%|██████▍   | 426/668 [00:06<00:03, 71.70it/s]Loading weights:  65%|██████▌   | 436/668 [00:06<00:03, 73.50it/s]Loading weights:  67%|██████▋   | 449/668 [00:06<00:02, 81.54it/s]Loading weights:  69%|██████▊   | 458/668 [00:06<00:02, 82.10it/s]Loading weights:  70%|██████▉   | 467/668 [00:06<00:02, 74.02it/s]Loading weights:  72%|███████▏  | 478/668 [00:06<00:02, 78.25it/s]Loading weights:  74%|███████▎  | 491/668 [00:06<00:02, 86.10it/s]Loading weights:  75%|███████▍  | 500/668 [00:06<00:01, 84.13it/s]Loading weights:  76%|███████▌  | 509/668 [00:07<00:02, 74.24it/s]Loading weights:  78%|███████▊  | 519/668 [00:07<00:01, 76.23it/s]Loading weights:  80%|███████▉  | 532/668 [00:07<00:01, 84.80it/s]Loading weights:  81%|████████  | 541/668 [00:07<00:01, 84.96it/s]Loading weights:  82%|████████▏ | 550/668 [00:07<00:01, 76.06it/s]Loading weights:  84%|████████▍ | 561/668 [00:07<00:01, 80.09it/s]Loading weights:  86%|████████▌ | 574/668 [00:07<00:01, 87.40it/s]Loading weights:  87%|████████▋ | 583/668 [00:07<00:01, 84.67it/s]Loading weights:  89%|████████▊ | 592/668 [00:08<00:01, 74.73it/s]Loading weights:  90%|█████████ | 602/668 [00:08<00:00, 76.63it/s]Loading weights:  92%|█████████▏| 615/668 [00:08<00:00, 84.81it/s]Loading weights:  93%|█████████▎| 624/668 [00:08<00:00, 85.07it/s]Loading weights:  95%|█████████▍| 633/668 [00:08<00:00, 76.42it/s]Loading weights:  96%|█████████▋| 644/668 [00:08<00:00, 79.13it/s]Loading weights:  98%|█████████▊| 657/668 [00:08<00:00, 86.61it/s]Loading weights: 100%|█████████▉| 666/668 [00:08<00:00, 84.60it/s]Loading weights: 100%|██████████| 668/668 [00:09<00:00, 74.13it/s]
+Loading weights:   0%|          | 3/668 [00:00<02:49,  3.91it/s]Loading weights:   1%|          | 8/668 [00:00<01:01, 10.66it/s]Loading weights:   3%|▎         | 21/668 [00:01<00:21, 30.66it/s]Loading weights:   5%|▌         | 34/668 [00:01<00:13, 48.13it/s]Loading weights:   6%|▋         | 43/668 [00:01<00:11, 56.69it/s]Loading weights:   8%|▊         | 52/668 [00:01<00:10, 58.27it/s]Loading weights:   9%|▉         | 63/668 [00:01<00:08, 67.32it/s]Loading weights:  11%|█▏        | 76/668 [00:01<00:07, 78.85it/s]Loading weights:  13%|█▎        | 86/668 [00:01<00:07, 77.69it/s]Loading weights:  14%|█▍        | 95/668 [00:01<00:07, 75.22it/s]Loading weights:  16%|█▌        | 104/668 [00:02<00:07, 75.61it/s]Loading weights:  18%|█▊        | 117/668 [00:02<00:06, 85.28it/s]Loading weights:  19%|█▉        | 126/668 [00:02<00:06, 85.93it/s]Loading weights:  20%|██        | 135/668 [00:02<00:06, 78.07it/s]Loading weights:  22%|██▏       | 146/668 [00:02<00:06, 82.02it/s]Loading weights:  24%|██▍       | 159/668 [00:02<00:05, 89.97it/s]Loading weights:  25%|██▌       | 169/668 [00:02<00:05, 84.86it/s]Loading weights:  27%|██▋       | 178/668 [00:02<00:06, 79.53it/s]Loading weights:  28%|██▊       | 187/668 [00:02<00:06, 78.52it/s]Loading weights:  30%|██▉       | 200/668 [00:03<00:05, 87.26it/s]Loading weights:  31%|███▏      | 209/668 [00:03<00:05, 87.60it/s]Loading weights:  33%|███▎      | 218/668 [00:03<00:05, 78.64it/s]Loading weights:  34%|███▍      | 229/668 [00:03<00:05, 82.71it/s]Loading weights:  36%|███▌      | 242/668 [00:03<00:04, 90.52it/s]Loading weights:  38%|███▊      | 252/668 [00:03<00:04, 85.80it/s]Loading weights:  39%|███▉      | 261/668 [00:03<00:05, 80.71it/s]Loading weights:  40%|████      | 270/668 [00:03<00:05, 79.46it/s]Loading weights:  42%|████▏     | 283/668 [00:04<00:04, 88.32it/s]Loading weights:  44%|████▎     | 292/668 [00:04<00:04, 88.19it/s]Loading weights:  45%|████▌     | 301/668 [00:04<00:04, 78.91it/s]Loading weights:  47%|████▋     | 312/668 [00:04<00:04, 82.78it/s]Loading weights:  49%|████▊     | 325/668 [00:04<00:03, 90.33it/s]Loading weights:  50%|█████     | 335/668 [00:04<00:03, 85.82it/s]Loading weights:  51%|█████▏    | 344/668 [00:04<00:04, 80.90it/s]Loading weights:  53%|█████▎    | 353/668 [00:04<00:03, 79.77it/s]Loading weights:  55%|█████▍    | 366/668 [00:05<00:03, 88.71it/s]Loading weights:  56%|█████▌    | 375/668 [00:05<00:03, 88.85it/s]Loading weights:  57%|█████▋    | 384/668 [00:05<00:03, 78.50it/s]Loading weights:  59%|█████▉    | 395/668 [00:05<00:03, 82.54it/s]Loading weights:  61%|██████    | 408/668 [00:05<00:02, 90.10it/s]Loading weights:  63%|██████▎   | 418/668 [00:05<00:02, 84.50it/s]Loading weights:  64%|██████▍   | 427/668 [00:05<00:03, 79.14it/s]Loading weights:  65%|██████▌   | 436/668 [00:05<00:02, 78.18it/s]Loading weights:  67%|██████▋   | 449/668 [00:06<00:02, 87.51it/s]Loading weights:  69%|██████▊   | 458/668 [00:06<00:02, 88.02it/s]Loading weights:  70%|██████▉   | 467/668 [00:06<00:02, 78.32it/s]Loading weights:  72%|███████▏  | 478/668 [00:06<00:02, 82.26it/s]Loading weights:  74%|███████▎  | 491/668 [00:06<00:01, 89.83it/s]Loading weights:  75%|███████▌  | 501/668 [00:06<00:01, 84.10it/s]Loading weights:  76%|███████▋  | 510/668 [00:06<00:02, 78.74it/s]Loading weights:  78%|███████▊  | 519/668 [00:06<00:01, 77.61it/s]Loading weights:  80%|███████▉  | 532/668 [00:07<00:01, 86.66it/s]Loading weights:  81%|████████  | 541/668 [00:07<00:01, 86.83it/s]Loading weights:  82%|████████▏ | 550/668 [00:07<00:01, 78.53it/s]Loading weights:  84%|████████▍ | 561/668 [00:07<00:01, 82.42it/s]Loading weights:  86%|████████▌ | 574/668 [00:07<00:01, 89.73it/s]Loading weights:  87%|████████▋ | 584/668 [00:07<00:00, 84.67it/s]Loading weights:  89%|████████▉ | 593/668 [00:07<00:00, 79.07it/s]Loading weights:  90%|█████████ | 602/668 [00:07<00:00, 77.90it/s]Loading weights:  92%|█████████▏| 615/668 [00:08<00:00, 86.45it/s]Loading weights:  93%|█████████▎| 624/668 [00:08<00:00, 86.69it/s]Loading weights:  95%|█████████▍| 633/668 [00:08<00:00, 78.49it/s]Loading weights:  96%|█████████▋| 644/668 [00:08<00:00, 82.82it/s]Loading weights:  98%|█████████▊| 657/668 [00:08<00:00, 90.53it/s]Loading weights: 100%|█████████▉| 667/668 [00:08<00:00, 84.60it/s]Loading weights: 100%|██████████| 668/668 [00:08<00:00, 76.81it/s]
 [transformers] [1mGemma4ForConditionalGeneration LOAD REPORT[0m from: google/gemma-4-12b-it
 Key                                                                          | Status     | 
 -----------------------------------------------------------------------------+------------+-
-model.embed_vision.pos_embedding                                             | UNEXPECTED | 
-model.embed_vision.patch_dense.bias                                          | UNEXPECTED | 
-model.embed_vision.patch_ln2.bias                                            | UNEXPECTED | 
-model.embed_vision.patch_dense.weight                                        | UNEXPECTED | 
-model.embed_vision.patch_ln1.weight                                          | UNEXPECTED | 
-model.embed_vision.patch_ln1.bias                                            | UNEXPECTED | 
 model.embed_vision.pos_norm.weight                                           | UNEXPECTED | 
-model.embed_vision.patch_ln2.weight                                          | UNEXPECTED | 
+model.embed_vision.patch_ln1.weight                                          | UNEXPECTED | 
+model.embed_vision.patch_dense.bias                                          | UNEXPECTED | 
+model.embed_vision.patch_ln1.bias                                            | UNEXPECTED | 
 model.embed_vision.pos_norm.bias                                             | UNEXPECTED | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.k_norm.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_min       | MISSING    | 
+model.embed_vision.patch_dense.weight                                        | UNEXPECTED | 
+model.embed_vision.pos_embedding                                             | UNEXPECTED | 
+model.embed_vision.patch_ln2.weight                                          | UNEXPECTED | 
+model.embed_vision.patch_ln2.bias                                            | UNEXPECTED | 
 model.audio_tower.layers.{0...11}.feed_forward2.pre_layer_norm.weight        | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_max             | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.per_dim_scale                    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.input_min                 | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.o_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.depthwise_conv1d.weight            | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.gate_proj.linear.weight       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.post_attention_layernorm.weight   | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_max        | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_min       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_max        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.output_max                | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_min            | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_max              | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.output_min                | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer1.norm.weight               | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_min        | MISSING    | 
 model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_max               | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.pre_layer_norm.weight        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_min              | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.linear.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_post_attn.weight                      | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.linear.weight               | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.pre_layer_norm.weight              | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.input_min                   | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.conv_norm.weight                   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_min               | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.output_min                | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.v_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.post_layer_norm.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.linear.weight         | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.output_max                | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.output_min                  | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.pre_feedforward_layernorm.weight  | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.output_min                | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_min             | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_max            | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_max        | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_max       | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.o_proj.linear.weight    | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer1.conv.weight               | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.gate_proj.linear.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_min        | MISSING    | 
 model.vision_tower.encoder.layers.{0...15}.mlp.down_proj.linear.weight       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.q_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.post_layer_norm.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.pre_layer_norm.weight        | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_pre_attn.weight                       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.output_max                  | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.relative_k_proj.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.linear.weight         | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.input_min                   | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_min              | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.linear.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.depthwise_conv1d.weight            | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_out.weight                            | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.input_layernorm.weight            | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.input_min                 | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer0.conv.weight               | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_min        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.k_norm.weight           | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.post_attention_layernorm.weight   | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_max              | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.post_layer_norm.weight       | MISSING    | 
 model.vision_tower.encoder.layers.{0...15}.post_feedforward_layernorm.weight | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_min       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.q_norm.weight           | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.input_layernorm.weight            | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.k_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.output_max                  | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.relative_k_proj.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.input_max                   | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_pre_attn.weight                       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.post_layer_norm.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_out.weight                            | MISSING    | 
-model.audio_tower.subsample_conv_projection.input_proj_linear.weight         | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_max             | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.input_min                 | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_min        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.v_proj.linear.weight    | MISSING    | 
 model.vision_tower.encoder.layers.{0...15}.mlp.up_proj.linear.weight         | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.output_max                | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer0.norm.weight               | MISSING    | 
-model.vision_tower.patch_embedder.input_proj.weight                          | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.k_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_min       | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.q_norm.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_min            | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.input_max                   | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.pre_feedforward_layernorm.weight  | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.per_dim_scale                    | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.output_min                  | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_min             | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.pre_layer_norm.weight              | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_post_attn.weight                      | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_max        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.q_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.conv_norm.weight                   | MISSING    | 
 model.audio_tower.output_proj.bias                                           | MISSING    | 
-model.vision_tower.patch_embedder.position_embedding_table                   | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer0.conv.weight               | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.linear.weight               | MISSING    | 
 model.audio_tower.output_proj.weight                                         | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer1.conv.weight               | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_max            | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.input_min                 | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_min               | MISSING    | 
+model.vision_tower.patch_embedder.input_proj.weight                          | MISSING    | 
+model.vision_tower.patch_embedder.position_embedding_table                   | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer0.norm.weight               | MISSING    | 
+model.audio_tower.subsample_conv_projection.input_proj_linear.weight         | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer1.norm.weight               | MISSING    | 
 
 Notes:
 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
@@ -121,7 +121,7 @@ Notes:
   - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=557637&article.offset=130&articleLimit=10
   - https://computer.cnu.ac.kr/computer/edu/requirements.do?mode=view&articleNo=569099&article.offset=0&articleLimit=10
 
-답변 (39.2s, 600자):
+답변 (40.4s, 600자):
 안녕! 컴퓨터융합학부 졸업 요건에 대해 궁금하구나? 내가 알아봐 줄게!
 
 먼저 **교양 과목**이랑 관련해서 꼭 알아둬야 할 정보들이 있어.
@@ -145,7 +145,7 @@ Notes:
   - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=557726&article.offset=130&articleLimit=10
   - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=539107&article.offset=210&articleLimit=10
 
-답변 (67.9s, 984자):
+답변 (69.9s, 984자):
 안녕하세요! 충남대학교 학내 정보를 도와주는 AI 챗봇이에요. 😊
 
 찾으시는 장학금 관련 공지사항들을 정리해 드릴게요. 여러 개의 공지가 있어서 각각 내용을 확인해 보시면 좋을 것 같아요!
@@ -180,7 +180,7 @@ Notes:
   - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=578729&article.offset=20&articleLimit=10
   - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=537817&article.offset=220&articleLimit=10
 
-답변 (34.7s, 603자):
+답변 (35.7s, 603자):
 안녕하세요! 궁금하신 내용을 확인해 드릴게요. 😊
 
 먼저 **2026학년도 1학기** 기준으로 말씀드릴게요. 제공해주신 정보 중에서 가장 최근이자 정확한 소식은 다음과 같아요.
@@ -206,7 +206,7 @@ Notes:
   - https://dorm.cnu.ac.kr/html/kr/sub04/sub04_040301.html
   - https://www.cnucoop.co.kr/ezhtml2.php?html=canteen
 
-답변 (65.1s, 829자):
+답변 (67.0s, 829자):
 안녕하세요! 오늘은 2026년 6월 10일 수요일이네요. 😊
 
 문의하신 **제1학생회관**의 오늘 점심 식단 안내해 드릴게요!
@@ -253,7 +253,7 @@ Notes:
   - https://plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html
   - https://job.cnu.ac.kr/job/community/calender.do?mode=list&cYear=2026&month=3
 
-답변 (83.6s, 1034자):
+답변 (86.4s, 1034자):
 안녕하세요! 충남대학교 셔틀버스 시간표에 대해 안내해 드릴게요.
 
 현재 제공된 자료에는 두 가지 종류의 버스 운영 정보가 있어요. 확인하시려는 노선에 맞춰 확인해 보세요!
