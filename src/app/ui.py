@@ -29,8 +29,9 @@ _CSS = """
     --line: #E5E3DA;          /* 경계선 */
 }
 .gradio-container {
-    max-width: 740px !important;
+    max-width: 1080px !important;
     margin: 0 auto !important;
+    padding: 0 24px !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif !important;
     background: var(--ivory) !important;
     color: var(--ink) !important;
@@ -240,7 +241,7 @@ def create_app(
             """
         )
 
-        chatbot_kwargs = {"height": 520, "show_label": False, "container": False}
+        chatbot_kwargs = {"height": 640, "show_label": False, "container": False}
         if _NEED_TYPE_PARAM:
             chatbot_kwargs["type"] = "messages"
         chatbot = gr.Chatbot(
