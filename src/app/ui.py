@@ -273,15 +273,19 @@ def create_app(
                 return
 
             question = _extract_text(message)
-            context, urls = retriever.build_context(question)
 
+            # 입력을 즉시 채팅창에 남기고 입력창을 비운다 (검색·생성보다 먼저)
             if _USE_MESSAGES:
                 history = history + [
                     {"role": "user", "content": question},
-                    {"role": "assistant", "content": ""},
+                    {"role": "assistant", "content": "…"},
                 ]
             else:
-                history = history + [[question, ""]]
+                history = history + [[question, "…"]]
+            yield "", history
+
+            # RAG 검색 (이 동안 어시스턴트 말풍선엔 '…' 표시)
+            context, urls = retriever.build_context(question)
 
             if model is not None and tokenizer is not None:
                 # 멀티턴: 이전 대화 이력을 모델에 전달
