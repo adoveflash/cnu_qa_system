@@ -11,7 +11,7 @@ import threading
 from collections.abc import Iterator
 
 import torch
-from transformers import AutoTokenizer, TextIteratorStreamer
+from transformers import TextIteratorStreamer
 
 from src.model.base import load_model, load_tokenizer, _DEFAULT_MODEL
 from src.tools.definitions import execute_tool
