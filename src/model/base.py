@@ -10,7 +10,13 @@ from __future__ import annotations
 import os
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoTokenizer, BitsAndBytesConfig
+
+# Gemma 4는 gemma4_unified 타입 → 전용 클래스 필요
+try:
+    from transformers import Gemma4ForConditionalGeneration as _ModelClass
+except ImportError:
+    from transformers import AutoModelForImageTextToText as _ModelClass
 
 _DEFAULT_MODEL = os.environ.get("BASE_MODEL", "google/gemma-4-12b-it")
 _SEED = 42
@@ -45,20 +51,20 @@ def load_tokenizer(name: str = _DEFAULT_MODEL) -> AutoTokenizer:
     return tokenizer
 
 
-def load_model(name: str = _DEFAULT_MODEL) -> AutoModelForCausalLM:
+def load_model(name: str = _DEFAULT_MODEL):
     """4bit 양자화 모델을 로드한다.
 
     Args:
         name: HuggingFace 모델 이름
 
     Returns:
-        양자화된 CausalLM 모델
+        양자화된 모델
     """
     torch.manual_seed(_SEED)
-    model = AutoModelForCausalLM.from_pretrained(
+    model = _ModelClass.from_pretrained(
         name,
         quantization_config=get_bnb_config(),
         device_map="auto",
-        trust_remote_code=True,
+        torch_dtype=torch.bfloat16,
     )
     return model

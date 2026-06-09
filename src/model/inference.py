@@ -10,7 +10,7 @@ import threading
 from collections.abc import Iterator
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
+from transformers import AutoTokenizer, TextIteratorStreamer
 
 from src.model.base import load_model, load_tokenizer, _DEFAULT_MODEL
 from src.tools.definitions import execute_tool
@@ -145,7 +145,7 @@ def _resolve_context(
 
 def load_inference_model(
     model_name: str | None = None,
-) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
+) -> tuple:
     """추론용 모델과 토크나이저를 로드한다."""
     if model_name is None:
         model_name = _DEFAULT_MODEL
@@ -159,8 +159,8 @@ def generate_answer(
     question: str,
     context: str,
     urls: list[str],
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
+    model,
+    tokenizer,
     max_new_tokens: int = 1024,
     use_tools: bool = True,
 ) -> str:
@@ -208,8 +208,8 @@ def generate_answer_stream(
     question: str,
     context: str,
     urls: list[str],
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
+    model,
+    tokenizer,
     max_new_tokens: int = 1024,
     use_tools: bool = True,
     history: list[dict] | None = None,
