@@ -194,7 +194,7 @@ def generate_answer(
     messages = _build_messages(question, final_context, history=None)
 
     text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, thinking=False
+        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
     )
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
@@ -265,7 +265,7 @@ def generate_answer_stream(
     messages = _build_messages(question, final_context, history=history)
 
     text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, thinking=False
+        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
     )
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 

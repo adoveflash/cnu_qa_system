@@ -31,7 +31,7 @@ def get_bnb_config() -> BitsAndBytesConfig:
     return BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_compute_dtype=torch.float16,  # T4/RTX8000(Turing)은 bf16 텐서코어 없음 → float16
         bnb_4bit_use_double_quant=True,
     )
 
@@ -65,6 +65,6 @@ def load_model(name: str = _DEFAULT_MODEL):
         name,
         quantization_config=get_bnb_config(),
         device_map="auto",
-        torch_dtype=torch.bfloat16,
+        torch_dtype=torch.float16,  # Turing(T4/RTX8000) 호환 + 텐서코어 가속
     )
     return model
