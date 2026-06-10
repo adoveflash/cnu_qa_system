@@ -188,6 +188,8 @@ def chunk_all(
 
     with open(output_path, "w", encoding="utf-8") as out:
         for doc_idx, doc in enumerate(docs):
+            if doc_idx % 100 == 0:
+                print(f"  청킹 진행 {doc_idx}/{len(docs)}...", flush=True)
             text_chunks = chunk_document(doc["content"], tokenizer)
             for chunk_idx, chunk_text in enumerate(text_chunks):
                 # 청크 단위 중복 제거: 공백 정규화 후 해시 (여러 페이지에 반복되는
