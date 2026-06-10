@@ -1,5 +1,30 @@
 
 ==================================================
+[cnu_chunks] 2021 chunks
+==================================================
+source 분포:
+  plus_kr      685
+  computer     677
+  job          217
+  pharm        117
+  biz          74
+  chem         58
+  economics    53
+  math         52
+  dorm         48
+  cnucoop      22
+  portal       7
+  meal         5
+  mobileadmin  3
+  sugang_manual 2
+  manual       1
+청크 길이(자) min/med/max: 68 / 670 / 3705
+20자 미만 청크 : 0
+URL 없는 청크  : 0
+본문 완전중복  : 0
+title 없는 청크: 0
+
+==================================================
 [cnu_live] 11 chunks
 ==================================================
 source 분포:
@@ -11,131 +36,109 @@ URL 없는 청크  : 0
 본문 완전중복  : 0
 title 없는 청크: 0
 
-==================================================
-[cnu_chunks] 571 chunks
-==================================================
-source 분포:
-  job          117
-  pharm        117
-  biz          74
-  chem         58
-  computer     56
-  economics    53
-  math         52
-  plus_kr      20
-  cnucoop      19
-  mobileadmin  2
-  sugang_manual 2
-  manual       1
-청크 길이(자) min/med/max: 68 / 647 / 3705
-20자 미만 청크 : 0
-URL 없는 청크  : 0
-본문 완전중복  : 0
-title 없는 청크: 0
-
 → 검색 품질도 보려면: python rag_check.py --retrieve
 bge-m3 로드 중...
-Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 19156.55it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 13843.99it/s]
 [transformers] You are using a model of type `gemma4_unified` to instantiate a model of type `gemma4`. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
 Gemma 4 로드 중... (4bit, 수십 초~수 분)
 Loading weights:   0%|          | 0/668 [00:00<?, ?it/s]/workspace/cnu_qa_system/.venv/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
   torch._check_is_size(blocksize)
-Loading weights:   0%|          | 3/668 [00:00<02:36,  4.24it/s]Loading weights:   1%|          | 8/668 [00:00<00:57, 11.43it/s]Loading weights:   3%|▎         | 21/668 [00:00<00:19, 32.64it/s]Loading weights:   5%|▌         | 34/668 [00:01<00:12, 51.03it/s]Loading weights:   7%|▋         | 44/668 [00:01<00:10, 60.70it/s]Loading weights:   8%|▊         | 53/668 [00:01<00:09, 62.97it/s]Loading weights:   9%|▉         | 63/668 [00:01<00:08, 69.16it/s]Loading weights:  11%|█▏        | 76/668 [00:01<00:07, 81.08it/s]Loading weights:  13%|█▎        | 86/668 [00:01<00:07, 79.64it/s]Loading weights:  14%|█▍        | 95/668 [00:01<00:07, 76.57it/s]Loading weights:  16%|█▌        | 104/668 [00:01<00:07, 76.78it/s]Loading weights:  18%|█▊        | 117/668 [00:02<00:06, 86.35it/s]Loading weights:  19%|█▉        | 126/668 [00:02<00:06, 87.21it/s]Loading weights:  20%|██        | 135/668 [00:02<00:06, 79.14it/s]Loading weights:  22%|██▏       | 146/668 [00:02<00:06, 84.04it/s]Loading weights:  24%|██▍       | 159/668 [00:02<00:05, 92.61it/s]Loading weights:  25%|██▌       | 169/668 [00:02<00:05, 87.70it/s]Loading weights:  27%|██▋       | 178/668 [00:02<00:05, 82.48it/s]Loading weights:  28%|██▊       | 187/668 [00:02<00:05, 81.38it/s]Loading weights:  30%|██▉       | 200/668 [00:02<00:05, 90.79it/s]Loading weights:  31%|███▏      | 210/668 [00:03<00:05, 90.43it/s]Loading weights:  33%|███▎      | 220/668 [00:03<00:05, 86.08it/s]Loading weights:  34%|███▍      | 229/668 [00:03<00:05, 84.07it/s]Loading weights:  36%|███▌      | 242/668 [00:03<00:04, 92.62it/s]Loading weights:  38%|███▊      | 252/668 [00:03<00:04, 88.07it/s]Loading weights:  39%|███▉      | 261/668 [00:03<00:04, 82.91it/s]Loading weights:  40%|████      | 270/668 [00:03<00:04, 81.73it/s]Loading weights:  42%|████▏     | 283/668 [00:03<00:04, 91.05it/s]Loading weights:  44%|████▍     | 293/668 [00:04<00:04, 91.41it/s]Loading weights:  45%|████▌     | 303/668 [00:04<00:04, 86.91it/s]Loading weights:  47%|████▋     | 312/668 [00:04<00:04, 84.79it/s]Loading weights:  49%|████▊     | 325/668 [00:04<00:03, 93.13it/s]Loading weights:  50%|█████     | 335/668 [00:04<00:03, 88.22it/s]Loading weights:  51%|█████▏    | 344/668 [00:04<00:03, 82.98it/s]Loading weights:  53%|█████▎    | 353/668 [00:04<00:03, 81.73it/s]Loading weights:  55%|█████▍    | 366/668 [00:04<00:03, 90.78it/s]Loading weights:  56%|█████▋    | 376/668 [00:04<00:03, 91.03it/s]Loading weights:  58%|█████▊    | 386/668 [00:05<00:03, 86.81it/s]Loading weights:  59%|█████▉    | 395/668 [00:05<00:03, 83.61it/s]Loading weights:  61%|██████    | 408/668 [00:05<00:02, 92.14it/s]Loading weights:  63%|██████▎   | 418/668 [00:05<00:02, 87.43it/s]Loading weights:  64%|██████▍   | 427/668 [00:05<00:02, 82.42it/s]Loading weights:  65%|██████▌   | 436/668 [00:05<00:02, 81.23it/s]Loading weights:  67%|██████▋   | 449/668 [00:05<00:02, 90.54it/s]Loading weights:  69%|██████▊   | 459/668 [00:05<00:02, 90.84it/s]Loading weights:  70%|███████   | 469/668 [00:06<00:02, 86.74it/s]Loading weights:  72%|███████▏  | 478/668 [00:06<00:02, 84.43it/s]Loading weights:  74%|███████▎  | 491/668 [00:06<00:01, 92.47it/s]Loading weights:  75%|███████▌  | 501/668 [00:06<00:01, 87.67it/s]Loading weights:  76%|███████▋  | 510/668 [00:06<00:01, 82.71it/s]Loading weights:  78%|███████▊  | 519/668 [00:06<00:01, 81.49it/s]Loading weights:  80%|███████▉  | 532/668 [00:06<00:01, 90.77it/s]Loading weights:  81%|████████  | 542/668 [00:06<00:01, 90.97it/s]Loading weights:  83%|████████▎ | 552/668 [00:07<00:01, 86.61it/s]Loading weights:  84%|████████▍ | 561/668 [00:07<00:01, 84.51it/s]Loading weights:  86%|████████▌ | 574/668 [00:07<00:01, 92.86it/s]Loading weights:  87%|████████▋ | 584/668 [00:07<00:00, 88.12it/s]Loading weights:  89%|████████▉ | 593/668 [00:07<00:00, 82.27it/s]Loading weights:  90%|█████████ | 602/668 [00:07<00:00, 81.36it/s]Loading weights:  92%|█████████▏| 615/668 [00:07<00:00, 90.55it/s]Loading weights:  94%|█████████▎| 625/668 [00:07<00:00, 90.88it/s]Loading weights:  95%|█████████▌| 635/668 [00:07<00:00, 86.84it/s]Loading weights:  96%|█████████▋| 644/668 [00:08<00:00, 84.60it/s]Loading weights:  98%|█████████▊| 657/668 [00:08<00:00, 93.02it/s]Loading weights: 100%|█████████▉| 667/668 [00:08<00:00, 88.10it/s]Loading weights: 100%|██████████| 668/668 [00:08<00:00, 80.03it/s]
+Loading weights:   0%|          | 3/668 [00:00<02:36,  4.24it/s]Loading weights:   1%|          | 8/668 [00:00<00:58, 11.37it/s]Loading weights:   3%|▎         | 21/668 [00:00<00:19, 32.45it/s]Loading weights:   5%|▌         | 34/668 [00:01<00:12, 50.74it/s]Loading weights:   7%|▋         | 44/668 [00:01<00:10, 60.27it/s]Loading weights:   8%|▊         | 53/668 [00:01<00:09, 62.45it/s]Loading weights:   9%|▉         | 63/668 [00:01<00:08, 68.86it/s]Loading weights:  11%|█▏        | 76/668 [00:01<00:07, 80.61it/s]Loading weights:  13%|█▎        | 86/668 [00:01<00:07, 79.17it/s]Loading weights:  14%|█▍        | 95/668 [00:01<00:07, 76.26it/s]Loading weights:  16%|█▌        | 104/668 [00:01<00:07, 76.25it/s]Loading weights:  18%|█▊        | 117/668 [00:02<00:06, 85.31it/s]Loading weights:  19%|█▉        | 126/668 [00:02<00:06, 86.16it/s]Loading weights:  20%|██        | 135/668 [00:02<00:06, 78.25it/s]Loading weights:  22%|██▏       | 146/668 [00:02<00:06, 82.90it/s]Loading weights:  24%|██▍       | 159/668 [00:02<00:05, 91.09it/s]Loading weights:  25%|██▌       | 169/668 [00:02<00:05, 86.01it/s]Loading weights:  27%|██▋       | 178/668 [00:02<00:06, 80.63it/s]Loading weights:  28%|██▊       | 187/668 [00:02<00:06, 79.59it/s]Loading weights:  30%|██▉       | 200/668 [00:03<00:05, 88.64it/s]Loading weights:  31%|███▏      | 209/668 [00:03<00:05, 88.63it/s]Loading weights:  33%|███▎      | 218/668 [00:03<00:05, 79.67it/s]Loading weights:  34%|███▍      | 229/668 [00:03<00:05, 83.75it/s]Loading weights:  36%|███▌      | 242/668 [00:03<00:04, 91.40it/s]Loading weights:  38%|███▊      | 252/668 [00:03<00:04, 86.34it/s]Loading weights:  39%|███▉      | 261/668 [00:03<00:05, 80.75it/s]Loading weights:  40%|████      | 270/668 [00:03<00:05, 78.86it/s]Loading weights:  42%|████▏     | 283/668 [00:04<00:04, 87.89it/s]Loading weights:  44%|████▎     | 292/668 [00:04<00:04, 88.27it/s]Loading weights:  45%|████▌     | 301/668 [00:04<00:04, 79.87it/s]Loading weights:  47%|████▋     | 312/668 [00:04<00:04, 84.20it/s]Loading weights:  49%|████▊     | 325/668 [00:04<00:03, 92.07it/s]Loading weights:  50%|█████     | 335/668 [00:04<00:03, 87.01it/s]Loading weights:  51%|█████▏    | 344/668 [00:04<00:03, 81.70it/s]Loading weights:  53%|█████▎    | 353/668 [00:04<00:03, 79.83it/s]Loading weights:  55%|█████▍    | 366/668 [00:04<00:03, 88.74it/s]Loading weights:  56%|█████▌    | 375/668 [00:05<00:03, 88.94it/s]Loading weights:  57%|█████▋    | 384/668 [00:05<00:03, 80.41it/s]Loading weights:  59%|█████▉    | 395/668 [00:05<00:03, 84.55it/s]Loading weights:  61%|██████    | 408/668 [00:05<00:02, 92.41it/s]Loading weights:  63%|██████▎   | 418/668 [00:05<00:02, 87.29it/s]Loading weights:  64%|██████▍   | 427/668 [00:05<00:02, 81.91it/s]Loading weights:  65%|██████▌   | 436/668 [00:05<00:02, 79.94it/s]Loading weights:  67%|██████▋   | 449/668 [00:05<00:02, 89.11it/s]Loading weights:  69%|██████▊   | 458/668 [00:06<00:02, 89.21it/s]Loading weights:  70%|██████▉   | 467/668 [00:06<00:02, 80.60it/s]Loading weights:  72%|███████▏  | 478/668 [00:06<00:02, 84.84it/s]Loading weights:  74%|███████▎  | 491/668 [00:06<00:01, 92.88it/s]Loading weights:  75%|███████▌  | 501/668 [00:06<00:01, 87.53it/s]Loading weights:  76%|███████▋  | 510/668 [00:06<00:01, 82.31it/s]Loading weights:  78%|███████▊  | 519/668 [00:06<00:01, 80.93it/s]Loading weights:  80%|███████▉  | 532/668 [00:06<00:01, 88.85it/s]Loading weights:  81%|████████  | 541/668 [00:07<00:01, 89.07it/s]Loading weights:  82%|████████▏ | 550/668 [00:07<00:01, 80.43it/s]Loading weights:  84%|████████▍ | 561/668 [00:07<00:01, 84.89it/s]Loading weights:  86%|████████▌ | 574/668 [00:07<00:01, 92.92it/s]Loading weights:  87%|████████▋ | 584/668 [00:07<00:00, 87.85it/s]Loading weights:  89%|████████▉ | 593/668 [00:07<00:00, 82.51it/s]Loading weights:  90%|█████████ | 602/668 [00:07<00:00, 81.30it/s]Loading weights:  92%|█████████▏| 615/668 [00:07<00:00, 90.35it/s]Loading weights:  94%|█████████▎| 625/668 [00:07<00:00, 90.53it/s]Loading weights:  95%|█████████▌| 635/668 [00:08<00:00, 85.49it/s]Loading weights:  96%|█████████▋| 644/668 [00:08<00:00, 83.60it/s]Loading weights:  98%|█████████▊| 657/668 [00:08<00:00, 92.25it/s]Loading weights: 100%|█████████▉| 667/668 [00:08<00:00, 87.44it/s]Loading weights: 100%|██████████| 668/668 [00:08<00:00, 78.82it/s]
 [transformers] [1mGemma4ForConditionalGeneration LOAD REPORT[0m from: google/gemma-4-12b-it
 Key                                                                          | Status     | 
 -----------------------------------------------------------------------------+------------+-
-model.embed_vision.patch_dense.weight                                        | UNEXPECTED | 
-model.embed_vision.patch_ln2.bias                                            | UNEXPECTED | 
 model.embed_vision.patch_dense.bias                                          | UNEXPECTED | 
+model.embed_vision.patch_dense.weight                                        | UNEXPECTED | 
 model.embed_vision.pos_norm.bias                                             | UNEXPECTED | 
+model.embed_vision.pos_norm.weight                                           | UNEXPECTED | 
+model.embed_vision.patch_ln2.bias                                            | UNEXPECTED | 
+model.embed_vision.patch_ln1.bias                                            | UNEXPECTED | 
 model.embed_vision.pos_embedding                                             | UNEXPECTED | 
 model.embed_vision.patch_ln2.weight                                          | UNEXPECTED | 
 model.embed_vision.patch_ln1.weight                                          | UNEXPECTED | 
-model.embed_vision.pos_norm.weight                                           | UNEXPECTED | 
-model.embed_vision.patch_ln1.bias                                            | UNEXPECTED | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.input_min                 | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.post_layer_norm.weight       | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.v_proj.linear.weight    | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.down_proj.linear.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_out.weight                            | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.input_min                   | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_min               | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.gate_proj.linear.weight       | MISSING    | 
+model.audio_tower.subsample_conv_projection.input_proj_linear.weight         | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.output_max                  | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_pre_attn.weight                       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.linear.weight    | MISSING    | 
 model.vision_tower.encoder.layers.{0...15}.post_attention_layernorm.weight   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.output_min                  | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_post_attn.weight                      | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_max        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.input_layernorm.weight            | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_min              | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_max             | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_min       | MISSING    | 
+model.vision_tower.patch_embedder.input_proj.weight                          | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.o_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.linear.weight               | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.linear.weight    | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_max        | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_max       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.gate_proj.linear.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_min       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_min       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.post_layer_norm.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_max            | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.linear.weight               | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.output_min                | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.v_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.input_max                   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_max        | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_out.weight                            | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.linear.weight    | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.down_proj.linear.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_min             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_min       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.o_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.output_min                | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.up_proj.linear.weight         | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_min               | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.linear.weight         | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.post_layer_norm.weight       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.k_norm.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_max        | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.q_norm.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_min              | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.linear.weight           | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.input_layernorm.weight            | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.pre_layer_norm.weight              | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.output_min                | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.linear.weight    | MISSING    | 
 model.audio_tower.layers.{0...11}.self_attn.q_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_post_attn.weight                      | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_min       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_min            | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.depthwise_conv1d.weight            | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.input_min                   | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.pre_layer_norm.weight        | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_max               | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.relative_k_proj.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_pre_attn.weight                       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.per_dim_scale                    | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_max             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_max        | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.conv_norm.weight                   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.input_min                 | MISSING    | 
-model.vision_tower.patch_embedder.input_proj.weight                          | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.linear.weight    | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.pre_feedforward_layernorm.weight  | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_max              | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.k_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.output_max                | MISSING    | 
 model.audio_tower.layers.{0...11}.self_attn.k_proj.output_max                | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.pre_layer_norm.weight        | MISSING    | 
-model.audio_tower.output_proj.bias                                           | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_max       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.post_feedforward_layernorm.weight | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.output_max                | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.q_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.relative_k_proj.weight           | MISSING    | 
 model.audio_tower.subsample_conv_projection.layer1.norm.weight               | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer0.norm.weight               | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_min             | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.k_proj.linear.weight    | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.k_norm.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.output_min                  | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_max            | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_max              | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_min       | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.up_proj.linear.weight         | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.linear.weight         | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_max       | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.q_norm.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.output_max                  | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.pre_layer_norm.weight        | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_min            | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.linear.weight             | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.post_feedforward_layernorm.weight | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.conv_norm.weight                   | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.pre_feedforward_layernorm.weight  | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.q_proj.linear.weight    | MISSING    | 
 model.vision_tower.patch_embedder.position_embedding_table                   | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer1.conv.weight               | MISSING    | 
-model.audio_tower.subsample_conv_projection.input_proj_linear.weight         | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.input_min                 | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.per_dim_scale                    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.post_layer_norm.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.linear.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.depthwise_conv1d.weight            | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.input_max                   | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_max               | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.pre_layer_norm.weight        | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.pre_layer_norm.weight              | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.linear.weight    | MISSING    | 
 model.audio_tower.output_proj.weight                                         | MISSING    | 
+model.audio_tower.output_proj.bias                                           | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer1.conv.weight               | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer0.norm.weight               | MISSING    | 
 model.audio_tower.subsample_conv_projection.layer0.conv.weight               | MISSING    | 
 
 Notes:
@@ -150,20 +153,27 @@ Notes:
 ======================================================================
 [졸업요건] Q: 컴퓨터융합학부 졸업하려면 몇 학점 들어야 해?
 ======================================================================
-검색 출처 3개:
+검색 출처 5개:
   - https://computer.cnu.ac.kr/computer/edu/requirements.do
-  - https://computer.cnu.ac.kr/computer/edu/curriculum.do
-  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=588345&article.offset=0&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/edu/requirements.do?mode=view&articleNo=569099&article.offset=0&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/edu/requirements.do?mode=view&articleNo=285160&article.offset=0&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=539349&article.offset=210&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/edu/requirements.do?mode=view&articleNo=586423&article.offset=0&articleLimit=10
 
-답변 (27.3s, 436자):
-안녕하세요! 컴퓨터융합학부 졸업 학점에 대해 궁금하시군요?
+답변 (44.7s, 671자):
+안녕하세요! 컴퓨터융합학부 졸업 학점에 대해 궁금하시군요? 제가 바로 알려드릴게요.
 
-컴퓨터융합학부 및 인공지능학과 학사학위과정 졸업에 필요한 총 학점은 130학점이에요.
+컴퓨터융합학부 및 인공지능학과에서 학사학위를 받으려면 **총 130학점**을 취득해야 해요.
 
-추가로 알아두시면 좋은 정보들을 정리해 드릴게요.
-먼저, 교양과목은 졸업학점으로 최대 48학점까지 인정돼요. 다만 이건 2025학년도 교육과정 적용자 기준이고, 2013\~2024학년도 입학자라면 42학점까지 인정된다는 점 꼭 기억해 주세요!
+더불어 알아두면 좋은 정보들도 함께 정리해 드릴게요.
 
-그리고 전공·트랙 요건으로는 졸업 시까지 프로젝트 교과목을 최소 3개 이상 이수해야 해요. 더 자세하고 정확한 세부 졸업요건은 컴퓨터융합학부 졸업요건표를 통해서 확인하시는 게 가장 정확해요.
+먼저 교양 과목은 여러분이 언제 입학했는지에 따라 인정되는 학점이 달라져요.
+* **2025학년도 교육과정 적용자:** 교양 과목은 최대 **48학점**까지 인정돼요.
+* **2013학년도 \~ 2024학년도 입학자:** 교양 과목은 최대 **42학점**까지 인정된다는 점 꼭 기억해 주세요! 두 경우 모두 초과하면 졸업 학점으로 인정되지 않아요.
+
+그리고 전공·트랙 요건으로 **프로젝트 교과목을 졸업 시까지 최소 3개 이상** 이수해야 해요. 특히 프로젝트 교과목 중에서 **종합설계1, 2는 하나 이상 반드시 이수**해야 한다는 점도 잊지 마세요! (단, 부전공 이수자는 제외돼요.)
+
+세부적인 졸업 요건은 학교에서 제공하는 ‘컴퓨터융합학부 졸업요건표’를 통해 다시 한번 꼼꼼하게 확인해보시는 게 가장 정확할 거예요! 더 궁금한 게 있으면 언제든 물어봐 주세요.
 
 <div class="source-row"><span class="source-label">참고</span><span class="source-chip">💻 컴퓨터융합학부</span></div>
 
@@ -171,206 +181,226 @@ Notes:
 [학교 공지사항] Q: 장학금 신청 공지 알려줘
 ======================================================================
 검색 출처 4개:
-  - https://math.cnu.ac.kr/math/community/notice.do?mode=view&articleNo=585870
-  - https://biz.cnu.ac.kr/grad/board/notice2.do?mode=view&articleNo=583991
-  - https://biz.cnu.ac.kr/biz/community/notice.do?mode=view&articleNo=205877&article.offset=0&articleLimit=10
-  - https://economics.cnu.ac.kr
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=561451&article.offset=120&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=550697&article.offset=170&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=557726&article.offset=130&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=539107&article.offset=210&articleLimit=10
 
-답변 (89.1s, 1284자):
-안녕하세요! 우리 학교 장학금 신청이랑 관련된 공지사항들을 찾아봤는데, 몇 가지 중요한 정보들이 있네요. 어떤 종류의 장학금을 찾으시는지에 따라 확인해야 할 내용이 조금씩 달라요.
+답변 (69.0s, 948자):
+안녕하세요! 장학금 신청 관련해서 궁금하시군요? 제가 찾아본 내용을 정리해서 알려드릴게요.
 
-먼저 **대전인재육성 장학생**과 **대학원 대통령과학장학금**에 대한 모집 공고예요.
+현재 공유된 정보 중에서 **컴퓨터인공지능학부**와 관련된 주요 장학금 신청 공지는 다음과 같아요.
 
-**1. 2026년 상반기 대전인재육성 장학생 선발 안내**
-* **선발 분야:** 과학 장학금, 꿈돌이 장학금, 재능 장학금 이렇게 3개 분야로 나누어져 있어요.
-* **접수 기간:** 2026. 4. 8.(수) \~ 5. 29.(금) 18:00까지였어요.
-* **접수 기관:** 온라인으로 진행돼요.
- * 과학, 재능 장학금: 대전청년포털(www.daejeonyouthportal.kr)
- * 꿈돌이 장학금: 담당자 이메일 제출([이메일])
-* **문의 부서:** 대전청년내일재단 인재육성팀(☏ [전화번호]∼2, 8426, 8474)
+먼저, **2025학년도 1학기 교내장학생 선발**과 관련해서는 아래 내용을 꼭 확인해 주세요.
 
-**2. 2026년 한국장학재단 대학원 대통령과학장학금 신규장학생 선발 안내**
-* **신청 기간:** 2026. 4. 9.(목) 10:00 \~ 4. 22.(수) 18:00
-* **신청 절차:** 한국장학재단 온라인 신청(재단 누리집)
-* **문의처:** 한국장학재단 AI우수장학부([전화번호])
+* **접수 방법:** 우선 어떤 장학금을 신청할지 이메일로 알리고, 이후에 장학서류와 증빙서류를 준비해서 이메일로 보내야 해요. 특히 외국의 우수 장학금을 포함해 보훈, 새터민, 학석사 연계과정 합격자는 사인이 빠지지 않도록 주의해서 보내주셔야 합니다.
+* **중요 일정:** 메일 발송 후 1시간 이내에 회신이 없으면 학과(821-6651)로 직접 전화해서 확인받아야 해요. 또한, 외국어우수 장학금 원본은 2월 13일(목) 오전 10시까지 학과 사무실로 제출해야 하며, 원본을 내지 않으면 장학생 선발이 불가능해요.
+* **주의사항:** 모든 장학은 2025학년도 1학기가 8개학기가 되는, 현재 7개 학기 이하 이수자 대상이에요. 그리고 장학생 선발 중에 휴학하시면 안 돼요! 자칫하면 장학금 탈락으로 이어질 수 있거든요.
 
-그 외에도 **경영학부** 기준으로 **교내 장학생 선발 자격조건 및 FAQ** 내용을 보면 이런 점을 주의해야 해요.
+그 외에도 이런 공지들이 있었어요.
 
-* **성적 장학금과 휴학:** 성적 장학금을 받고 휴학하려면 등록금을 납부한 후에 휴학을 해야 해요. 하지만 이때 꼭 기억해야 할 건, 그렇게 휴학했다가 돌아올 때는 ‘등록유효 복학생’이 되어서 복학하는 학기의 교내 장학금 선발 대상에서는 제외된다는 점이에요. 특히 외국어성적우수 장학 같은 특별 장학금 신청도 불가능하니 조심해야 해요.
-* **이미 휴학을 했다면:** 아직 등록금을 내기 전에 휴학을 하셨다면, 일단 휴학 취소를 먼저 하시고 나서 등록금을 납부한 뒤에 다시 휴학 신청을 하시면 돼요. 만약 군 입대를 위한 휴학이라면 학사지원과에 직접 방문해서 취소해야 하고, 재신청할 때 '입영통지서'가 꼭 필요해요.
+* **2025년 2학기 국가근로 장학금 1차 신청:** 5.23(금) \~ 6.23(월) 18시까지였어요.
+* **2025학년도 2학기 교내장학생 선발:** 이건 이전 학기에 진행되었던 내용이라 지금 시점에서는 참고만 해주시면 될 것 같아요.
+* **2학기 장학 추가 선발(국가유공자 및 영탑장학금):** 9.11(목)까지이었어요.
 
-혹시 더 궁금하거나 본인이 속한 과의 특수한 조건이 필요한가요? 말씀해 주시면 더 자세히 알아봐 드릴게요!
+혹시 더 자세하게 알고 싶은 부분이나 특정 장학금 종류가 있다면 다시 말씀해 주세요! 도와드릴게요.
 
-<div class="source-row"><span class="source-label">참고</span><span class="source-chip">🔢 수학과</span> <span class="source-chip">📊 경영학부</span> <span class="source-chip">📈 경제학과</span></div>
+<div class="source-row"><span class="source-label">참고</span><span class="source-chip">💻 컴퓨터융합학부</span></div>
 
 ======================================================================
 [학사일정] Q: 이번 학기 수강신청 정정 기간 언제야?
 ======================================================================
 검색 출처 5개:
-  - https://chem.cnu.ac.kr/chem/undergrad/notice.do?mode=view&articleNo=588607
-  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=588441&article.offset=0&articleLimit=10
-  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=579610&article.offset=0&articleLimit=10
-  - https://biz.cnu.ac.kr/biz/community/notice.do?mode=view&articleNo=578942&article.offset=0&articleLimit=10
-  - https://economics.cnu.ac.kr
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=538935&article.offset=210&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=557604&article.offset=140&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=576214&article.offset=50&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=578729&article.offset=20&articleLimit=10
+  - https://computer.cnu.ac.kr/computer/notice/bachelor.do?mode=view&articleNo=537817&article.offset=220&articleLimit=10
 
-답변 (15.0s, 417자):
-안녕하세요! 궁금하신 내용을 확인해 드릴게요. 😊
+답변 (25.2s, 415자):
+안녕하세요! 궁금하신 내용을 바로 알려드릴게요.
 
-현재 제공된 정보에는 **'이번 학기(2026학년도 1학기)'**의 수강신청 정정 기간에 대한 내용은 포함되어 있지 않아요. 대신 하계 계절학기의 수강신청 취소 기간이나 기타 학사의 관련 정보들 위주로 안내되어 있네요.
+컴퓨터인공지능학부 기준으로 **1학기 수강신청 확인 및 변경 기간**은 **3.4(화) \~ 3.10.(월) 18시까지**예요.
 
-혹시 제가 더 도와드릴 부분이 있을까요? 편하게 말씀해 주세요!
+혹시 특별한 사유 없이 정원 증원이 필요한 경우에는 조정이 어려울 수 있고, 전공 필수 교과목을 수강신청하지 못했거나 혹은 4학년인데 여석이 남은 교과목을 수강신청 해서 졸업 전공 학점이 부족한 학생처럼 특별한 사유가 있는 학생만 3월 4일(화)에 학과사무실로 직접 방문해야 해요. 이때 문의 전화는 가능하지만 메일 상담은 진행하지 않는다고 하니 꼭 참고해 주세요!
 
-<div class="source-row"><span class="source-label">참고</span><span class="source-chip">🧪 화학과</span> <span class="source-chip">💻 컴퓨터융합학부</span> <span class="source-chip">📊 경영학부</span> <span class="source-chip">📈 경제학과</span></div>
+<div class="source-row"><span class="source-label">참고</span><span class="source-chip">💻 컴퓨터융합학부</span></div>
 
 ======================================================================
 [식단 안내] Q: 오늘 학생회관 식당 점심 메뉴 뭐야?
 ======================================================================
-검색 출처 2개:
-  - https://www.cnucoop.co.kr/ezhtml2.php?html=canteen
+검색 출처 3개:
   - https://mobileadmin.cnu.ac.kr/food/index.jsp
+  - https://dorm.cnu.ac.kr/html/kr/sub04/sub04_040301.html
+  - https://www.cnucoop.co.kr/ezhtml2.php?html=canteen
 
-답변 (46.4s, 703자):
-안녕하세요! 오늘은 2026년 6월 10일 수요일이네요. 😊
+답변 (62.2s, 708자):
+안녕하세요! 오늘 제공되는 제1학생회관 점심 식단 안내해 드릴게요.
 
-문의하신 오늘의 **학생회관** 내 식당별 점심 메뉴와 관련 정보 안내해 드릴게요! 각 건물 위치에 따라 이용하시는 곳이 다를 수 있으니 확인해 보세요.
+**라면&간식 (10:00\~14:00)**
+* 라면: 2,500원
+* 떡만두라면: 3,000원
+* 해장라면: 3,000원
+* 치즈라면: 3,000원
+* 부대라면: 4,000원
+* 김밥: 3,000원
+* 공기밥: 500원
 
-먼저, 제공된 자료에는 여러 개의 학생회관이 있어서 각각 나누어 설명해 드려요.
+**양식 (11:00\~14:00)**
+* 등심왕돈까스: 5,500원
+* 눈꽃치즈돈까스: 6,000원
+* 파채돈까스: 6,000원
+* 돈까스&파스타: 6,500원
+* 닭다리살스테이크: 6,000원
+* 파닭스테이크: 6,500원
+* 베이컨로제파스타: 5,800원
 
-* **1학생회관**: 여기는 **푸드코트**가 있는데, **평일 09:00\~19:00**, **토요일 11:00\~19:00**까지 운영돼요. (**공휴일 운영 안 함**) - *메뉴는 별도로 안내되어 있지 않아요.*
-* **2학생회관**: **학생식당**(취업지원회관 1층 E5)에서는 **11:30\~14:00**까지 **백반/양식/특식**을 제공해요. (**토, 공휴일 운영 안 함**)
-* **3학생회관**: **학생식당**(제3후생관 1층 N-7)에서는 **11:30\~14:00**까지 **카페테리아/특식**을 제공해요. (**토, 공휴일 운영 안 함**)
+**스낵 (11:00\~14:30)**
+* 버터김치별달알밥: 5,600원
+* 버터김치치즈알밥: 6,500원
+* 치즈 토핑: 1,000원
+* 소불고기 토핑: 2,000원
+* 떡갈비 토핑: 1,000원
+* 감자고로케 토핑: 1,000원
+* 날치알 토핑: 1,000원
+* 구운계란 토핑: 500원
+* 컵버터감자칩: 2,000원
 
-혹시 제가 말씀드린 장소 중에 가시고자 하는 곳이 있나요? 더 궁금한 점이 있다면 언제든 편하게 물어봐 주세요!
+더 궁금한 게 있으면 언제든 물어봐 주세요!
 
-<div class="source-row"><span class="source-label">참고</span><span class="source-chip">🍽️ 생활협동조합</span> <span class="source-chip">🍱 충남대 식단</span></div>
+<div class="source-row"><span class="source-label">참고</span><span class="source-chip">🍱 충남대 식단</span> <span class="source-chip">🔗 dorm</span> <span class="source-chip">🍽️ 생활협동조합</span></div>
 
 ======================================================================
 [통학/셔틀버스] Q: 셔틀버스 시간표 알려줘
 ======================================================================
-검색 출처 2개:
+검색 출처 1개:
   - https://plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html
-  - https://www.cnucoop.co.kr/ezhtml2.php?html=canteen
 
-답변 (47.2s, 621자):
+답변 (63.9s, 728자):
 안녕하세요! 충남대학교 셔틀버스 시간표에 대해 안내해 드릴게요.
 
-먼저 **학교셔틀버스** 운영 기준은 학기 중 평일 주간이며, 평일 야간, 주말, 공휴일, 방학, 그리고 수학능력시험일(10시 이전)에는 운영하지 않아요. 또한 사고나 행사 상황에 따라 시간이 변동될 수 있고, 약 5분 정도 차이가 생길 수 있으니 미리 대기하시는 게 좋아요.
+**2026학년도 학교셔틀버스 운영 안내**에 따른 시간표는 다음과 같아요.
 
-문의하신 셔틀버스는 크게 두 가지 노선으로 나누어져 있어요.
+**[셔틀버스 운행 시간표]**
+* **교내 순환 (대덕캠퍼스 내)**
+ * **오전:** 08:20 (월평역) 등교 / 08:30, 09:30, 09:40, 10:30, 11:30
+ * **오후:** 13:30, 14:30, 15:30, 16:30, 17:30
 
-**1. 교내 순환 (대덕캠퍼스 내)**
-* **오전:** 08:20 (월평역) 등교 / 08:30, 09:30, 09:40, 10:30, 11:30, 13:30, 14:30, 15:30, 16:30, 17:30
+* **캠퍼스 순환 (대덕캠퍼스 ↔ 보운캠퍼스)**
+ * **오전:** 08:10 (출발, 골프연습장) / 08:50 (회차 보운캠퍼스)
+ * **오후:** 미운영
 
-**2. 캠퍼스 순환 (대덕캠퍼스 ↔ 보운캠퍼스)**
-* **오전:** 08:10 (출발, 골프연습장) / 08:50 (회차 보운캠퍼스)
-* **오후:** 미운영
+이 외에도 **캠퍼스 순환(대덕↔보운)** 노선의 상세 경로는 아래와 같이 운영돼요.
+* **경로:** ①골프연습장 출발(08:10) → ②중앙도 서관(08:11) → ③산학연교육연구관(08:12) → ④충남대학교입구 버스정류장(홈 플러스유성점방면)(08:13) → ⑤월평역(08:15) → ⑥보운캠퍼스(회차, 08:50) → ⑦다솔아파트 건너편 → 제2학생회관 → 중앙도서관 → 골프연습장 도착
+* **운행 횟수:** 1회(회차)
+* **운영 기간:** 학기 중 운영(총 150일)
 
-더 궁금한 점이 있다면 언제든 편하게 물어봐 주세요!
+더 궁금한 점이 있으면 언제든 물어봐 주세요!
 
-<div class="source-row"><span class="source-label">참고</span><span class="source-chip">🏫 충남대 공식</span> <span class="source-chip">🍽️ 생활협동조합</span></div>
+<div class="source-row"><span class="source-label">참고</span><span class="source-chip">🏫 충남대 공식</span></div>
 bge-m3 로드 중...
-Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 20259.84it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 24054.28it/s]
 [transformers] You are using a model of type `gemma4_unified` to instantiate a model of type `gemma4`. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
 Gemma 4 로드 중...
 Loading weights:   0%|          | 0/668 [00:00<?, ?it/s]/workspace/cnu_qa_system/.venv/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
   torch._check_is_size(blocksize)
-Loading weights:   0%|          | 3/668 [00:00<02:37,  4.23it/s]Loading weights:   1%|          | 8/668 [00:00<00:58, 11.37it/s]Loading weights:   3%|▎         | 21/668 [00:00<00:19, 32.35it/s]Loading weights:   5%|▌         | 34/668 [00:01<00:12, 50.45it/s]Loading weights:   6%|▋         | 43/668 [00:01<00:10, 58.97it/s]Loading weights:   8%|▊         | 52/668 [00:01<00:10, 60.05it/s]Loading weights:   9%|▉         | 63/668 [00:01<00:08, 69.13it/s]Loading weights:  11%|█▏        | 76/668 [00:01<00:07, 80.54it/s]Loading weights:  13%|█▎        | 86/668 [00:01<00:07, 78.98it/s]Loading weights:  14%|█▍        | 95/668 [00:01<00:07, 76.00it/s]Loading weights:  16%|█▌        | 104/668 [00:01<00:07, 76.14it/s]Loading weights:  18%|█▊        | 117/668 [00:02<00:06, 85.64it/s]Loading weights:  19%|█▉        | 126/668 [00:02<00:06, 86.27it/s]Loading weights:  20%|██        | 135/668 [00:02<00:06, 78.28it/s]Loading weights:  22%|██▏       | 146/668 [00:02<00:06, 82.98it/s]Loading weights:  24%|██▍       | 159/668 [00:02<00:05, 91.40it/s]Loading weights:  25%|██▌       | 169/668 [00:02<00:05, 86.68it/s]Loading weights:  27%|██▋       | 178/668 [00:02<00:06, 81.60it/s]Loading weights:  28%|██▊       | 187/668 [00:02<00:06, 80.06it/s]Loading weights:  30%|██▉       | 200/668 [00:03<00:05, 89.22it/s]Loading weights:  31%|███▏      | 210/668 [00:03<00:05, 89.49it/s]Loading weights:  33%|███▎      | 220/668 [00:03<00:05, 84.82it/s]Loading weights:  34%|███▍      | 229/668 [00:03<00:05, 82.95it/s]Loading weights:  36%|███▌      | 242/668 [00:03<00:04, 91.28it/s]Loading weights:  38%|███▊      | 252/668 [00:03<00:04, 86.74it/s]Loading weights:  39%|███▉      | 261/668 [00:03<00:04, 81.73it/s]Loading weights:  40%|████      | 270/668 [00:03<00:04, 80.68it/s]Loading weights:  42%|████▏     | 283/668 [00:03<00:04, 89.83it/s]Loading weights:  44%|████▍     | 293/668 [00:04<00:04, 90.21it/s]Loading weights:  45%|████▌     | 303/668 [00:04<00:04, 86.02it/s]Loading weights:  47%|████▋     | 312/668 [00:04<00:04, 83.64it/s]Loading weights:  49%|████▊     | 325/668 [00:04<00:03, 91.66it/s]Loading weights:  50%|█████     | 335/668 [00:04<00:03, 86.84it/s]Loading weights:  51%|█████▏    | 344/668 [00:04<00:03, 81.59it/s]Loading weights:  53%|█████▎    | 353/668 [00:04<00:03, 80.33it/s]Loading weights:  55%|█████▍    | 366/668 [00:04<00:03, 89.27it/s]Loading weights:  56%|█████▌    | 375/668 [00:05<00:03, 89.32it/s]Loading weights:  57%|█████▋    | 384/668 [00:05<00:03, 80.49it/s]Loading weights:  59%|█████▉    | 395/668 [00:05<00:03, 84.41it/s]Loading weights:  61%|██████    | 408/668 [00:05<00:02, 92.17it/s]Loading weights:  63%|██████▎   | 418/668 [00:05<00:02, 85.95it/s]Loading weights:  64%|██████▍   | 427/668 [00:05<00:02, 80.91it/s]Loading weights:  65%|██████▌   | 436/668 [00:05<00:02, 79.60it/s]Loading weights:  67%|██████▋   | 449/668 [00:05<00:02, 88.10it/s]Loading weights:  69%|██████▊   | 458/668 [00:06<00:02, 88.41it/s]Loading weights:  70%|██████▉   | 467/668 [00:06<00:02, 80.23it/s]Loading weights:  72%|███████▏  | 478/668 [00:06<00:02, 84.40it/s]Loading weights:  74%|███████▎  | 491/668 [00:06<00:01, 92.40it/s]Loading weights:  75%|███████▌  | 501/668 [00:06<00:01, 87.18it/s]Loading weights:  76%|███████▋  | 510/668 [00:06<00:01, 81.99it/s]Loading weights:  78%|███████▊  | 519/668 [00:06<00:01, 80.61it/s]Loading weights:  80%|███████▉  | 532/668 [00:06<00:01, 89.54it/s]Loading weights:  81%|████████  | 542/668 [00:07<00:01, 89.74it/s]Loading weights:  83%|████████▎ | 552/668 [00:07<00:01, 85.62it/s]Loading weights:  84%|████████▍ | 561/668 [00:07<00:01, 83.65it/s]Loading weights:  86%|████████▌ | 574/668 [00:07<00:01, 91.90it/s]Loading weights:  87%|████████▋ | 584/668 [00:07<00:00, 87.08it/s]Loading weights:  89%|████████▉ | 593/668 [00:07<00:00, 81.96it/s]Loading weights:  90%|█████████ | 602/668 [00:07<00:00, 79.72it/s]Loading weights:  92%|█████████▏| 615/668 [00:07<00:00, 88.72it/s]Loading weights:  93%|█████████▎| 624/668 [00:07<00:00, 89.00it/s]Loading weights:  95%|█████████▍| 633/668 [00:08<00:00, 80.48it/s]Loading weights:  96%|█████████▋| 644/668 [00:08<00:00, 84.62it/s]Loading weights:  98%|█████████▊| 657/668 [00:08<00:00, 92.52it/s]Loading weights: 100%|█████████▉| 667/668 [00:08<00:00, 87.33it/s]Loading weights: 100%|██████████| 668/668 [00:08<00:00, 78.86it/s]
+Loading weights:   0%|          | 3/668 [00:00<02:34,  4.29it/s]Loading weights:   1%|          | 8/668 [00:00<00:57, 11.56it/s]Loading weights:   3%|▎         | 21/668 [00:00<00:19, 32.93it/s]Loading weights:   5%|▌         | 34/668 [00:01<00:12, 51.22it/s]Loading weights:   7%|▋         | 44/668 [00:01<00:10, 60.69it/s]Loading weights:   8%|▊         | 53/668 [00:01<00:09, 62.78it/s]Loading weights:   9%|▉         | 63/668 [00:01<00:08, 68.85it/s]Loading weights:  11%|█▏        | 76/668 [00:01<00:07, 80.53it/s]Loading weights:  13%|█▎        | 86/668 [00:01<00:07, 78.95it/s]Loading weights:  14%|█▍        | 95/668 [00:01<00:07, 75.72it/s]Loading weights:  16%|█▌        | 104/668 [00:01<00:07, 75.93it/s]Loading weights:  18%|█▊        | 117/668 [00:02<00:06, 85.51it/s]Loading weights:  19%|█▉        | 126/668 [00:02<00:06, 86.17it/s]Loading weights:  20%|██        | 135/668 [00:02<00:06, 78.04it/s]Loading weights:  22%|██▏       | 146/668 [00:02<00:06, 82.52it/s]Loading weights:  24%|██▍       | 159/668 [00:02<00:05, 90.82it/s]Loading weights:  25%|██▌       | 169/668 [00:02<00:05, 85.75it/s]Loading weights:  27%|██▋       | 178/668 [00:02<00:06, 80.44it/s]Loading weights:  28%|██▊       | 187/668 [00:02<00:06, 79.43it/s]Loading weights:  30%|██▉       | 200/668 [00:03<00:05, 88.46it/s]Loading weights:  31%|███▏      | 209/668 [00:03<00:05, 88.02it/s]Loading weights:  33%|███▎      | 218/668 [00:03<00:05, 79.39it/s]Loading weights:  34%|███▍      | 229/668 [00:03<00:05, 83.56it/s]Loading weights:  36%|███▌      | 242/668 [00:03<00:04, 91.36it/s]Loading weights:  38%|███▊      | 252/668 [00:03<00:04, 86.28it/s]Loading weights:  39%|███▉      | 261/668 [00:03<00:05, 80.73it/s]Loading weights:  40%|████      | 270/668 [00:03<00:04, 79.63it/s]Loading weights:  42%|████▏     | 283/668 [00:03<00:04, 88.60it/s]Loading weights:  44%|████▎     | 292/668 [00:04<00:04, 88.78it/s]Loading weights:  45%|████▌     | 301/668 [00:04<00:04, 80.05it/s]Loading weights:  47%|████▋     | 312/668 [00:04<00:04, 84.25it/s]Loading weights:  49%|████▊     | 325/668 [00:04<00:03, 92.14it/s]Loading weights:  50%|█████     | 335/668 [00:04<00:03, 86.99it/s]Loading weights:  51%|█████▏    | 344/668 [00:04<00:03, 81.64it/s]Loading weights:  53%|█████▎    | 353/668 [00:04<00:03, 80.40it/s]Loading weights:  55%|█████▍    | 366/668 [00:04<00:03, 89.35it/s]Loading weights:  56%|█████▋    | 376/668 [00:05<00:03, 89.60it/s]Loading weights:  58%|█████▊    | 386/668 [00:05<00:03, 84.69it/s]Loading weights:  59%|█████▉    | 395/668 [00:05<00:03, 82.65it/s]Loading weights:  61%|██████    | 408/668 [00:05<00:02, 90.97it/s]Loading weights:  63%|██████▎   | 418/668 [00:05<00:02, 86.17it/s]Loading weights:  64%|██████▍   | 427/668 [00:05<00:02, 81.02it/s]Loading weights:  65%|██████▌   | 436/668 [00:05<00:02, 80.01it/s]Loading weights:  67%|██████▋   | 449/668 [00:05<00:02, 89.14it/s]Loading weights:  69%|██████▊   | 458/668 [00:06<00:02, 89.16it/s]Loading weights:  70%|██████▉   | 467/668 [00:06<00:02, 80.51it/s]Loading weights:  72%|███████▏  | 478/668 [00:06<00:02, 84.78it/s]Loading weights:  74%|███████▎  | 491/668 [00:06<00:01, 92.78it/s]Loading weights:  75%|███████▌  | 501/668 [00:06<00:01, 87.35it/s]Loading weights:  76%|███████▋  | 510/668 [00:06<00:01, 81.83it/s]Loading weights:  78%|███████▊  | 519/668 [00:06<00:01, 80.66it/s]Loading weights:  80%|███████▉  | 532/668 [00:06<00:01, 89.76it/s]Loading weights:  81%|████████  | 542/668 [00:07<00:01, 89.95it/s]Loading weights:  83%|████████▎ | 552/668 [00:07<00:01, 85.65it/s]Loading weights:  84%|████████▍ | 561/668 [00:07<00:01, 83.40it/s]Loading weights:  86%|████████▌ | 574/668 [00:07<00:01, 91.84it/s]Loading weights:  87%|████████▋ | 584/668 [00:07<00:00, 87.07it/s]Loading weights:  89%|████████▉ | 593/668 [00:07<00:00, 81.77it/s]Loading weights:  90%|█████████ | 602/668 [00:07<00:00, 80.70it/s]Loading weights:  92%|█████████▏| 615/668 [00:07<00:00, 89.76it/s]Loading weights:  94%|█████████▎| 625/668 [00:07<00:00, 90.02it/s]Loading weights:  95%|█████████▌| 635/668 [00:08<00:00, 85.82it/s]Loading weights:  96%|█████████▋| 644/668 [00:08<00:00, 83.62it/s]Loading weights:  98%|█████████▊| 657/668 [00:08<00:00, 91.31it/s]Loading weights: 100%|█████████▉| 667/668 [00:08<00:00, 84.77it/s]Loading weights: 100%|██████████| 668/668 [00:08<00:00, 78.79it/s]
 [transformers] [1mGemma4ForConditionalGeneration LOAD REPORT[0m from: google/gemma-4-12b-it
 Key                                                                          | Status     | 
 -----------------------------------------------------------------------------+------------+-
 model.embed_vision.patch_ln1.bias                                            | UNEXPECTED | 
-model.embed_vision.pos_norm.bias                                             | UNEXPECTED | 
-model.embed_vision.patch_dense.weight                                        | UNEXPECTED | 
-model.embed_vision.pos_embedding                                             | UNEXPECTED | 
+model.embed_vision.patch_dense.bias                                          | UNEXPECTED | 
 model.embed_vision.pos_norm.weight                                           | UNEXPECTED | 
+model.embed_vision.patch_dense.weight                                        | UNEXPECTED | 
+model.embed_vision.patch_ln2.bias                                            | UNEXPECTED | 
+model.embed_vision.pos_norm.bias                                             | UNEXPECTED | 
 model.embed_vision.patch_ln1.weight                                          | UNEXPECTED | 
 model.embed_vision.patch_ln2.weight                                          | UNEXPECTED | 
-model.embed_vision.patch_dense.bias                                          | UNEXPECTED | 
-model.embed_vision.patch_ln2.bias                                            | UNEXPECTED | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_min               | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_max              | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.linear.weight    | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.up_proj.linear.weight         | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.output_max                | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_min       | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.gate_proj.linear.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.input_max                   | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.q_norm.weight           | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.o_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.output_max                | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.pre_layer_norm.weight        | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.k_norm.weight           | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.k_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_max        | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.v_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.depthwise_conv1d.weight            | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.output_min                | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.linear.weight         | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.pre_feedforward_layernorm.weight  | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_max        | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.post_attention_layernorm.weight   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.output_min                  | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.self_attn.q_proj.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_min              | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.pre_layer_norm.weight        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_post_attn.weight                      | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.post_feedforward_layernorm.weight | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_min       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_max             | MISSING    | 
+model.embed_vision.pos_embedding                                             | UNEXPECTED | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_max        | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_min       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.input_min                   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.output_min                | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.linear.weight             | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_min            | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.input_layernorm.weight            | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.input_max                 | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.linear.weight           | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.post_layer_norm.weight       | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer0.norm.weight               | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.q_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.output_min                | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_out.weight                            | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_min        | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.linear.weight               | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_min               | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_max               | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.pre_layer_norm.weight        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.k_proj.linear.weight    | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.o_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.per_dim_scale                    | MISSING    | 
 model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_min             | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_min        | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer0.conv.weight               | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.conv_norm.weight                   | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.v_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.input_max                   | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_min              | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_min        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.up_proj.linear.weight         | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.k_norm.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.output_min                  | MISSING    | 
 model.audio_tower.layers.{0...11}.self_attn.relative_k_proj.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.linear.weight    | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.input_layernorm.weight            | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.linear.weight           | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_end.output_max              | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_min        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.post_feedforward_layernorm.weight | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.linear.weight             | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.pre_layer_norm.weight              | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.post_layer_norm.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.pre_layer_norm.weight        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.input_max             | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.input_min                   | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.input_min                 | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.q_norm.weight           | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.gate_proj.linear.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.input_min                 | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_max       | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_min            | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_post_attn.weight                      | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.input_min                 | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.input_max                 | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.v_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_min        | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_pre_attn.weight                       | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_min       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.input_max                 | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.self_attn.q_proj.linear.weight    | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.depthwise_conv1d.weight            | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_2.input_max        | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.input_max        | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.pre_feedforward_layernorm.weight  | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.output_max                  | MISSING    | 
 model.audio_tower.layers.{0...11}.lconv1d.linear_start.output_max            | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.post_attention_layernorm.weight   | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.output_min                | MISSING    | 
+model.audio_tower.layers.{0...11}.feed_forward1.post_layer_norm.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.norm_out.weight                            | MISSING    | 
+model.vision_tower.encoder.layers.{0...15}.mlp.down_proj.linear.weight       | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.q_proj.output_min                | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.output_min       | MISSING    | 
 model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_1.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.per_dim_scale                    | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.k_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.norm_pre_attn.weight                       | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.input_max        | MISSING    | 
-model.vision_tower.encoder.layers.{0...15}.mlp.down_proj.linear.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.conv_norm.weight                   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.post.output_max                  | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.output_max       | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.linear_end.input_max               | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_max        | MISSING    | 
-model.vision_tower.patch_embedder.position_embedding_table                   | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.input_min                 | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.post_layer_norm.weight       | MISSING    | 
-model.audio_tower.layers.{0...11}.self_attn.v_proj.output_max                | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer0.conv.weight               | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward2.ffw_layer_2.linear.weight    | MISSING    | 
-model.audio_tower.layers.{0...11}.lconv1d.pre_layer_norm.weight              | MISSING    | 
-model.audio_tower.layers.{0...11}.feed_forward1.ffw_layer_1.input_min        | MISSING    | 
-model.audio_tower.subsample_conv_projection.input_proj_linear.weight         | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.output_max                | MISSING    | 
+model.audio_tower.layers.{0...11}.lconv1d.linear_start.linear.weight         | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.k_proj.linear.weight             | MISSING    | 
 model.audio_tower.output_proj.weight                                         | MISSING    | 
+model.audio_tower.layers.{0...11}.self_attn.post.linear.weight               | MISSING    | 
+model.vision_tower.patch_embedder.position_embedding_table                   | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer1.conv.weight               | MISSING    | 
+model.audio_tower.subsample_conv_projection.layer0.norm.weight               | MISSING    | 
 model.audio_tower.subsample_conv_projection.layer1.norm.weight               | MISSING    | 
 model.audio_tower.output_proj.bias                                           | MISSING    | 
+model.audio_tower.subsample_conv_projection.input_proj_linear.weight         | MISSING    | 
 model.vision_tower.patch_embedder.input_proj.weight                          | MISSING    | 
-model.audio_tower.subsample_conv_projection.layer1.conv.weight               | MISSING    | 
 
 Notes:
 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
@@ -384,410 +414,395 @@ Notes:
 
 [검색된 청크 8개 — 총 졸업학점 텍스트가 있는지 확인]
 
---- 1. dist=0.104 [manual] 컴퓨터융합학부 졸업 학점 안내 (총 130학점)
-충남대학교 컴퓨터융합학부 및 인공지능학과 졸업 학점 안내입니다. 학사학위과정 졸업에 필요한 총 학점은 130학점을 원칙으로 합니다. 교양과목은 졸업학점으로 최대 48학점까지 인정됩니다 (2025학년도 교육과정 적용자 기준이며, 2013~2024학년도 입학자는 42학점까지 인정). 전공·트랙 요건으로는 프로젝트 교과목을 졸업 시까지 최소 3개 이상 이수해야 합니다. 정확한 세부 졸업요건은 컴퓨터융합학부 졸업요건표를 확인하세요.
-
---- 2. dist=0.229 [computer] 컴퓨터인공지능학부 | 교육 | 교과과정
+--- 1. dist=0.062 [computer] 교육  >  졸업요건 게시판읽기 ( [★★★ 2021학년도 이후 입학자 
 졸업요건
 
-1학년
+[★★★ 2021학년도 이후 입학자 프로젝트교과목 및 트랙 필수 이수 안내]
 
-2학년
+[★★★ 2021학년도 이후 입학자 프로젝트교과목 및 트랙 필수 이수 안내]
 
-3학년
+작성자
 
-4학년
+조교 이희정
 
-검색
+조회수
 
-* 이 자료는 통합정보시스템의 정보를 실시간으로 제공하고 있습니다.
+5142
 
-교과과정
+등록일
 
-학년-학기
+2021.12.30
 
-이수구분
+이메일
 
-교과목번호
+컴퓨터융합학부 내규에 따른
+
+2021학년도 이후 입학자(교육과정적용연도포함)들의 졸업요건에 해당되는 사항입니다.
+
+(2021학년도 입학자 포함)
+
+1.
+
+프로젝트 교과목 필수 이수
+
+- 컴퓨터융합학부 및 인공지능학과 학생은
+
+모든 프로젝트 교과목 의무 수강
+
+을 통하여 최소한 1년에 1건 이상의 팀 프로젝트를 수행하여 졸업시까지 최소 3건 이상의 실무 프로젝트를 수행 하는 것을 목적으로 한다
+
+(졸업요건: 1년에 1개 교과목 이상 이수, 최소 3개 교과목 이수 완료)
 
 교과목명
 
-핵심교양영역
+개설 학년-학기
 
-영역
+어드벤처디자인
 
-학점시수
+1-2
 
-3-2
+기초프로젝트랩
 
-전공(핵심)
+2-1, 2-2
 
-1216-3002
+심화프로젝트랩
 
-학년-학기 :
+3-1, 3-2
 
-3-2
+공개소프트웨어실습(2023.9.19.추가)
 
-이수구분 :
+3-
 
-전공(핵심)
-
-교과목번호 :
-
-1216-3002
-
-교과목명 :
-
-컴퓨터비전*
-
-핵심교양영역 :
-
-영역 :
-
-학점시수 :
-
-3/2/2
-
-컴퓨터비전*
-
-3/2/2
-
-3-2
-
-전공(핵심)
-
-1215-3002
-
-학년-학기 :
-
-3-2
-
-이수구분 :
-
-전공(핵심)
-
-교과목번호 :
-
-1215-3002
-
-교과목명 :
-
-심화프로젝트랩*
-
-핵심교양영역 :
-
-영역 :
-
-학점시수 :
-
-3/0/6
-
-심화프로젝트랩*
-
-3/0/6
-
-3-2
-
-전공(핵심)
-
-1214-3030
-
-학년-학기 :
-
-3-2
-
-이수구분 :
-
-전공(핵심)
-
-교과목번호 :
-
-1214-3030
-
-교과목명 :
-
-IT영어2*
-
-핵심교양영역 :
-
-영역 :
-
-
---- 3. dist=0.282 [computer] 컴퓨터인공지능학부 | 교육 | 교과과정
-웨어*
-
-핵심교양영역 :
-
-영역 :
-
-학점시수 :
-
-3/2/2
-
-임베디드소프트웨어*
-
-3/2/2
-
-4-1
-
-전공(심화)
-
-1214-4007
-
-학년-학기 :
-
-4-1
-
-이수구분 :
-
-전공(심화)
-
-교과목번호 :
-
-1214-4007
-
-교과목명 :
-
-최신컴퓨터특강*
-
-핵심교양영역 :
-
-영역 :
-
-학점시수 :
-
-3/3/0
-
-최신컴퓨터특강*
-
-3/3/0
-
-4-1
-
-전공(심화)
-
-1182-4031
-
-학년-학기 :
-
-4-1
-
-이수구분 :
-
-전공(심화)
-
-교과목번호 :
-
-1182-4031
-
-교과목명 :
-
-상업 교수법 및 평가*
-
-핵심교양영역 :
-
-영역 :
-
-학점시수 :
-
-2/2/0
-
-상업 교수법 및 평가*
-
-2/2/0
-
-3-2
-
-전공(심화)
-
-1216-3007
-
-학년-학기 :
-
-3-2
-
-이수구분 :
-
-전공(심화)
-
-교과목번호 :
-
-1216-3007
-
-교과목명 :
-
-신뢰가능AI*
-
-핵심교양영역 :
-
-영역 :
-
-학점시수 :
-
-3/3/0
-
-신뢰가능AI*
-
-3/3/0
-
-3-2
-
-전공(심화)
-
-1216-3
-
---- 4. dist=0.284 [computer] 컴퓨터인공지능학부 | 교육 | 교과과정
-드소프트웨어*핵심교양영역 :영역 :학점시수 :3/2/2 | 임베디드소프트웨어* |  |  | 3/2/2
-
-4-1 | 전공(심화) | 1214-4007학년-학기 :4-1이수구분 :전공(심화)교과목번호 :1214-4007교과목명 :최신컴퓨터특강*핵심교양영역 :영역 :학점시수 :3/3/0 | 최신컴퓨터특강* |  |  | 3/3/0
-
-4-1 | 전공(심화) | 1182-4031학년-학기 :4-1이수구분 :전공(심화)교과목번호 :1182-4031교과목명 :상업 교수법 및 평가*핵심교양영역 :영역 :학점시수 :2/2/0 | 상업 교수법 및 평가* |  |  | 2/2/0
-
-3-2 | 전공(심화) | 1216-3007학년-학기 :3-2이수구분 :전공(심화)교과목번호 :1216-3007교과목명 :신뢰가능AI*핵심교양영역 :영역 :학점시수 :3/3/0 | 신뢰가능AI* |  |  | 3/3/0
-
-3-2 | 전공(심화) | 1216-3005학년-학기 :3-2이수구분 :전공(심화)교과목번호 :1216
-
---- 5. dist=0.287 [computer] 컴퓨터인공지능학부 | 교육 | 교과과정
-소프트웨어실습*핵심교양영역 :영역 :학점시수 :2/0/4 | 공개소프트웨어실습* |  |  | 2/0/4
-
-3-2 | 전공(심화) | 1214-3019학년-학기 :3-2이수구분 :전공(심화)교과목번호 :1214-3019교과목명 :디지털시스템설계*핵심교양영역 :영역 :학점시수 :3/2/2 | 디지털시스템설계* |  |  | 3/2/2
-
-3-2 | 전공(심화) | 1214-3005학년-학기 :3-2이수구분 :전공(심화)교과목번호 :1214-3005교과목명 :컴퓨터그래픽스*핵심교양영역 :영역 :학점시수 :3/2/2 | 컴퓨터그래픽스* |  |  | 3/2/2
-
-3-2 | 전공(심화) | 1182-3037학년-학기 :3-2이수구분 :전공(심화)교과목번호 :1182-3037교과목명 :상업 교육과정 및 교재연구*핵심교양영역 :영역 :학점시수 :2/2/0 | 상업 교육과정 및 교재연구* |  |  | 2/2/0
-
-3-1 | 전공(심화) | 1215-3008학년-학기 :3-1이수구분 :전공(심화)
-
---- 6. dist=0.303 [computer] 컴퓨터인공지능학부
-[교내우수장학선발 기준 변경 안내 :  영어 및 IT 자격증 가산점 폐지]
-[교내우수장학선발 기준 변경 안내 :  영어 및 IT 자격증 가산점 폐지]
+--- 2. dist=0.063 [computer] 교육  >  졸업요건 게시판읽기 ( 컴퓨터융합학부 및 인공지능학과 교과과
+졸업요건
+컴퓨터융합학부 및 인공지능학과 교과과정 운영 및 졸업에 관한 학과 규정
+컴퓨터융합학부 및 인공지능학과 교과과정 운영 및 졸업에 관한 학과 규정
 작성자
-학부학생담당조교
+조교 김정화
 조회수
-1096
+33
 등록일
-2026.04.08
+2026.05.12
 이메일
-jahee@cnu.ac.kr
-* 교내 성적우수장학선발 기준 변경 안내 *
-변경 전 선발제도
-변경후 선발제도
-(
-직전학기 총 평점평균
-/4.5×80%) +
-(
-공인토익성적
-/990×20%) +
-(IT
-관련 기술자격증 점수 총합
-×50%,
-최대
-10
-점
-) +
-기타점수
-(
-최대
-10
-점
-)
-직전학기 총 평점평균
-/4.5×100%
-장학 선발은 2026.2학기 선발부터 적용되오니 참고 하시기 바랍니다.
-목록
-이전글
-2026.1학기 미래설계상담교수 배정(확인용)
-다음글
-5.29(금)쎄트렉아이 현장 방문 학생들 중 공결 협조 공문 필요한 학생은 학과에서 수령하여 주세요
+[이메일]
+우리 컴퓨터융합학부 및 인공지능학과의 교과과정 운영과 학생들의 졸업요건에 대해서는
+붙임과 같이 규정으로 정하고 운영해 오고 있습니다.
+이는 졸업요건표에 포함하여 안내하고 있으며,
+규정 본문을 붙임과 같이 공지하니,
+놓치는 내용으로 졸업에 문제가 되지 않기를 바랍니다.
+첨부
+1. 컴퓨터융합학부·인공지능학과 졸업에 관한 내규-[학번]
+2. 컴퓨터융합학부·인공지능학과 교과과정 운영에 관한 내규-[학번]
+첨부
+(공지용)컴퓨터융합학부·인공지능학과 졸업에 관한 내규-[학번].pdf
+(미리보기)
+(공지용)컴퓨터융합학부·인공지능학과 교과과정 운영에 관한 내규-[학번].pdf
+(미리보기)
 
---- 7. dist=0.303 [computer] 컴퓨터인공지능학부
-[졸업논문제출]2026.8월 졸업예정자 졸업 논문 제출 안내(6.19(금)까지)
-[졸업논문제출]2026.8월 졸업예정자 졸업 논문 제출 안내(6.19(금)까지)
+--- 3. dist=0.096 [computer] 교육  >  졸업요건 게시판읽기 ( [졸업요건] 컴퓨터융합학부 및 인공지
+졸업요건
+
+[졸업요건] 컴퓨터융합학부 및 인공지능학과 졸업요건표-2025 CNU 교양교육과정 개편 및 경과조치 반영 (시행: 2025년 9일)
+
+[졸업요건] 컴퓨터융합학부 및 인공지능학과 졸업요건표-2025 CNU 교양교육과정 개편 및 경과조치 반영 (시행: 2025년 9일)
+
 작성자
-학부학생담당조교
+
+조교 김정화
+
 조회수
-348
+
+525
+
 등록일
-2026.06.03
+
+2025.11.13
+
 이메일
-jahee@cnu.ac.kr
-2026.8월 졸업예정자 중 학과 졸업프로젝트를 완료하고 졸업을 위한 결과물을 제출할 수 있는 학생은 첨부의 양식을 활용하여  졸업논문 및 졸업논문결과보고서를 제출하여야 합니다.
-[제출서식  3가지 모두 제출하여야 함]
-1.졸업논문 심사요지서(지도교수용)
-2. 졸업논문 결과보고서(학생용)
-3. 졸업논문 작성본 학과로 파일제출(메일제출 불가)
-4. 컴융에서 인공지능학과 복수전공을 하는 학생은 2개의 논문을 제출하여야 합니다.
-5. 시스템 입력후 졸업사정 결과에 반영되므로 제출 일정 엄수바랍니다.
-[문의처 : 821-6651]
-[관련 근거]
-목록
-이전글
-1학기 미래설계상담 이수 완료 안내(6.12(금)까지 상담이 완료되어야 함)
 
+[이메일]
 
---- 8. dist=0.358 [computer] 컴퓨터인공지능학부
-1학기 미래설계상담 이수 완료 안내(6.12(금)까지 상담이 완료되어야 함)
-1학기 미래설계상담 이수 완료 안내(6.12(금)까지 상담이 완료되어야 함)
+[2025.10.20.수정 사항]
+
+2025 CNU 교양교육과정 개편에 의거
+
+-
+
+2025학년도 입학자(
+
+2025학년도 교육과정 적용자)부터는
+
+교양과목은 48학점까지만 인정
+
+하며 초과 시, 졸업학점으로 인정하지 않습니다.
+
+2013학년도
+
+~
+
+2024학년도 입학자까지는
+
+교양과목은
+
+42학점까지만
+
+인정
+
+하며, 초과 시 졸업학점으로 인정하지 않습니다.
+
+- 프로젝트 교과목 중, 종합설계1, 2는 한 개 이상 반드시 이수해야 함을 명시(부전공 이수자 예외)
+
+[2025.9.9.
+
+적용 사항]
+
+2025년 1월
+
+--- 4. dist=0.098 [computer] 교육  >  졸업요건 게시판읽기 ( [졸업요건] 비교과 졸업요건: 프로젝
+졸업요건
+
+[졸업요건] 비교과 졸업요건: 프로젝트 교과목 및 트랙 이수 안내 및 제출 안내
+
+[졸업요건] 비교과 졸업요건: 프로젝트 교과목 및 트랙 이수 안내 및 제출 안내
+
 작성자
-학부학생담당조교
+
+조교 김정화
+
 조회수
-393
+
+461
+
 등록일
-2026.06.02
+
+2025.11.13
+
 이메일
-jahee@cnu.ac.kr
-2026학년도 1학기 미래설계상담이수 안내 드립니다.
-현재 상담을 신청하지 않은 학생 및 2회 미만인 학생들은 빠른 신청 및 상담 완료 바랍니다.
-해당 내용은 포털에서 확인 할 수 있으며 대면상담 1회 포함하여 반드시 2회를 상담 완료하여야 성적이  PASS 됩니다.
-□
-운영 개요
-○ 이수 기준: 학기 중 대면상담 1회 포함 필수, 총 2회 이상 상담
-[학생]
+
+[이메일]
+
+★제출 시기: 매 학년도 졸업 본사정 기간 중 제출 [8월 졸업자]
+
+7월 20일까지
+
+, [2월 졸업자]
+
+1월 20일까지
+
+★제출 자료: (붙임서식) 전공트랙이수현황-학번-이름
+
+★제출 방법: 별도 안내
+
+--------------------------------
+
+컴퓨터융합학부 내규에 따른
+
+2021학년도 이후 입학자(교육과정적용연도포함)들의 졸업요건에 해당되는 사항입니다.
+
+(2021학년도 입학자 포함)
+
 1.
-개강 후
-15주차(6.12(금)까지)
-상담 완료
-2.
-졸업필수요건 확인:
-졸업시까지
-총 4개 학기(교과) 이상
-이수 완료(8학기 기준
-)
-3.
-통합정보시스템 학사행정 > 휴복학미래설계상담 > 미래설계상담신청
-목록
-이전글
-5.29(금)쎄트렉아이 현장 방문 학생들 중 공결 협
+
+프로젝트 교과목 필수 이수
+
+- 컴퓨터융합학부 및 인공지능학과 학생은
+
+모든 프로젝트 교과목 의무 수강
+
+을 통하여 최소한 1년에 1건 이상의 팀 프로젝트를 수행하여
+
+졸업시까지 최소 3건 이상의 실무 
+
+--- 5. dist=0.104 [manual] 컴퓨터융합학부 졸업 학점 안내 (총 130학점)
+충남대학교 컴퓨터융합학부 및 인공지능학과 졸업 학점 안내입니다. 학사학위과정 졸업에 필요한 총 학점은 130학점을 원칙으로 합니다. 교양과목은 졸업학점으로 최대 48학점까지 인정됩니다 (2025학년도 교육과정 적용자 기준이며, 2013~2024학년도 입학자는 42학점까지 인정). 전공·트랙 요건으로는 프로젝트 교과목을 졸업 시까지 최소 3개 이상 이수해야 합니다. 정확한 세부 졸업요건은 컴퓨터융합학부 졸업요건표를 확인하세요.
+
+--- 6. dist=0.114 [computer] 공지사항  >  학사공지 게시판읽기 ( ★★[졸업요건] 비교과 졸업요건:
+★★[졸업요건] 비교과 졸업요건: 프로젝트 교과목 및 트랙 이수 안내 및 제출 안내
+
+★★[졸업요건] 비교과 졸업요건: 프로젝트 교과목 및 트랙 이수 안내 및 제출 안내
+
+작성자
+
+조교 김정화
+
+조회수
+
+4304
+
+등록일
+
+2025.07.09
+
+이메일
+
+[이메일]
+
+★제출 시기: 매 학년도 졸업 본사정 기간 중 제출 [8월 졸업자]
+
+7월 20일까지
+
+, [2월 졸업자]
+
+1월 20일까지
+
+★제출 자료: (붙임서식) 전공트랙이수현황-학번-이름
+
+★제출 방법: 별도 안내
+
+--------------------------------
+
+컴퓨터융합학부 내규에 따른
+
+2021학년도 이후 입학자(교육과정적용연도포함)들의 졸업요건에 해당되는 사항입니다.
+
+(2021학년도 입학자 포함)
+
+1.
+
+프로젝트 교과목 필수 이수
+
+- 컴퓨터융합학부 및 인공지능학과 학생은
+
+모든 프로젝트 교과목 의무 수강
+
+을 통하여 최소한 1년에 1건 이상의 팀 프로젝트를 수행하여
+
+졸업시까지 최소 3건 이상의 실무 프
+
+--- 7. dist=0.115 [computer] 공지사항  >  학사공지 게시판읽기 ( ★★[졸업요건] 비교과 졸업요건:
+★★[졸업요건] 비교과 졸업요건: 프로젝트 교과목 및 트랙 이수 안내 및 제출 안내
+
+★★[졸업요건] 비교과 졸업요건: 프로젝트 교과목 및 트랙 이수 안내 및 제출 안내
+
+작성자
+
+조교 김정화
+
+조회수
+
+4305
+
+등록일
+
+2025.07.09
+
+이메일
+
+[이메일]
+
+★제출 시기: 매 학년도 졸업 본사정 기간 중 제출 [8월 졸업자]
+
+7월 20일까지
+
+, [2월 졸업자]
+
+1월 20일까지
+
+★제출 자료: (붙임서식) 전공트랙이수현황-학번-이름
+
+★제출 방법: 별도 안내
+
+--------------------------------
+
+컴퓨터융합학부 내규에 따른
+
+2021학년도 이후 입학자(교육과정적용연도포함)들의 졸업요건에 해당되는 사항입니다.
+
+(2021학년도 입학자 포함)
+
+1.
+
+프로젝트 교과목 필수 이수
+
+- 컴퓨터융합학부 및 인공지능학과 학생은
+
+모든 프로젝트 교과목 의무 수강
+
+을 통하여 최소한 1년에 1건 이상의 팀 프로젝트를 수행하여
+
+졸업시까지 최소 3건 이상의 실무 프
 
 /workspace/cnu_qa_system/.venv/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:468: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
   torch._check_is_size(blocksize)
+--- 8. dist=0.118 [computer] 공지사항  >  학사공지 게시판읽기 ( [수강신청] ★★★ 1학년 교과목
+학과에서 지정한 교과목 (15학점) 외에
+
+나머지 3학점은 교양교과목에서 본인이 희망하는 교과목으로 수강 신청,
+
+될 수 있으면 졸업 필수 교과목인 핵심교양(목록은 붙임 졸업요건에서 확인)으로 수강 신청
+
+- 인공지능과미래사회는 2022학번부터 전문기초교양으로 지정된 필수 이수 교과목입니다.
+
+이전 학번은 졸업요건표 확인하여 본인의 전문기초교양으로 수강하시기 바랍니다.
+
+-1학년 학생은 정원이 초과되어 수강신청 못 할 경우 학과사무실로 전화주세요.
+
+([전화번호])
+
+[유의사항 및 일정]
+
+1.
+
+교양
+
+: 지정된 분반은 컴퓨터융합학부 및 인공지능 학과 학생을 위하여 확보된 분반이지만
+
+타과 학생이 수강신청 할 경우 여석 확보가 어려울 수 있으므로
+
+가급적
+
+빨리 수강신청
+
+하여 주시기 바랍니다.
+
+2.
+
+미래설계상담2: 1학년 학생 해당과목
+
+졸업요건: 미래설계상담 4개 학기 이수, 한 학기에 두 개 과목 수강할 수 없음
+
+3.
+
+예비수강신청: 7.28(월) ~ 7.30.(수) 0
+
 
 ======================================================================
 [top_k=3] 답변
 ======================================================================
 안녕하세요! 컴퓨터융합학부 졸업 요건에 대해 궁금하시군요? 제가 확인해 드릴게요.
 
-먼저, 컴퓨터융합학부 및 인공지능학과 학사학위과정 졸업에 필요한 총 학점은 130학점이에요.
+먼저 **프로젝트 교과목**과 관련해서는 다음과 같은 기준이 있어요.
 
-세부적인 사항들을 정리해 드리면 다음과 같아요.
+* **신입생 대상:** 2021학년도 이후 입학자(교육과정 적용 연도 포함)는 모든 프로젝트 교과목을 의무적으로 수강해야 해요. 이를 통해 1년에 1건 이상의 팀 프로젝트를 수행하여, 졸업 시까지 최소 3건 이상의 실무 프로젝트를 수행하는 것을 목표로 합니다.
+ * 즉, 졸요 조건은 **1년에 1개 교과목 이상 이수, 최소 3개 교과목 이수 완료**예요.
+* **특이사항:** 특히 프로젝트 교과목 중에서 **종합설계1, 2는 한 개 이상 반드시 이수**해야 한다는 점 꼭 기억해 주세요. (단, 부전공 이수자는 예외입니다.)
 
-* **교양 과목:** 졸업 학점으로 최대 48학점까지 인정돼요. 다만, 이는 2025학년도 교육과정 적용자 기준이고, 2013\~2024학년도 입학자는 42학점까지 인정된다는 점 유의해 주세요.
-* **전공·트랙 요건:** 프로젝트 교과목을 졸업 시까지 최소 3개 이상 이수해야 해요.
+그리고 **교양 과목** 인정 학점에 대해서는 입학 연도에 따라 차이가 있어요.
 
-더욱 자세하고 정확한 세부 졸업 요건은 **컴퓨터융합학부 졸업요건표**를 직접 확인하시는 게 가장 정확할 것 같아요! 도움이 필요하시면 언제든 또 물어봐 주세요.
+* **2025학년도 입학자(및 교육과정 적용자):** 교양 과목은 **48학점까지만** 인정되며, 이를 초과할 경우 졸업 학점으로 인정되지 않아요.
+* **2013학년도 \~ 2024학년도 입학자:** 교양 과목은 **42학점까지만** 인정되고, 초과 시에는 졸업 학점으로 인정되지 않으니 주의해야 해요.
+
+더불어 상세한 정보는 학교 홈페이지 등에 공지된 **‘컴퓨터융합학부 및 인공지능학과 졸업에 관한 내규’**와 **‘교과과정 운영에 관한 내규’**, 그리고 **‘졸업요건표’**를 통해서도 확인할 수 있으니 함께 체크해보시면 좋을 것 같아요!
 
 <div class="source-row"><span class="source-label">참고</span><span class="source-chip">💻 컴퓨터융합학부</span></div>
 
 ======================================================================
 [top_k=5] 답변
 ======================================================================
-안녕하세요! 컴퓨터융합학부 졸업 요건에 대해 궁금하시군요? 제가 확인해 드릴게요.
+안녕하세요! 컴퓨터융합학부 졸업 요건에 대해 궁금하시군요? 제가 차근차근 설명해 드릴게요.
 
-먼저 기본적으로 **학사학위과정 졸업에 필요한 총 학점은 130학점**이에요. 이때 교양과목은 아래 조건에 따라 차이가 있어요.
+먼저 가장 기본이 되는 **졸업 학점**부터 말씀드릴게요.
+* **총 졸업 학점:** 130학점을 원칙으로 해요.
+* **교양 과목 인정 범위:** 2025학년도 교육과정 적용자 기준으로 교양 과목은 최대 48학점까지 졸업 학점으로 인정돼요. (그 이전인 2013\~2024학년도 입학자분들은 42학점까지 인정된다고 하네요.)
 
-* **2025학년도 교육과정 적용자:** 최대 48학점까지 인정
-* **2013\~2024학년도 입학자:** 최대 42학점까지 인정
+그리고 우리 학부에서 아주 중요한 **프로젝트 교과목** 이수 조건이 있어요.
+* **필수 이수:** 모든 프로젝트 교과목을 의무적으로 수강해야 해요. 특히 1년에 1개 이상의 팀 프로젝트를 수행해서, 졸업할 때까지 최소 3개 이상의 실무 프로젝트를 수행하는 것을 목표로 하고 있어요. 즉, **매년 1개 이상의 교과목을 이수하고 최종적으로 최소 3개의 교과목 이수를 완료**해야 해요.
+ * 특히 복수전공자나 편입생의 경우에는 종합설계1, 종합설계2 중에서 반드시 1건 이상을 이수해야 한다는 점 꼭 기억해 주세요!
 
-그리고 전공·트랙 요건으로는 **프로젝트 교과목을 졸업 시까지 최소 3개 이상 이수**해야 해요. 더 자세하고 정확한 세부 졸업요건은 꼭 학교 홈페이지 등에 올라온 **컴퓨터융합학부 졸업요건표**를 직접 확인하시는 게 가장 정확해요!
+더불어 몇 가지 추가로 확인해야 할 사항들이 있어요.
+* **신규 변경 사항:** 2025학년도 신입생(또는 교육과정 적용자)부터는 "인문학 관련 교과목 8학점 이상 이수" 항목이 폐지되었다고 해요.
+* **세부 규칙:** 더 자세하고 정확한 세부 졸업 요건은 학교에서 제공하는 '컴퓨터융합학부 졸업요건표'를 직접 확인하시는 게 가장 정확해요.
+
+준비하시다가 또 궁금한 게 생기면 언제든 물어봐 주세요! 도와드릴게요.
 
 <div class="source-row"><span class="source-label">참고</span><span class="source-chip">💻 컴퓨터융합학부</span></div>
