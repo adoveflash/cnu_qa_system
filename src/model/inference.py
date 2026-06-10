@@ -50,6 +50,41 @@ def _strip_context_markers(text: str) -> str:
     return text.strip()
 
 
+def _fold_system_into_user(messages: list[dict]) -> list[dict]:
+    """system 메시지를 다음 user 메시지 앞에 합친다 (Gemma 3 등 system role 미지원 모델용)."""
+    system_text = ""
+    out: list[dict] = []
+    for m in messages:
+        role, content = m.get("role"), m.get("content")
+        text = content if isinstance(content, str) else ""
+        if role == "system":
+            system_text += text + "\n\n"
+        elif role == "user" and system_text:
+            out.append({"role": "user", "content": system_text + text})
+            system_text = ""
+        else:
+            out.append(m)
+    return out
+
+
+def _render_prompt(tokenizer, messages: list[dict]) -> str:
+    """chat 템플릿을 적용한다.
+
+    일부 모델(Gemma 3 등)은 system role / enable_thinking 인자를 지원하지 않는다.
+    실패하면 system을 user에 합치고 enable_thinking 없이 재시도해 모델 호환성을 넓힌다.
+    Gemma 4는 첫 시도에서 그대로 통과한다.
+    """
+    try:
+        return tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+        )
+    except Exception:
+        folded = _fold_system_into_user(messages)
+        return tokenizer.apply_chat_template(
+            folded, tokenize=False, add_generation_prompt=True
+        )
+
+
 def _build_system_prompt() -> str:
     """오늘 날짜와 현재 학기를 포함한 시스템 프롬프트를 생성한다."""
     from datetime import datetime, timezone, timedelta
@@ -219,9 +254,7 @@ def generate_answer(
     final_context, final_urls, used_tool = _resolve_context(question, context, urls, use_tools)
     messages = _build_messages(question, final_context, history=None)
 
-    text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-    )
+    text = _render_prompt(tokenizer, messages)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     gen_kwargs = {
@@ -291,9 +324,7 @@ def generate_answer_stream(
 
     messages = _build_messages(question, final_context, history=history)
 
-    text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-    )
+    text = _render_prompt(tokenizer, messages)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)

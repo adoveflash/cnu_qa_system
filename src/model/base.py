@@ -12,11 +12,10 @@ import os
 import torch
 from transformers import AutoTokenizer, BitsAndBytesConfig
 
-# Gemma 4는 gemma4_unified 타입 → 전용 클래스 필요
-try:
-    from transformers import Gemma4ForConditionalGeneration as _ModelClass
-except ImportError:
-    from transformers import AutoModelForImageTextToText as _ModelClass
+# AutoModelForImageTextToText는 Gemma 4/3 체크포인트를 올바른 클래스로 자동 매핑한다.
+# (Gemma 4 → Gemma4ForConditionalGeneration, Gemma 3 → Gemma3ForConditionalGeneration)
+# 덕분에 BASE_MODEL 환경변수만 바꾸면 모델 교체 가능 (폴백 Tier B).
+from transformers import AutoModelForImageTextToText as _ModelClass
 
 _DEFAULT_MODEL = os.environ.get("BASE_MODEL", "google/gemma-4-12b-it")
 _SEED = 42
