@@ -6,6 +6,7 @@ RAG 컨텍스트와 질문을 받아 답변을 생성한다.
 
 from __future__ import annotations
 
+import gc
 import re
 import threading
 from collections.abc import Iterator
@@ -240,7 +241,7 @@ def generate_answer(
     urls: list[str],
     model,
     tokenizer,
-    max_new_tokens: int = 1024,
+    max_new_tokens: int = 512,
     use_tools: bool = True,
 ) -> str:
     """답변을 생성한다 (배치 추론용).
@@ -280,6 +281,12 @@ def generate_answer(
     answer = _strip_context_markers(answer)
     answer = answer.replace("\r", "")
 
+    # 배치 추론 중 KV 캐시 누적 OOM 방지
+    del inputs, outputs, generated_ids
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     if not used_tool:
         answer += _format_sources(final_urls)
     return answer
@@ -291,7 +298,7 @@ def generate_answer_stream(
     urls: list[str],
     model,
     tokenizer,
-    max_new_tokens: int = 1024,
+    max_new_tokens: int = 512,
     use_tools: bool = True,
     history: list[dict] | None = None,
 ) -> Iterator[str]:
@@ -357,6 +364,13 @@ def generate_answer_stream(
     final = _clean_thinking(accumulated)
     final = _strip_context_markers(final)
     final = final.replace("\r", "")
+
+    # 메모리 정리 (다음 질문 OOM 방지)
+    del inputs
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     if not used_tool:
         final += _format_sources(final_urls)
     yield final

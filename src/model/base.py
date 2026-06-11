@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import os
 
+# CUDA 메모리 단편화로 인한 OOM 방지 (torch CUDA 초기화 전에 설정해야 적용됨)
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+
 import torch
 from transformers import AutoTokenizer, BitsAndBytesConfig
 
