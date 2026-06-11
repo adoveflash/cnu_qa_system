@@ -24,8 +24,10 @@ def _clean_thinking(text: str) -> str:
     """Gemma 4 thinking 토큰/쓰레기 제거."""
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
     text = re.sub(r"^.*?(?=안녕하세요)", "", text, flags=re.DOTALL)
-    if text and not re.match(r"[가-힣*#\-]", text):
-        match = re.search(r"[가-힣]", text)
+    # 앞에 영어·기호 쓰레기가 붙은 경우만 첫 본문 글자까지 잘라낸다.
+    # 숫자(연도·학점·가격·날짜)는 정상 본문이므로 시작 문자로 인정해 깎지 않는다.
+    if text and not re.match(r"[가-힣0-9*#\-]", text):
+        match = re.search(r"[가-힣0-9]", text)
         if match:
             text = text[match.start():]
     return text.strip()
