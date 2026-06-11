@@ -5,9 +5,11 @@ Qwen3 네이티브 tool calling을 위한 tool 스키마와 실행 함수를 정
 
 from __future__ import annotations
 
+import json
 import re
 import time
 from datetime import datetime
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -236,6 +238,34 @@ def _fetch_dorm_meal(date: str) -> str:
         return "[기숙사] 식단 정보를 가져올 수 없어요."
 
 
+def _load_building1_menu() -> str:
+    """제1학생회관 고정 메뉴를 수동 수집 데이터에서 읽어온다.
+
+    제1학생회관은 mobileadmin 식단표에 일일 메뉴가 안 올라오고(병합 빈 칸),
+    라면·돈까스·한식 등 코너별 고정 메뉴로 운영된다. 그 메뉴를
+    data/corpus/raw/meal_building1_manual_*.jsonl 에 수동 수집해 두었다.
+
+    Returns:
+        제1학생회관 식단 텍스트 (아침·점심·저녁). 파일 없으면 빈 문자열.
+    """
+    raw_dir = Path(__file__).resolve().parents[2] / "data" / "corpus" / "raw"
+    files = sorted(raw_dir.glob("meal_building1_manual_*.jsonl"))
+    if not files:
+        return ""
+    blocks: list[str] = []
+    try:
+        for line in files[-1].read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            content = json.loads(line).get("content", "").strip()
+            if content:
+                blocks.append(content)
+    except Exception:
+        return ""
+    return "\n\n".join(blocks)
+
+
 def _fetch_student_hall_meal(date: str) -> str:
     """학생회관 식단을 requests로 크롤링한다 (mobileadmin.cnu.ac.kr).
 
@@ -328,9 +358,17 @@ def _fetch_student_hall_meal(date: str) -> str:
 
         print(f"  [tool] 학생회관 식단: {len(parts)}행 추출")
 
+        building1 = _load_building1_menu()
+        b1_block = (
+            f"{building1}\n\n"
+            if building1
+            else "※ 제1학생회관은 코너별 고정 메뉴로 운영됩니다.\n\n"
+        )
         if parts:
-            note = "※ 제1학생회관 메뉴는 별도 시스템으로 운영되어 조회할 수 없습니다."
-            return f"[학생회관 식단 {date}]\n{note}\n" + "\n".join(parts)
+            return f"[학생회관 식단 {date}]\n{b1_block}" + "\n".join(parts)
+        elif building1:
+            # 제2~4학생회관 라이브 데이터는 없어도 제1 고정 메뉴는 안내
+            return f"[학생회관 식단 {date}]\n{b1_block}".rstrip()
         else:
             return f"[학생회관] {date} 식단 데이터 없음 (주말 또는 미운영)"
     except Exception as e:
