@@ -38,7 +38,10 @@ fi
 echo ""
 echo "[2/4] Task 3 — 실시간 정보 반영..."
 if [ -f "data/test_realtime.json" ]; then
-    python -m src.realtime_model "$@" || echo "  [경고] Task 3 실행 실패 — 건너뜀"
+    # realtime_model은 --batch-only를 모르므로 제거하고 나머지 인자만 전달
+    RT_ARGS=()
+    for _a in "$@"; do [ "$_a" != "--batch-only" ] && RT_ARGS+=("$_a"); done
+    python -m src.realtime_model "${RT_ARGS[@]}" || echo "  [경고] Task 3 실행 실패 — 건너뜀"
 else
     echo "  data/test_realtime.json 없음 — 건너뜀"
 fi

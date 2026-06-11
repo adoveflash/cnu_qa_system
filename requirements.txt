@@ -11,7 +11,9 @@ accelerate>=1.0.0
 bitsandbytes>=0.45.0
 
 # 임베딩 / Vector DB
-sentence-transformers>=3.0.0
+# sentence-transformers는 2.x로 고정 — 5.x는 torchcodec를 강제 import하는데
+# torch 2.5.1과 비호환(libtorchcodec 로드 실패)이라 RAG가 죽음.
+sentence-transformers==2.7.0
 chromadb>=0.5.0
 
 # 모델/벡터DB 다운로드
