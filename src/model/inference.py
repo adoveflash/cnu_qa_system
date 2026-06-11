@@ -272,7 +272,7 @@ def generate_answer(
     answer = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
     answer = _clean_thinking(answer)
     answer = _strip_context_markers(answer)
-    answer = answer.replace("\r", "").replace("~", r"\~")
+    answer = answer.replace("\r", "")
 
     if not used_tool:
         answer += _format_sources(final_urls)
@@ -343,14 +343,14 @@ def generate_answer_stream(
     accumulated = ""
     for chunk in streamer:
         accumulated += chunk
-        yield accumulated.replace("~", r"\~")
+        yield accumulated
 
     thread.join()
 
     # 최종 정리 + 출처 추가
     final = _clean_thinking(accumulated)
     final = _strip_context_markers(final)
-    final = final.replace("\r", "").replace("~", r"\~")
+    final = final.replace("\r", "")
     if not used_tool:
         final += _format_sources(final_urls)
     yield final
