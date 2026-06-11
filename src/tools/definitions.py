@@ -5,11 +5,9 @@ Qwen3 네이티브 tool calling을 위한 tool 스키마와 실행 함수를 정
 
 from __future__ import annotations
 
-import json
 import re
 import time
 from datetime import datetime
-from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -238,32 +236,34 @@ def _fetch_dorm_meal(date: str) -> str:
         return "[기숙사] 식단 정보를 가져올 수 없어요."
 
 
+# 제1학생회관 고정 메뉴 (코너별 상시 운영).
+# mobileadmin 식단표엔 제1학생회관 일일 메뉴가 안 올라와(병합 빈 칸) 라이브 크롤링이 불가하므로,
+# 라면·양식·한식·일식·중식 코너별 고정 메뉴를 상수로 둔다. data/corpus/raw 는 gitignore라
+# 런타임 파일 의존을 피하고 코드에 박아 박스·Colab 양쪽에서 동일하게 동작하게 한다.
+_BUILDING1_MENU = """■ 제1학생회관 (코너별 고정 메뉴)
+
+라면&간식 (10:00~14:00)
+- 라면 2,500 / 떡만두라면 3,000 / 해장라면 3,000 / 치즈라면 3,000 / 부대라면 4,000 / 김밥 3,000 / 공기밥 500
+
+양식 (11:00~14:00)
+- 등심왕돈까스 5,500 / 눈꽃치즈돈까스 6,000 / 파채돈까스 6,000 / 돈까스&파스타 6,500 / 닭다리살스테이크 6,000 / 파닭스테이크 6,500 / 베이컨로제파스타 5,800
+
+스낵 (11:00~14:30)
+- 버터김치별달알밥 5,600 / 버터김치치즈알밥 6,500 / 컵버터감자칩 2,000 (토핑: 치즈 1,000·소불고기 2,000·떡갈비 1,000·감자고로케 1,000·날치알 1,000·구운계란 500)
+
+한식 (11:00~14:00 / 저녁 17:00~19:00)
+- 비빔밥 7,000 / 묵은지김치찌개 5,800 / 부대햄플러스김치찌개 6,800 / 우삼겹된장찌개 6,600 / 별달소고기국밥 7,000 / 똑배기닭갈비덮밥 5,800
+
+일식 (11:00~19:00)
+- 얼큰소두부우동국밥 6,300 / 매운부타동고기덮밥 7,500 / 고소한카레덮밥 5,800 / 부타동고기덮밥 5,800 / 치킨가라아게마요 6,500 / 마제소바 6,000 / 1L치킨포케샐러드 6,800 / 세겹배기생우동 6,500
+
+중식 (점심 11:00~14:00 / 저녁 16:00~19:00)
+- 차돌온면 6,500 / 매운차돌온면 6,500 / 온국밥 6,500 / 매운온국밥 6,500 / 비빔면 5,800 / 냉면 5,800"""
+
+
 def _load_building1_menu() -> str:
-    """제1학생회관 고정 메뉴를 수동 수집 데이터에서 읽어온다.
-
-    제1학생회관은 mobileadmin 식단표에 일일 메뉴가 안 올라오고(병합 빈 칸),
-    라면·돈까스·한식 등 코너별 고정 메뉴로 운영된다. 그 메뉴를
-    data/corpus/raw/meal_building1_manual_*.jsonl 에 수동 수집해 두었다.
-
-    Returns:
-        제1학생회관 식단 텍스트 (아침·점심·저녁). 파일 없으면 빈 문자열.
-    """
-    raw_dir = Path(__file__).resolve().parents[2] / "data" / "corpus" / "raw"
-    files = sorted(raw_dir.glob("meal_building1_manual_*.jsonl"))
-    if not files:
-        return ""
-    blocks: list[str] = []
-    try:
-        for line in files[-1].read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            content = json.loads(line).get("content", "").strip()
-            if content:
-                blocks.append(content)
-    except Exception:
-        return ""
-    return "\n\n".join(blocks)
+    """제1학생회관 고정 메뉴 텍스트를 반환한다 (상수)."""
+    return _BUILDING1_MENU
 
 
 def _fetch_student_hall_meal(date: str) -> str:
