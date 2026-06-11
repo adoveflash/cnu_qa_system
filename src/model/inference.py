@@ -120,7 +120,11 @@ def _build_system_prompt() -> str:
         "'해당 학과의 정확한 졸업요건은 확인되지 않았어요'라고 답해.\n"
         "10. 답변에 '[참고1]', '[참고2]' 같은 자료 번호나 '제공된 자료/입력하신 데이터에 따르면' "
         "같은 내부 참고자료 언급을 절대 쓰지 마. 참고자료의 존재를 드러내지 말고 사용자에게 "
-        "바로 자연스럽게 정보를 전달해."
+        "바로 자연스럽게 정보를 전달해.\n"
+        "11. 되묻지 말고 참고 자료에 있는 정보를 바로 보여줘. 사용자가 콕 집어 물은 대상이 "
+        "자료에 없으면(예: 제1학생회관 메뉴 미제공) 그 사실을 한 줄로만 알리고, 자료에 있는 "
+        "관련 정보(다른 식당의 아침·점심·저녁 메뉴 등)를 곧바로 이어서 보여줘. "
+        "'어떤 음식을 원하냐'처럼 사용자에게 되묻는 것으로 답을 끝내지 마."
     )
 
 
@@ -261,7 +265,7 @@ def generate_answer(
         **inputs,
         "max_new_tokens": max_new_tokens,
         "do_sample": False,
-        "repetition_penalty": 1.3,
+        "repetition_penalty": 1.1,
     }
 
     torch.manual_seed(_SEED)
@@ -332,7 +336,7 @@ def generate_answer_stream(
         **inputs,
         "max_new_tokens": max_new_tokens,
         "do_sample": False,
-        "repetition_penalty": 1.3,
+        "repetition_penalty": 1.1,
         "streamer": streamer,
     }
 
