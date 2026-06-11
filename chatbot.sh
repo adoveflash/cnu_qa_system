@@ -27,6 +27,13 @@ pip install -q -r requirements.txt 2>/dev/null || true
 # ── outputs 디렉터리 생성 ──
 mkdir -p outputs
 
+# ── 벡터 DB 준비 (없으면 HuggingFace 공개 저장소에서 다운로드) ──
+if [ ! -d "data/vector_db" ]; then
+    echo ""
+    echo "[*] 벡터 DB가 없어 HuggingFace에서 다운로드합니다..."
+    python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='adoveflash/cnu-qa-system', repo_type='model', local_dir='.', allow_patterns=['data/vector_db/**'])"
+fi
+
 # ── Task 3: 실시간 정보 (Optional) ──
 echo ""
 echo "[2/4] Task 3 — 실시간 정보 반영..."

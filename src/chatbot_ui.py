@@ -69,7 +69,7 @@ def run_chat_batch(
 
     print(f"[chat] {len(test_data)}건 추론 중...")
     results = []
-    for idx, item in enumerate(test_data):
+    for item in test_data:
         question = item["user"]
         context, urls = retriever.build_context(question)
 
@@ -78,8 +78,8 @@ def run_chat_batch(
         else:
             answer = fallback_answer(question, context, urls)
 
-        # 조교 양식: id, user, model
-        results.append({"id": item.get("id", idx), "user": question, "model": answer})
+        # 조교 양식: user, model
+        results.append({"user": question, "model": answer})
         print(f"  Q: {question[:40]}... → {len(answer)}자")
 
     out = Path(output_path)

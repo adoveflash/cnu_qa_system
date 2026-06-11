@@ -1,21 +1,25 @@
-# Core ML (추론 필수)
-torch>=2.1.0
-transformers>=4.44.0
-bitsandbytes>=0.43.0
-accelerate>=0.28.0
-sentence-transformers>=2.6.0
+# 충남대학교 Campus ChatBot — 실행 의존성
+# 환경: Python 3.10.12 / CUDA 12.x (Colab T4 기준)
+# 과제 명세 지정 버전: torch 2.5.1
 
-# Vector DB
-chromadb>=0.4.22
+# Core ML (추론 필수) — Gemma 3는 torch 2.5.1 + transformers 4.50에서 구동
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+transformers==4.50.0
+accelerate>=1.0.0
+bitsandbytes>=0.45.0
 
-# Crawling
+# 임베딩 / Vector DB
+sentence-transformers>=3.0.0
+chromadb>=0.5.0
+
+# 모델/벡터DB 다운로드
+huggingface_hub>=0.25.0
+
+# 실시간 도구(식단·셔틀·공지 크롤링)
 requests>=2.31.0
 beautifulsoup4>=4.12.0
-pdfplumber>=0.10.0
 
 # Web UI
 gradio>=4.20.0
-
-# Training only (추론 시 불필요)
-# peft>=0.10.0
-# datasets>=2.18.0
