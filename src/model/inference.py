@@ -174,6 +174,41 @@ def _format_sources(urls: list[str]) -> str:
     return f'\n\n<div class="source-row"><span class="source-label">참고</span>{badges}</div>'
 
 
+_SMALLTALK_KEYWORDS = (
+    "안녕",
+    "하이",
+    "헬로",
+    "hello",
+    "hi",
+    "반가",
+    "고마",
+    "감사",
+    "잘 지내",
+    "잘지내",
+    "ㅎㅇ",
+    "방가",
+    "누구야",
+    "누구니",
+)
+
+
+def _is_smalltalk(question: str) -> bool:
+    """인사·감사 등 정보성이 아닌 짧은 잡담인지 판단한다.
+
+    잡담이면 RAG 컨텍스트·출처를 붙이지 않아 엉뚱한 출처(예: 약학대학)를 막는다.
+
+    Args:
+        question: 사용자 질문
+
+    Returns:
+        잡담 여부
+    """
+    q = question.strip().lower()
+    if len(q) > 15:  # 길면 실제 질문일 가능성 (예: "안녕하세요, 졸업요건 알려주세요")
+        return False
+    return any(k in q for k in _SMALLTALK_KEYWORDS)
+
+
 def _build_messages(question: str, context: str, history: list[dict] | None = None) -> list[dict]:
     """시스템 프롬프트 + 대화 이력 + 참고자료 + 질문으로 메시지를 구성한다."""
     system_prompt = _build_system_prompt()
@@ -259,6 +294,8 @@ def generate_answer(
         생성된 답변 문자열
     """
     final_context, final_urls, used_tool = _resolve_context(question, context, urls, use_tools)
+    if not used_tool and _is_smalltalk(question):
+        final_context, final_urls = "", []
     messages = _build_messages(question, final_context, history=None)
 
     text = _render_prompt(tokenizer, messages)
@@ -334,6 +371,10 @@ def generate_answer_stream(
     else:
         final_context = context
         final_urls = urls
+
+    if not used_tool and _is_smalltalk(question):
+        final_context = ""
+        final_urls = []
 
     messages = _build_messages(question, final_context, history=history)
 
