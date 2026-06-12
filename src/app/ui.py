@@ -179,6 +179,20 @@ textarea:focus {
 }
 .chatbot .message p, .chatbot .prose p, .message-row p { margin: 0 !important; }
 .chatbot .message > *, .bubble > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+/* ===== 한글 메시지 가로 출력 강제 (세로로 한 글자씩 쪼개지던 버그 해결) ===== */
+.chatbot .message, .chatbot .message *, .message-row .message, .message-wrap .message,
+.bubble, .chatbot [data-testid="user"], .chatbot [data-testid="bot"], .chatbot .prose {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+}
+.chatbot .message.user, .message-row.user-row .message, .chatbot [data-testid="user"] {
+    width: fit-content !important;
+    max-width: 80% !important;
+    margin-left: auto !important;
+}
 """
 
 # 생성 대기 중 표시할 타이핑 애니메이션 / 스트리밍 커서
@@ -235,7 +249,7 @@ def create_app(
         gr.HTML(
             """
             <div class="title-area">
-                <div class="logo-icon">&#10024;</div>
+                <div class="logo-icon">🎓</div>
                 <h1>CNU Campus AI</h1>
                 <p>충남대학교 학내 정보를 안내해 드릴게요</p>
             </div>
