@@ -77,19 +77,32 @@ footer { visibility: hidden }
     background: var(--card) !important;
     box-shadow: 0 12px 32px rgba(11, 47, 94, 0.08) !important;
 }
-/* 메시지 말풍선 (Gradio 버전별 방어적 타겟팅) */
+/* ===== 메시지: Gemini 스타일 (내 메시지=우측 블루 말풍선 / 봇=좌측 박스 없는 평문) ===== */
+/* 행 정렬: 사용자 우측, 봇 좌측 */
+.message-row.user-row { justify-content: flex-end !important; }
+.message-row.bot-row { justify-content: flex-start !important; }
+/* 내 메시지: 우측 정렬 + 폭 제한 (침범 방지) */
 .chatbot .message.user, .chatbot [data-testid="user"], .message-row.user-row .message {
+    display: inline-block !important;
+    max-width: 72% !important;
+    margin-left: auto !important;
     background: linear-gradient(135deg, var(--sky), var(--blue)) !important;
     border: none !important;
-    border-radius: 16px 16px 4px 16px !important;
+    border-radius: 18px 18px 5px 18px !important;
     color: #fff !important;
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25) !important;
+    text-align: left !important;
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22) !important;
 }
 .chatbot .message.user *, .message-row.user-row .message * { color: #fff !important; }
+/* 봇 응답: 박스·테두리 없이 평문, 좌측, 넓게 (제미나이처럼) */
 .chatbot .message.bot, .chatbot [data-testid="bot"], .message-row.bot-row .message {
-    background: #F5F9FF !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 16px 16px 16px 4px !important;
+    max-width: 90% !important;
+    margin-right: auto !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 2px !important;
     color: var(--ink) !important;
 }
 /* ===== 전송 버튼 ===== */
