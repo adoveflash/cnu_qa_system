@@ -42,7 +42,7 @@ body, .gradio-container {
     background: linear-gradient(180deg, #E7F0FC 0%, #F4F8FE 55%, #FFFFFF 100%) !important;
 }
 /* ===== 헤더 ===== */
-.title-area { text-align: center; padding: 40px 0 8px 0; }
+.title-area { text-align: center; padding: 26px 0 6px 0; }
 .title-area .logo-icon {
     display: inline-flex; align-items: center; justify-content: center;
     width: 66px; height: 66px; border-radius: 19px;
@@ -105,6 +105,19 @@ footer { visibility: hidden }
     padding-left: 2px !important;
     color: var(--ink) !important;
 }
+/* ===== 컴팩트: 말풍선 패딩·줄간격·메시지 간격 축소 (세로 길이 줄임) ===== */
+.chatbot .message {
+    padding: 9px 14px !important;
+    line-height: 1.5 !important;
+    font-size: 0.95em !important;
+}
+.chatbot .message p, .chatbot .message li {
+    margin: 0 0 0.3em 0 !important;
+    line-height: 1.5 !important;
+}
+.chatbot .message p:last-child, .chatbot .message ul:last-child { margin-bottom: 0 !important; }
+.message-row { margin: 2px 0 !important; padding: 2px 0 !important; }
+.chatbot .message-wrap { gap: 4px !important; }
 /* ===== 전송 버튼 ===== */
 button.primary {
     background: linear-gradient(135deg, var(--sky), var(--blue-deep)) !important;
@@ -254,6 +267,8 @@ def create_app(
                 show_label=False,
                 scale=9,
                 container=False,
+                lines=1,
+                max_lines=5,
             )
             submit_btn = gr.Button("전송", variant="primary", scale=1, min_width=80)
 
