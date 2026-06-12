@@ -55,7 +55,7 @@ _SOURCE_GROUP: dict[str, list[str]] = {
 }
 
 # source 부스팅 가중치 (distance에서 이만큼 차감)
-_BOOST_WEIGHT = 0.15
+_BOOST_WEIGHT = 0.08
 
 
 def _detect_sources(query: str) -> list[str]:

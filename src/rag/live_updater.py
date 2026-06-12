@@ -30,6 +30,17 @@ SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": USER_AGENT})
 SESSION.verify = False
 
+# transient 타임아웃·5xx 자동 재시도 (학교 서버 응답 지연 대비)
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+_retry_cfg = Retry(
+    total=2, connect=2, read=2, backoff_factor=1.0,
+    status_forcelist=[500, 502, 503, 504], allowed_methods=["GET"],
+)
+SESSION.mount("https://", HTTPAdapter(max_retries=_retry_cfg))
+SESSION.mount("http://", HTTPAdapter(max_retries=_retry_cfg))
+
 
 # ── 식단 크롤링 ─────────────────────────────────────────────────────────
 

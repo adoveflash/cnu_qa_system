@@ -19,7 +19,7 @@ def load_embedding_model(model_name: str = _DEFAULT_MODEL) -> SentenceTransforme
     Returns:
         SentenceTransformer 객체
     """
-    return SentenceTransformer(model_name)
+    return SentenceTransformer(model_name, device="cpu")
 
 
 def embed_texts(

@@ -18,172 +18,151 @@ _USE_MESSAGES = _GRADIO_MAJOR >= 5
 _NEED_TYPE_PARAM = _GRADIO_MAJOR == 5  # 6.x는 type 파라미터 없음
 
 _CSS = """
-/* ===== Claude 스타일: 따뜻한 아이보리 + 점토색(clay) 포인트 + 세리프 ===== */
+/* ===== 블루 테마: 시원한 하늘색 그라데이션 + 카드형 말풍선 ===== */
 :root {
-    --clay: #D97757;          /* Claude 시그니처 점토색 */
-    --clay-deep: #C15F3C;
-    --ivory: #FAF9F5;         /* 따뜻한 배경 */
-    --cream: #F0EEE6;         /* 카드/칩 배경 */
-    --ink: #2A2A28;           /* 본문 텍스트 (웜 블랙) */
-    --muted: #6B6B63;         /* 보조 텍스트 */
-    --line: #E5E3DA;          /* 경계선 */
+    --blue: #2563EB;          /* 메인 블루 */
+    --blue-deep: #1D4ED8;     /* 진한 블루 */
+    --sky: #3B82F6;           /* 밝은 하늘 */
+    --navy: #0B2F5E;          /* 제목용 네이비 */
+    --bg: #EAF1FB;            /* 배경 */
+    --card: #FFFFFF;          /* 카드/채팅 배경 */
+    --soft: #E1ECFB;          /* 칩 배경 */
+    --ink: #122038;           /* 본문 텍스트 */
+    --muted: #5C6B84;         /* 보조 텍스트 */
+    --line: #D4E1F4;          /* 경계선 */
 }
 .gradio-container {
     max-width: 1080px !important;
     margin: 0 auto !important;
     padding: 0 24px !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif !important;
-    background: var(--ivory) !important;
     color: var(--ink) !important;
 }
-body, .gradio-container { background: var(--ivory) !important; }
-.title-area {
-    text-align: center;
-    padding: 44px 0 10px 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
+body, .gradio-container {
+    background: linear-gradient(180deg, #E7F0FC 0%, #F4F8FE 55%, #FFFFFF 100%) !important;
 }
+/* ===== 헤더 ===== */
+.title-area { text-align: center; padding: 40px 0 8px 0; }
 .title-area .logo-icon {
-    font-size: 2.4em;
-    color: var(--clay);
-    line-height: 1;
-    margin-bottom: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 66px; height: 66px; border-radius: 19px;
+    background: linear-gradient(135deg, var(--sky), var(--blue-deep));
+    color: #fff; font-size: 1.95em; line-height: 1;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.38);
+    margin-bottom: 14px;
 }
 .title-area h1 {
-    font-family: 'Tiempos Text', Georgia, 'Times New Roman', serif;
-    font-size: 2.0em;
-    font-weight: 500;
-    margin-bottom: 6px;
-    color: var(--ink);
-    letter-spacing: -0.4px;
+    font-size: 2.05em; font-weight: 800; margin-bottom: 6px;
+    color: var(--navy); letter-spacing: -0.5px;
 }
-.title-area p {
-    color: var(--muted);
-    font-size: 0.96em;
-    margin-top: 0;
-}
+.title-area p { color: var(--muted); font-size: 0.96em; margin-top: 0; }
+/* ===== 카테고리 칩 ===== */
 .category-badges {
-    display: flex;
-    justify-content: center;
-    gap: 7px;
-    flex-wrap: wrap;
-    margin: 18px 0 22px 0;
+    display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 18px 0 22px 0;
 }
 .category-badges span {
-    background: var(--cream);
-    color: var(--muted);
-    padding: 5px 13px;
-    border-radius: 8px;
-    font-size: 0.82em;
-    font-weight: 500;
-    border: 1px solid var(--line);
+    background: var(--card); color: var(--blue-deep);
+    padding: 6px 14px; border-radius: 999px; font-size: 0.82em; font-weight: 600;
+    border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(11, 47, 94, 0.05);
     transition: all 0.18s ease;
 }
 .category-badges span:hover {
-    background: #fff;
-    color: var(--clay-deep);
-    border-color: var(--clay);
+    background: var(--blue); color: #fff; border-color: var(--blue); transform: translateY(-1px);
 }
-footer {visibility: hidden}
-/* 채팅 영역 */
+footer { visibility: hidden }
+/* ===== 채팅 영역 ===== */
 .chatbot {
-    border-radius: 18px !important;
+    border-radius: 20px !important;
     border: 1px solid var(--line) !important;
-    background: #FFFDF9 !important;
-    box-shadow: none !important;
+    background: var(--card) !important;
+    box-shadow: 0 12px 32px rgba(11, 47, 94, 0.08) !important;
 }
 /* 메시지 말풍선 (Gradio 버전별 방어적 타겟팅) */
 .chatbot .message.user, .chatbot [data-testid="user"], .message-row.user-row .message {
-    background: var(--cream) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 14px !important;
-    color: var(--ink) !important;
-}
-.chatbot .message.bot, .chatbot [data-testid="bot"], .message-row.bot-row .message {
-    background: transparent !important;
+    background: linear-gradient(135deg, var(--sky), var(--blue)) !important;
     border: none !important;
-    color: var(--ink) !important;
-}
-/* 전송 버튼 */
-button.primary {
-    background: var(--clay) !important;
-    border: none !important;
-    border-radius: 10px !important;
-    font-weight: 600 !important;
+    border-radius: 16px 16px 4px 16px !important;
     color: #fff !important;
-    transition: background 0.18s ease !important;
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25) !important;
 }
-button.primary:hover {
-    background: var(--clay-deep) !important;
-}
-/* 보조 버튼 (초기화) */
-button.secondary {
-    background: transparent !important;
+.chatbot .message.user *, .message-row.user-row .message * { color: #fff !important; }
+.chatbot .message.bot, .chatbot [data-testid="bot"], .message-row.bot-row .message {
+    background: #F5F9FF !important;
     border: 1px solid var(--line) !important;
-    border-radius: 10px !important;
-    color: var(--muted) !important;
-}
-button.secondary:hover {
-    border-color: var(--clay) !important;
-    color: var(--clay-deep) !important;
-}
-/* 입력창 */
-textarea {
-    border-radius: 12px !important;
-    border: 1px solid var(--line) !important;
-    background: #FFFDF9 !important;
+    border-radius: 16px 16px 16px 4px !important;
     color: var(--ink) !important;
-    font-size: 1.0em !important;
+}
+/* ===== 전송 버튼 ===== */
+button.primary {
+    background: linear-gradient(135deg, var(--sky), var(--blue-deep)) !important;
+    border: none !important; border-radius: 12px !important;
+    font-weight: 700 !important; color: #fff !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+    transition: all 0.18s ease !important;
+}
+button.primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+/* 보조 버튼 */
+button.secondary {
+    background: transparent !important; border: 1px solid var(--line) !important;
+    border-radius: 12px !important; color: var(--muted) !important;
+}
+button.secondary:hover { border-color: var(--blue) !important; color: var(--blue-deep) !important; }
+/* ===== 입력창 ===== */
+textarea {
+    border-radius: 14px !important; border: 1px solid var(--line) !important;
+    background: var(--card) !important; color: var(--ink) !important; font-size: 1.0em !important;
 }
 textarea:focus {
-    border-color: var(--clay) !important;
-    box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.13) !important;
+    border-color: var(--blue) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
 }
-/* 출처 배지 */
+/* ===== 타이핑 애니메이션 (점 3개 통통) ===== */
+.typing-dots { display: inline-flex; gap: 5px; align-items: center; padding: 5px 2px; }
+.typing-dots span {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--blue);
+    animation: typing-bounce 1.1s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes typing-bounce {
+    0%, 70%, 100% { transform: translateY(0) scale(0.85); opacity: 0.45; }
+    35% { transform: translateY(-7px) scale(1); opacity: 1; }
+}
+/* ===== 스트리밍 중 깜빡이는 커서 ===== */
+.caret {
+    display: inline-block; width: 8px; height: 1.05em; background: var(--blue);
+    margin-left: 2px; border-radius: 2px; vertical-align: text-bottom;
+    animation: caret-blink 0.9s steps(1) infinite;
+}
+@keyframes caret-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+/* ===== 출처 배지 (블루) ===== */
 .source-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-    padding-top: 11px;
-    border-top: 1px solid var(--line);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line);
 }
 .source-label {
-    font-size: 0.72em;
-    color: var(--muted);
-    font-weight: 600;
-    margin-right: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 0.72em; color: var(--muted); font-weight: 700; margin-right: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
 }
 .source-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--cream);
-    border: 1px solid var(--line);
-    color: var(--clay-deep);
-    padding: 4px 11px;
-    border-radius: 8px;
-    font-size: 0.76em;
-    font-weight: 500;
-    box-shadow: none;
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--soft); border: 1px solid var(--line); color: var(--blue-deep);
+    padding: 4px 11px; border-radius: 999px; font-size: 0.76em; font-weight: 600;
 }
-/* 예시 질문 */
+/* ===== 예시 질문 ===== */
 .examples-row button, .examples button {
-    border-radius: 10px !important;
-    font-size: 0.86em !important;
-    background: #FFFDF9 !important;
-    border: 1px solid var(--line) !important;
+    border-radius: 12px !important; font-size: 0.86em !important;
+    background: var(--card) !important; border: 1px solid var(--line) !important;
     color: var(--ink) !important;
 }
 .examples-row button:hover, .examples button:hover {
-    border-color: var(--clay) !important;
-    background: #fff !important;
+    border-color: var(--blue) !important; background: #F0F6FF !important;
 }
 """
+
+# 생성 대기 중 표시할 타이핑 애니메이션 / 스트리밍 커서
+_TYPING = '<span class="typing-dots"><span></span><span></span><span></span></span>'
+_CARET = '<span class="caret"></span>'
 
 _EXAMPLES = [
     "컴퓨터융합학부 졸업 요건이 어떻게 되나요?",
@@ -216,6 +195,14 @@ def _extract_text(content: Any) -> str:
     return str(content)
 
 
+def _set_bot(history: list, text: str) -> None:
+    """버전에 맞게 마지막 어시스턴트 메시지 내용을 설정한다."""
+    if _USE_MESSAGES:
+        history[-1]["content"] = text
+    else:
+        history[-1][1] = text
+
+
 def create_app(
     retriever: Any,
     model: Any | None = None,
@@ -227,7 +214,7 @@ def create_app(
         gr.HTML(
             """
             <div class="title-area">
-                <div class="logo-icon">&#10037;</div>
+                <div class="logo-icon">&#10024;</div>
                 <h1>CNU Campus AI</h1>
                 <p>충남대학교 학내 정보를 안내해 드릴게요</p>
             </div>
@@ -274,17 +261,17 @@ def create_app(
 
             question = _extract_text(message)
 
-            # 입력을 즉시 채팅창에 남기고 입력창을 비운다 (검색·생성보다 먼저)
+            # 입력을 즉시 채팅창에 남기고, 어시스턴트 말풍선엔 타이핑 애니메이션 표시
             if _USE_MESSAGES:
                 history = history + [
                     {"role": "user", "content": question},
-                    {"role": "assistant", "content": "…"},
+                    {"role": "assistant", "content": _TYPING},
                 ]
             else:
-                history = history + [[question, "…"]]
+                history = history + [[question, _TYPING]]
             yield "", history
 
-            # RAG 검색 (이 동안 어시스턴트 말풍선엔 '…' 표시)
+            # RAG 검색 (이 동안 타이핑 점이 계속 통통 튐)
             context, urls = retriever.build_context(question)
 
             if model is not None and tokenizer is not None:
@@ -300,20 +287,21 @@ def create_app(
                     while prior and prior[0]["role"] != "user":
                         prior.pop(0)
                     chat_history = prior or None
+
+                last = ""
                 for partial in generate_answer_stream(
                     question, context, urls, model, tokenizer, history=chat_history
                 ):
-                    if _USE_MESSAGES:
-                        history[-1]["content"] = partial
-                    else:
-                        history[-1][1] = partial
+                    last = partial
+                    # 생성 중에는 끝에 깜빡이는 커서를 붙여 '타이핑 중'처럼 보이게
+                    _set_bot(history, partial + _CARET)
                     yield "", history
+                # 최종: 커서 제거
+                _set_bot(history, last)
+                yield "", history
             else:
                 answer = fallback_answer(question, context, urls)
-                if _USE_MESSAGES:
-                    history[-1]["content"] = answer
-                else:
-                    history[-1][1] = answer
+                _set_bot(history, answer)
                 yield "", history
 
         submit_btn.click(respond, [msg, chatbot], [msg, chatbot])

@@ -19,6 +19,17 @@ _SESSION = requests.Session()
 _SESSION.headers.update({"User-Agent": USER_AGENT})
 _SESSION.verify = False
 
+# transient 타임아웃·5xx 자동 재시도 (학교 서버 응답 지연 대비)
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+_retry_cfg = Retry(
+    total=2, connect=2, read=2, backoff_factor=1.0,
+    status_forcelist=[500, 502, 503, 504], allowed_methods=["GET"],
+)
+_SESSION.mount("https://", HTTPAdapter(max_retries=_retry_cfg))
+_SESSION.mount("http://", HTTPAdapter(max_retries=_retry_cfg))
+
 # ── Tool JSON Schema (Qwen3 format) ────────────────────────────────────────
 
 TOOLS = [
