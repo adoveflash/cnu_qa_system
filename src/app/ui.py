@@ -254,7 +254,7 @@ def create_app(
             """
         )
 
-        chatbot_kwargs = {"height": 640, "show_label": False, "container": False}
+        chatbot_kwargs = {"height": 430, "show_label": False, "container": False}
         if _NEED_TYPE_PARAM:
             chatbot_kwargs["type"] = "messages"
         chatbot = gr.Chatbot(
