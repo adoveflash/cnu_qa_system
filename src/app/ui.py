@@ -137,6 +137,9 @@ button.secondary:hover { border-color: var(--blue) !important; color: var(--blue
 textarea {
     border-radius: 14px !important; border: 1px solid var(--line) !important;
     background: var(--card) !important; color: var(--ink) !important; font-size: 1.0em !important;
+    min-height: 46px !important; max-height: 130px !important; height: 46px !important;
+    padding: 12px 15px !important; line-height: 1.35 !important;
+    resize: none !important; overflow-y: auto !important;
 }
 textarea:focus {
     border-color: var(--blue) !important;
