@@ -77,32 +77,16 @@ footer { visibility: hidden }
     background: var(--card) !important;
     box-shadow: 0 12px 32px rgba(11, 47, 94, 0.08) !important;
 }
-/* ===== 메시지: Gemini 스타일 (내 메시지=우측 블루 말풍선 / 봇=좌측 박스 없는 평문) ===== */
-/* 행 정렬: 사용자 우측, 봇 좌측 */
-.message-row.user-row { justify-content: flex-end !important; }
-.message-row.bot-row { justify-content: flex-start !important; }
-/* 내 메시지: 우측 정렬 + 폭 제한 (침범 방지) */
+/* ===== 메시지 색상만 (레이아웃은 Gradio 기본 유지 → 글자 가로 정상) ===== */
 .chatbot .message.user, .chatbot [data-testid="user"], .message-row.user-row .message {
-    display: inline-block !important;
-    max-width: 72% !important;
-    margin-left: auto !important;
     background: linear-gradient(135deg, var(--sky), var(--blue)) !important;
     border: none !important;
-    border-radius: 18px 18px 5px 18px !important;
     color: #fff !important;
-    text-align: left !important;
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22) !important;
 }
 .chatbot .message.user *, .message-row.user-row .message * { color: #fff !important; }
-/* 봇 응답: 박스·테두리 없이 평문, 좌측, 넓게 (제미나이처럼) */
 .chatbot .message.bot, .chatbot [data-testid="bot"], .message-row.bot-row .message {
-    max-width: 90% !important;
-    margin-right: auto !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 2px !important;
+    background: #F5F9FF !important;
+    border: 1px solid var(--line) !important;
     color: var(--ink) !important;
 }
 /* ===== 컴팩트: 말풍선 패딩·줄간격·메시지 간격 축소 (세로 길이 줄임) ===== */
@@ -137,9 +121,6 @@ button.secondary:hover { border-color: var(--blue) !important; color: var(--blue
 textarea {
     border-radius: 14px !important; border: 1px solid var(--line) !important;
     background: var(--card) !important; color: var(--ink) !important; font-size: 1.0em !important;
-    min-height: 46px !important; max-height: 130px !important; height: 46px !important;
-    padding: 12px 15px !important; line-height: 1.35 !important;
-    resize: none !important; overflow-y: auto !important;
 }
 textarea:focus {
     border-color: var(--blue) !important;
@@ -187,6 +168,17 @@ textarea:focus {
 .examples-row button:hover, .examples button:hover {
     border-color: var(--blue) !important; background: #F0F6FF !important;
 }
+/* ===== 메시지 세로 길이 강제 축소 (Gradio 버전 무관 광범위 타겟, 최우선) ===== */
+.chatbot .message, .chatbot [data-testid="user"], .chatbot [data-testid="bot"],
+.message-row .message, .message-wrap .message, .bubble, .chatbot .prose,
+.chatbot div[class*="message"] {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    line-height: 1.35 !important;
+    min-height: 0 !important;
+}
+.chatbot .message p, .chatbot .prose p, .message-row p { margin: 0 !important; }
+.chatbot .message > *, .bubble > * { margin-top: 0 !important; margin-bottom: 0 !important; }
 """
 
 # 생성 대기 중 표시할 타이핑 애니메이션 / 스트리밍 커서
