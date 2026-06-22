@@ -130,9 +130,14 @@ def _answer(question: str, history: list[dict]) -> Any:
     context, urls = retriever.build_context(question)
 
     if model is not None and tokenizer is not None:
-        prior = [m for m in history if m.get("content")] or None
+        # Gemma 챗 템플릿은 user/assistant 엄격 교대 + user 시작을 요구한다.
+        # 맨 앞 환영 메시지(assistant)로 시작하면 깨지므로, user로 시작하도록
+        # 앞쪽 비-user 메시지를 떼어낸다.
+        prior = [m for m in history if m.get("content")]
+        while prior and prior[0].get("role") != "user":
+            prior.pop(0)
         return generate_answer_stream(
-            question, context, urls, model, tokenizer, history=prior
+            question, context, urls, model, tokenizer, history=prior or None
         )
     return fallback_answer(question, context, urls)
 
