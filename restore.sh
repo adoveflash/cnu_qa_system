@@ -7,6 +7,13 @@
 # 그 다음:        bash restore.sh
 set -e
 
+# CUDA 라이브러리 가드: 시스템 옛 libnvJitLink가 torch 휠보다 먼저 잡혀
+# cusparse __nvJitLinkComplete_12_4 심볼 누락으로 torch import가 죽는 걸 우회.
+_NVJIT_LIB="$(python -c 'import os,nvidia.nvjitlink as m; print(os.path.dirname(m.__file__)+"/lib")' 2>/dev/null || true)"
+if [ -n "$_NVJIT_LIB" ]; then
+    export LD_LIBRARY_PATH="${_NVJIT_LIB}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
+
 CORE=/tmp/cleaned_core.jsonl
 BOX=/tmp/cleaned_box.jsonl
 MERGED=/tmp/cleaned_merged.jsonl

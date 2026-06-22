@@ -15,6 +15,15 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# ── CUDA 라이브러리 가드 ──
+# 시스템의 옛 libnvJitLink.so.12가 torch 휠보다 먼저 잡히면 cusparse가
+# __nvJitLinkComplete_12_4 심볼을 못 찾아 torch import가 죽는다.
+# pip 휠의 nvjitlink lib을 LD_LIBRARY_PATH 맨 앞에 둬서 우회한다.
+_NVJIT_LIB="$(python -c 'import os,nvidia.nvjitlink as m; print(os.path.dirname(m.__file__)+"/lib")' 2>/dev/null || true)"
+if [ -n "$_NVJIT_LIB" ]; then
+    export LD_LIBRARY_PATH="${_NVJIT_LIB}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
+
 echo "============================================"
 echo "  CNU Q&A 챗봇 — Task 2 & 3"
 echo "============================================"
