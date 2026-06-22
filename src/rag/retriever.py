@@ -100,6 +100,11 @@ class Retriever:
 
         self.top_k = top_k
 
+        # advanced RAG 구성요소 (lazy 로딩 캐시)
+        self._bm25 = None
+        self._reranker = None
+        self._all_docs = None
+
     def _query_collection(
         self, collection: Any, query_embedding: list[float], top_k: int
     ) -> list[dict[str, Any]]:
@@ -129,55 +134,120 @@ class Retriever:
             )
         return output
 
-    def retrieve(self, query: str, top_k: int | None = None) -> list[dict[str, Any]]:
-        """static + live 컬렉션에서 질문과 유사한 청크를 검색한다.
-
-        두 컬렉션 결과를 합쳐 거리순으로 정렬 후 top_k개 반환한다.
-        질문에 학과 키워드가 있으면 해당 source 결과를 우선 부스팅한다.
-
-        Args:
-            query: 검색 질문
-            top_k: 반환할 결과 수 (None이면 기본값 사용)
-
-        Returns:
-            [{text, url, title, source, distance}, ...]
-        """
-        k = top_k or self.top_k
+    def _dense(self, query: str, fetch_k: int) -> list[dict[str, Any]]:
+        """dense(bge-m3) 검색 — static+live 병합 + 학과 부스팅 후 fetch_k개."""
         query_embedding = self.model.encode(query).tolist()
 
-        # 넓게 검색 (부스팅 후 재정렬을 위해 2배로)
-        fetch_k = k * 2
-
-        # static 컬렉션 검색
         results = self._query_collection(self.static, query_embedding, fetch_k)
-
-        # live 컬렉션 검색 (있으면)
         if self.live is not None:
-            live_results = self._query_collection(self.live, query_embedding, fetch_k)
-            results.extend(live_results)
+            results.extend(self._query_collection(self.live, query_embedding, fetch_k))
 
-        # 학과 부스팅: 매칭 source의 distance를 낮춰서 우선 정렬
         preferred_sources = _detect_sources(query)
         if preferred_sources:
             for r in results:
                 if r["source"] in preferred_sources:
                     r["distance"] = max(0, r["distance"] - _BOOST_WEIGHT)
 
-        # 거리순 정렬 후 top_k
         results.sort(key=lambda x: x["distance"])
-        return results[:k]
+        return results[:fetch_k]
 
-    def build_context(self, query: str, top_k: int | None = None) -> tuple[str, list[str]]:
+    def _all_documents(self) -> list[dict[str, Any]]:
+        """BM25용 — 전체 코퍼스 문서를 1회 적재해 캐싱한다."""
+        if self._all_docs is None:
+            docs: list[dict[str, Any]] = []
+            for col in [self.static, self.live]:
+                if col is None:
+                    continue
+                got = col.get(include=["documents", "metadatas"])
+                for cid, text, meta in zip(got["ids"], got["documents"], got["metadatas"]):
+                    docs.append(
+                        {
+                            "chunk_id": cid,
+                            "text": text,
+                            "url": meta.get("url", ""),
+                            "title": meta.get("title", ""),
+                            "source": meta.get("source", ""),
+                            "distance": 1.0,
+                        }
+                    )
+            self._all_docs = docs
+        return self._all_docs
+
+    def _bm25_search(self, query: str, n: int) -> list[dict[str, Any]]:
+        """BM25 희소검색 (lazy 인덱스 구축)."""
+        if self._bm25 is None:
+            from src.rag.advanced import BM25Index
+
+            self._bm25 = BM25Index(self._all_documents())
+        return self._bm25.search(query, n)
+
+    def _rerank(
+        self, query: str, candidates: list[dict[str, Any]], top_k: int
+    ) -> list[dict[str, Any]]:
+        """cross-encoder 재정렬 (lazy 모델 로딩)."""
+        if self._reranker is None:
+            from src.rag.advanced import Reranker
+
+            self._reranker = Reranker()
+        return self._reranker.rerank(query, candidates, top_k)
+
+    def retrieve(
+        self, query: str, top_k: int | None = None, mode: str = "naive"
+    ) -> list[dict[str, Any]]:
+        """질문과 유사한 청크를 검색한다 (RAG 모드 선택 가능).
+
+        모드:
+            - "naive": dense(bge-m3) top_k (기본)
+            - "hybrid": dense + BM25 RRF 융합
+            - "rerank": dense 후보를 cross-encoder로 재정렬
+            - "hybrid_rerank": hybrid 후보를 재정렬
+
+        Args:
+            query: 검색 질문
+            top_k: 반환할 결과 수 (None이면 기본값)
+            mode: 검색 모드
+
+        Returns:
+            [{text, url, title, source, distance, ...}, ...]
+        """
+        k = top_k or self.top_k
+
+        if mode == "naive":
+            return self._dense(query, k * 2)[:k]
+
+        from src.rag.advanced import rrf_fuse
+
+        cand_n = max(k * 4, 20)  # 재정렬/융합용 넓은 후보
+        dense = self._dense(query, cand_n)
+
+        if mode == "rerank":
+            return self._rerank(query, dense, k)
+
+        bm25 = self._bm25_search(query, cand_n)
+        fused = rrf_fuse([dense, bm25], top_k=cand_n)
+
+        if mode == "hybrid":
+            return fused[:k]
+        if mode == "hybrid_rerank":
+            return self._rerank(query, fused, k)
+
+        # 알 수 없는 모드는 naive로 폴백
+        return dense[:k]
+
+    def build_context(
+        self, query: str, top_k: int | None = None, mode: str = "naive"
+    ) -> tuple[str, list[str]]:
         """질문에 대한 컨텍스트 문자열과 출처 URL 목록을 생성한다.
 
         Args:
             query: 검색 질문
             top_k: 검색 결과 수
+            mode: RAG 검색 모드 (naive/hybrid/rerank/hybrid_rerank)
 
         Returns:
             (컨텍스트 문자열, 출처 URL 리스트) 튜플
         """
-        results = self.retrieve(query, top_k)
+        results = self.retrieve(query, top_k, mode=mode)
         if not results:
             return "", []
 

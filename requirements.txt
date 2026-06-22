@@ -16,6 +16,9 @@ bitsandbytes>=0.45.0
 sentence-transformers==2.7.0
 chromadb>=0.5.0
 
+# Advanced RAG — BM25 희소검색 (hybrid 모드). reranker는 sentence-transformers CrossEncoder 사용
+rank-bm25>=0.2.2
+
 # 모델/벡터DB 다운로드
 huggingface_hub>=0.25.0
 

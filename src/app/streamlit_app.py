@@ -115,19 +115,30 @@ def _load_pipeline() -> tuple[Any, Any | None, Any | None]:
     return retriever, model, tokenizer
 
 
-def _answer(question: str, history: list[dict]) -> Any:
+# RAG 모드: 표시 라벨 → retriever 모드 값
+_RAG_MODES = {
+    "기본 (dense)": "naive",
+    "Hybrid (dense+BM25)": "hybrid",
+    "Rerank (cross-encoder)": "rerank",
+    "Hybrid + Rerank": "hybrid_rerank",
+}
+
+
+def _answer(question: str, history: list[dict], mode: str = "naive", top_k: int = 5) -> Any:
     """질문에 대한 답변을 (가능하면 스트리밍 제너레이터로) 만든다.
 
     Args:
         question: 사용자 질문
         history: 직전 대화 이력 [{"role", "content"}, ...] (현재 질문 제외)
+        mode: RAG 검색 모드 (naive/hybrid/rerank/hybrid_rerank)
+        top_k: 검색 문서 수
 
     Returns:
         모델이 있으면 누적 텍스트를 yield 하는 제너레이터,
         없으면 완성된 폴백 답변 문자열.
     """
     retriever, model, tokenizer = _load_pipeline()
-    context, urls = retriever.build_context(question)
+    context, urls = retriever.build_context(question, top_k=top_k, mode=mode)
 
     if model is not None and tokenizer is not None:
         # Gemma 챗 템플릿은 user/assistant 엄격 교대 + user 시작을 요구한다.
@@ -151,8 +162,24 @@ def main() -> None:
     if "messages" not in st.session_state:
         st.session_state.messages = [{"role": "assistant", "content": _WELCOME}]
 
-    # 사이드바: 예시 질문 + 초기화
+    # 사이드바: 설정 톱니바퀴 + 예시 질문 + 초기화
     with st.sidebar:
+        with st.expander("⚙️ 설정 (RAG)", expanded=False):
+            mode_label = st.radio(
+                "검색 방식",
+                list(_RAG_MODES.keys()),
+                index=0,
+                help=(
+                    "기본=의미검색만 · Hybrid=키워드(BM25) 결합 · "
+                    "Rerank=정밀 재정렬 · Hybrid+Rerank=둘 다 (가장 정확, 느림)"
+                ),
+            )
+            st.session_state.rag_mode = _RAG_MODES[mode_label]
+            st.session_state.rag_top_k = st.slider("검색 문서 수 (top-k)", 3, 10, 5)
+            st.caption(
+                "Rerank/Hybrid는 첫 사용 시 모델·인덱스 로딩으로 잠시 느릴 수 있어요."
+            )
+
         st.subheader("💡 이런 질문을 해보세요")
         for ex in _EXAMPLES:
             if st.button(ex, use_container_width=True):
@@ -185,7 +212,12 @@ def main() -> None:
     history = st.session_state.messages[:-1]  # 현재 질문 제외
     with st.chat_message("assistant"):
         placeholder = st.empty()
-        result = _answer(prompt, history)
+        result = _answer(
+            prompt,
+            history,
+            mode=st.session_state.get("rag_mode", "naive"),
+            top_k=st.session_state.get("rag_top_k", 5),
+        )
 
         if isinstance(result, str):
             final = result
