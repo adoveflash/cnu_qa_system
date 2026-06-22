@@ -23,5 +23,6 @@ huggingface_hub>=0.25.0
 requests>=2.31.0
 beautifulsoup4>=4.12.0
 
-# Web UI
+# Web UI — Streamlit으로 전환 (gradio는 레거시 폴백으로 유지)
+streamlit>=1.30.0
 gradio>=4.20.0

@@ -65,5 +65,7 @@ if echo "$@" | grep -q "batch-only"; then
     [ -f "outputs/realtime_output.json" ] && echo "    - outputs/realtime_output.json"
     echo "============================================"
 else
-    python -m src.chatbot_ui --ui-only "$@"
+    # Streamlit UI 실행 (프로젝트 루트를 PYTHONPATH에 둬서 `import src...` 동작)
+    PYTHONPATH="$SCRIPT_DIR" streamlit run src/app/streamlit_app.py \
+        --server.port=8501 --server.address=0.0.0.0
 fi

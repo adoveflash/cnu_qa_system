@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 
@@ -91,12 +92,32 @@ def run_chat_batch(
 
 
 def launch_ui() -> None:
-    """Gradio 챗봇 UI를 실행한다."""
-    retriever, model, tokenizer = _load_pipeline()
+    """Streamlit 챗봇 UI를 실행한다.
 
-    from src.app.ui import launch
+    Streamlit은 `streamlit run`으로 띄워야 하므로 여기서 직접 프로세스를
+    띄운다. (`chatbot.sh`도 동일하게 streamlit run을 호출한다.)
+    모델/검색기 로드는 Streamlit 앱 내부의 @st.cache_resource 가 담당한다.
+    """
+    import subprocess
+    import sys
 
-    launch(retriever, model, tokenizer, share=True)
+    root = Path(__file__).resolve().parents[1]
+    app = root / "src" / "app" / "streamlit_app.py"
+    env = {**os.environ, "PYTHONPATH": str(root)}
+    print("[ui] Streamlit UI 시작...")
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "streamlit",
+            "run",
+            str(app),
+            "--server.port=8501",
+            "--server.address=0.0.0.0",
+        ],
+        env=env,
+        check=False,
+    )
 
 
 if __name__ == "__main__":
