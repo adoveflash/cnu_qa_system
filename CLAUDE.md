@@ -134,32 +134,45 @@ Termproject_{이름}/
 │   ├── test_cls.json           # 평가용 (조교 제공, 고정 경로)
 │   ├── test_chat.json          # 평가용 (조교 제공, 고정 경로)
 │   ├── test_realtime.json      # 평가용 (조교 제공, optional)
-│   ├── train.json              # 학습 데이터 (직접 구축)
-│   └── valid.json              # 검증 데이터 (직접 구축)
-├── src/
+│   ├── train.json              # Task1 분류 시드 (직접 구축)
+│   ├── train_augmented.json    # Task1 분류 증강 (Claude Haiku paraphrase)
+│   ├── valid.json              # Task1 검증 데이터 (직접 구축)
+│   ├── qa/                     # Task2 RAG용 Q&A (train/eval)
+│   └── corpus/                 # 크롤링 raw·정제(cleaned)·청크(chunks)·vector_db
+├── src/                        # ── 평가 대상 소스 ──
 │   ├── classifier.ipynb        # Task 1 — 평가 시 이것만 실행
-│   ├── chatbot_ui.py           # Task 2 — 챗봇 UI
+│   ├── chatbot_ui.py           # Task 2 — 배치추론/UI 진입
 │   ├── realtime_model.py       # Task 3 — 실시간 정보 반영
+│   ├── app/                    # Streamlit 웹 UI (streamlit_app.py)
 │   ├── crawl/                  # 크롤러, HTML/PDF 정제
-│   ├── data/                   # 청킹, Q&A 자동 생성, 개인정보 마스킹
-│   ├── rag/                    # 임베딩, 벡터 DB, 검색
-│   ├── model/                  # base 로드, 추론
+│   ├── data/                   # 청킹, Q&A 생성, 개인정보 마스킹
+│   ├── rag/                    # 임베딩, 벡터 DB, 검색 (Advanced RAG)
+│   ├── model/                  # base 로드, 추론, 직접 구현 BERT(bert_scratch)
+│   ├── skills/                 # 실시간 스킬(식단·셔틀·학사·공지) + 자동 레지스트리
+│   ├── tools/                  # (레거시 shim → skills 위임)
 │   └── eval/                   # 평가 스크립트
+├── model/                      # 모델 안내·다운로드 (README, download_model.py)
 ├── models/
 │   └── lora_adapter/           # (레거시, 현재 미사용)
+├── notebooks/                  # submission·gemma3_submission·스모크 테스트
+├── scripts/                    # 개발·유지보수 (build_db, restore.sh, make_submission 등)
+├── tests/                      # 단위 테스트
 ├── outputs/                    # 실행 결과 (자동 생성)
 │   ├── cls_output.json         # Task 1 결과
 │   ├── chat_output.json        # Task 2 결과
 │   └── realtime_output.json    # Task 3 결과
-├── chatbot.sh                  # Task 2 — 평가 시 이것만 실행 (JSON 생성 + UI)
+├── chatbot.sh                  # Task 2·3 — 평가 시 이것만 실행 (JSON 생성 + UI)
 ├── requirements.txt
 ├── README.md
 ├── CLAUDE.md
+├── DIARY.md                    # 작업 일지 + 회고
 └── docs/
+    ├── 2_term_project_QA.pdf   # 과제 명세
     └── decisions/              # 의사결정 기록
 ```
 
 **평가 시 실행 파일**: `src/classifier.ipynb`와 `chatbot.sh`만 실행
+(개발·유지보수 스크립트는 `scripts/`, 보조/제출 노트북은 `notebooks/`에 둔다)
 
 `src/<모듈>/AGENTS.md`가 있다면 그 디렉터리 작업 시 함께 읽는다.
 
