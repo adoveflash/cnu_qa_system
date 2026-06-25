@@ -11,12 +11,28 @@ venv/
 # Data (용량 큰 것들)
 data/corpus/raw/
 data/vector_db/
-models/lora_adapter/*.bin
-models/lora_adapter/*.safetensors
+
+# 모델 가중치 (커밋 금지)
+models/lora_adapter/
+*.bin
+*.safetensors
+*.pt
+*.pth
 
 # Notebooks
 .ipynb_checkpoints/
 
+# Gradio 런타임
+.gradio/
+
+# 제출물 / 발표자료 (대용량 바이너리)
+Termproject_*/
+Termproject_*.zip
+*.pptx
+*.docx
+*.pdf
+
 # OS
-.DS_Store.env
+.DS_Store
+.env
 .cookies.json

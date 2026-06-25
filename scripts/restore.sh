@@ -4,7 +4,7 @@
 # (5개 카테고리는 Task1 분류기 얘기. Task2 챗봇은 넓을수록 좋다.)
 #
 # 실행 전 반드시: git fetch origin && git reset --hard origin/main   (Mac 코어 cleaned.jsonl 받기)
-# 그 다음:        bash restore.sh
+# 그 다음(레포 루트에서): bash scripts/restore.sh
 set -e
 
 # CUDA 라이브러리 가드: 시스템 옛 libnvJitLink가 torch 휠보다 먼저 잡혀
@@ -35,9 +35,9 @@ cat "$CORE" "$BOX" > "$MERGED"
 CUDA_VISIBLE_DEVICES=0 python -c "from pathlib import Path; from src.data.chunker import chunk_all; chunk_all(Path('$MERGED'), Path('data/corpus/chunks.jsonl'))"
 
 echo "[3/4] 벡터DB 재구축 (bge-m3 재임베딩)..."
-CUDA_VISIBLE_DEVICES=0 python build_db.py
+CUDA_VISIBLE_DEVICES=0 python scripts/build_db.py
 
 echo "[4/4] manual 큐레이션 청크 투입..."
-CUDA_VISIBLE_DEVICES=0 python add_manual.py
+CUDA_VISIBLE_DEVICES=0 python scripts/add_manual.py
 
-echo "✅ 병합 복구 완료 (박스 학과 + Mac 코어) — 'bash validate.sh'로 확인"
+echo "✅ 병합 복구 완료 (박스 학과 + Mac 코어) — 'python scripts/rag_check.py'로 확인"

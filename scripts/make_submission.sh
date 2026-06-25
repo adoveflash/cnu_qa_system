@@ -64,7 +64,7 @@ zip -r "$ZIP_NAME" \
     chatbot.sh \
     requirements.txt \
     README.md \
-    submission.ipynb \
+    notebooks/submission.ipynb \
     -x "*.pyc" \
     -x "*/__pycache__/*" \
     -x "*/.ipynb_checkpoints/*" \
