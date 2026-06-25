@@ -21,9 +21,10 @@ if not hasattr(torch, "float8_e8m0fnu"):
 
 from transformers import AutoTokenizer, BitsAndBytesConfig
 
-# Gemma 4는 텍스트 전용 Gemma4ForCausalLM으로 로드한다.
-# (멀티모달 AutoModelForImageTextToText는 config 파싱에서 'list'.keys() 에러)
-from transformers import Gemma4ForCausalLM as _ModelClass
+# gemma-4-12b-it는 멀티모달 unified 체크포인트(text decoder + vision/audio embedder)라
+# AutoModelForImageTextToText로 로드해야 가중치(model.language_model.*)가 올바로 매핑된다.
+# Gemma4ForCausalLM(텍스트 전용)으로 로드하면 키가 안 맞아 전부 랜덤 초기화된다.
+from transformers import AutoModelForImageTextToText as _ModelClass
 
 # transformers 회귀버그(#42374): gemma-4 unified 체크포인트를 텍스트로 로드할 때
 # GenerationConfig.from_model_config가 dict 형태 config에 to_dict()를 호출해
