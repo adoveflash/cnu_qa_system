@@ -231,7 +231,7 @@ def main() -> None:
             st.session_state.rag_top_k = st.slider("검색 문서 수 (top-k)", 3, 10, 5)
             st.session_state.ab_compare = st.checkbox(
                 "응답 2개 비교 후 선택 (GPT식)",
-                value=st.session_state.get("ab_compare", True),
+                value=st.session_state.get("ab_compare", False),
                 help=(
                     "답변을 기본(실시간·정밀)·대안(넓은 검색) 두 가지로 만들어 더 나은 쪽을 "
                     "고르게 합니다. 생성을 2회 하므로 응답이 느려져요."
@@ -278,7 +278,7 @@ def main() -> None:
     mode = st.session_state.get("rag_mode", "naive")
     top_k = st.session_state.get("rag_top_k", 5)
 
-    if st.session_state.get("ab_compare", True):
+    if st.session_state.get("ab_compare", False):
         # A/B: 두 후보를 완성본으로 생성 → 다음 rerun에서 _render_ab_choice 로 선택.
         #  A(기본) = 사이드바 모드 + 툴 ON → 툴 응답 또는 정밀 RAG
         #  B(대안) = naive(무컷오프 recall) + 툴 OFF → 코퍼스 RAG
