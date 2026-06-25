@@ -20,7 +20,8 @@ from transformers import AutoTokenizer, BitsAndBytesConfig
 # 덕분에 BASE_MODEL 환경변수만 바꾸면 모델 교체 가능 (폴백 Tier B).
 from transformers import AutoModelForImageTextToText as _ModelClass
 
-_DEFAULT_MODEL = os.environ.get("BASE_MODEL", "google/gemma-3-12b-it")
+# 기본은 Gemma 4. Gemma 3은 폴백(Tier B) — BASE_MODEL=google/gemma-3-12b-it 로 전환.
+_DEFAULT_MODEL = os.environ.get("BASE_MODEL", "google/gemma-4-12b-it")
 _SEED = 42
 
 

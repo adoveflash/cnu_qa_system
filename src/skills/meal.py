@@ -384,6 +384,14 @@ register(
             "기숙사 저녁",
             "기숙사 아침",
         ],
+        parameters={
+            "date": {"type": "string", "description": "조회 날짜 YYYY-MM-DD. 비우면 오늘."},
+            "location": {
+                "type": "string",
+                "enum": ["all", "student_hall", "dormitory"],
+                "description": "식당 구분: 전체/학생회관/기숙사. 비우면 전체(all).",
+            },
+        },
         run=get_meal_menu,
         infer_args=_infer_meal_args,
     )

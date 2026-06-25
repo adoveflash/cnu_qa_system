@@ -1,7 +1,8 @@
 """추론 모듈.
 
 RAG 컨텍스트와 질문을 받아 답변을 생성한다.
-키워드 기반 tool 감지로 실시간 정보(식단, 셔틀, 학사일정, 공지)를 조회할 수 있다.
+LLM tool-calling 라우터로 실시간 정보(식단, 셔틀, 학사일정, 공지)를 조회하며,
+라우터가 파싱에 실패하면 키워드 detect()로 폴백한다.
 """
 
 from __future__ import annotations
@@ -15,8 +16,8 @@ import torch
 from transformers import TextIteratorStreamer
 
 from src.model.base import load_model, load_tokenizer, _DEFAULT_MODEL
-from src.tools.definitions import execute_tool
-from src.tools.detector import detect_tool
+from src.skills import detect, run_skill
+from src.skills.router import route_llm
 
 _SEED = 42
 
@@ -234,8 +235,22 @@ def _build_messages(question: str, context: str, history: list[dict] | None = No
 _TOOL_FAIL_KEYWORDS = ["찾을 수 없습니다", "가져올 수 없습니다", "조회 실패"]
 
 
+def _route_tool(question: str, model, tokenizer) -> tuple[str | None, dict]:
+    """LLM 라우터로 도구를 고르고, 파싱 실패 시 키워드 detect()로 폴백한다.
+
+    Returns:
+        (도구이름 | None, 인자). 도구 불필요면 (None, {}).
+    """
+    routed = route_llm(question, model, tokenizer)
+    if routed is not None:
+        return routed  # (name, args) 또는 (None, {}) — LLM 판단을 신뢰
+    # 라우터 파싱 실패 → 키워드 폴백 (DIARY 회고: 키워드는 안전망으로만)
+    skill, args = detect(question)
+    return (skill.name if skill else None), args
+
+
 def _resolve_context(
-    question: str, rag_context: str, urls: list[str], use_tools: bool
+    question: str, rag_context: str, urls: list[str], use_tools: bool, model, tokenizer
 ) -> tuple[str, list[str], bool]:
     """질문에 대해 tool 또는 RAG 컨텍스트를 결정한다.
 
@@ -245,10 +260,10 @@ def _resolve_context(
         (final_context, final_urls, used_tool)
     """
     if use_tools:
-        tool_name, tool_args = detect_tool(question)
+        tool_name, tool_args = _route_tool(question, model, tokenizer)
         if tool_name:
             print(f"  [tool] {tool_name}({tool_args})")
-            result = execute_tool(tool_name, tool_args)
+            result = run_skill(tool_name, tool_args)
             # tool 실패 시 RAG fallback
             if any(kw in result for kw in _TOOL_FAIL_KEYWORDS):
                 print("  [tool] 실패 → RAG fallback")
@@ -293,7 +308,9 @@ def generate_answer(
     Returns:
         생성된 답변 문자열
     """
-    final_context, final_urls, used_tool = _resolve_context(question, context, urls, use_tools)
+    final_context, final_urls, used_tool = _resolve_context(
+        question, context, urls, use_tools, model, tokenizer
+    )
     if not used_tool and _is_smalltalk(question):
         final_context, final_urls = "", []
     messages = _build_messages(question, final_context, history=None)
@@ -354,14 +371,14 @@ def generate_answer_stream(
     Yields:
         누적된 답변 문자열
     """
-    # tool 감지 + 실행 (스트리밍 전에 완료)
+    # tool 라우팅 + 실행 (스트리밍 전에 완료)
     used_tool = False
     if use_tools:
-        tool_name, tool_args = detect_tool(question)
+        tool_name, tool_args = _route_tool(question, model, tokenizer)
         if tool_name:
             yield f"🔍 실시간 정보 조회 중... ({tool_name})"
             print(f"  [tool] {tool_name}({tool_args})")
-            result = execute_tool(tool_name, tool_args)
+            result = run_skill(tool_name, tool_args)
             final_context = f"[{tool_name} 결과]\n{result}"
             final_urls: list[str] = []
             used_tool = True

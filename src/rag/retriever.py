@@ -6,6 +6,7 @@ static(고정 정보) + live(실시간 갱신 정보) 두 컬렉션을 동시에
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -45,6 +46,13 @@ _DEPARTMENT_KEYWORDS: dict[str, list[str]] = {
         "채용",
         "진로",
     ],
+    # 장학금: 학과 페이지(약학대·경영 등)가 아니라 공식 안내(plus_kr)를 우선한다.
+    "scholarship": [
+        "장학",
+        "장학금",
+        "장학생",
+        "등록금 지원",
+    ],
 }
 
 # source 그룹: 특정 source 감지 시 함께 부스팅할 source 목록
@@ -52,10 +60,21 @@ _SOURCE_GROUP: dict[str, list[str]] = {
     "computer": ["computer", "manual"],
     "plus_kr": ["plus_kr", "manual"],
     "job": ["job"],
+    "scholarship": ["plus_kr", "job", "manual"],
 }
 
 # source 부스팅 가중치 (distance에서 이만큼 차감)
-_BOOST_WEIGHT = 0.08
+# bge-m3 cosine distance(0~2) 기준. 0.08은 약해 학과 청크 오염을 못 막아 0.15로 상향.
+_BOOST_WEIGHT = float(os.environ.get("RAG_BOOST_WEIGHT", "0.15"))
+
+# 제출 파이프라인 기본 검색 모드. naive는 컷오프·재정렬이 없어 무관 청크가 출처로 샌다.
+# rerank(cross-encoder)를 기본으로 두되, T4 메모리 부족 시 RAG_MODE=naive로 폴백 가능.
+_DEFAULT_MODE = os.environ.get("RAG_MODE", "rerank")
+
+# cross-encoder rerank_score 컷오프. 이 값 미만 청크는 컨텍스트·출처에서 제외한다.
+# bge-reranker-v2-m3은 raw logit을 내며 양수≈관련/음수≈무관(sigmoid 0.5 기준 0.0).
+# 무관 청크가 출처 배지로 새는 것을 막는 핵심 레버. RAG_RERANK_MIN으로 튜닝.
+_RERANK_SCORE_MIN = float(os.environ.get("RAG_RERANK_MIN", "0.0"))
 
 
 def _detect_sources(query: str) -> list[str]:
@@ -191,26 +210,39 @@ class Retriever:
             self._reranker = Reranker()
         return self._reranker.rerank(query, candidates, top_k)
 
+    @staticmethod
+    def _apply_cutoff(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """rerank_score가 컷오프 미만인 무관 청크를 제거한다.
+
+        무관 청크가 컨텍스트뿐 아니라 출처 배지(약학대·경영 등)로 새는 것을 막는다.
+        전부 컷오프되면 빈 리스트를 반환해 "확인되지 않은 정보" 정직 응답으로 유도한다
+        (과거 RAG 데이터로 잘못된 정보를 단정하는 것보다 낫다).
+        """
+        return [r for r in results if r.get("rerank_score", 1.0) >= _RERANK_SCORE_MIN]
+
     def retrieve(
-        self, query: str, top_k: int | None = None, mode: str = "naive"
+        self, query: str, top_k: int | None = None, mode: str | None = None
     ) -> list[dict[str, Any]]:
         """질문과 유사한 청크를 검색한다 (RAG 모드 선택 가능).
 
         모드:
-            - "naive": dense(bge-m3) top_k (기본)
+            - "naive": dense(bge-m3) top_k
             - "hybrid": dense + BM25 RRF 융합
-            - "rerank": dense 후보를 cross-encoder로 재정렬
-            - "hybrid_rerank": hybrid 후보를 재정렬
+            - "rerank": dense 후보를 cross-encoder로 재정렬 + score 컷오프 (기본)
+            - "hybrid_rerank": hybrid 후보를 재정렬 + score 컷오프
+
+        rerank 계열 모드는 _RERANK_SCORE_MIN 미만 청크를 탈락시켜 출처 오염을 막는다.
 
         Args:
             query: 검색 질문
             top_k: 반환할 결과 수 (None이면 기본값)
-            mode: 검색 모드
+            mode: 검색 모드 (None이면 _DEFAULT_MODE — 환경변수 RAG_MODE, 기본 rerank)
 
         Returns:
             [{text, url, title, source, distance, ...}, ...]
         """
         k = top_k or self.top_k
+        mode = mode or _DEFAULT_MODE
 
         if mode == "naive":
             return self._dense(query, k * 2)[:k]
@@ -221,7 +253,7 @@ class Retriever:
         dense = self._dense(query, cand_n)
 
         if mode == "rerank":
-            return self._rerank(query, dense, k)
+            return self._apply_cutoff(self._rerank(query, dense, k))
 
         bm25 = self._bm25_search(query, cand_n)
         fused = rrf_fuse([dense, bm25], top_k=cand_n)
@@ -229,23 +261,23 @@ class Retriever:
         if mode == "hybrid":
             return fused[:k]
         if mode == "hybrid_rerank":
-            return self._rerank(query, fused, k)
+            return self._apply_cutoff(self._rerank(query, fused, k))
 
         # 알 수 없는 모드는 naive로 폴백
         return dense[:k]
 
     def build_context(
-        self, query: str, top_k: int | None = None, mode: str = "naive"
+        self, query: str, top_k: int | None = None, mode: str | None = None
     ) -> tuple[str, list[str]]:
         """질문에 대한 컨텍스트 문자열과 출처 URL 목록을 생성한다.
 
         Args:
             query: 검색 질문
             top_k: 검색 결과 수
-            mode: RAG 검색 모드 (naive/hybrid/rerank/hybrid_rerank)
+            mode: RAG 검색 모드 (None이면 _DEFAULT_MODE — naive/hybrid/rerank/hybrid_rerank)
 
         Returns:
-            (컨텍스트 문자열, 출처 URL 리스트) 튜플
+            (컨텍스트 문자열, 출처 URL 리스트) 튜플. 관련 청크가 없으면 ("", []).
         """
         results = self.retrieve(query, top_k, mode=mode)
         if not results:

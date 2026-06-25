@@ -103,6 +103,9 @@ register(
         name="get_notices",
         description="충남대학교 컴퓨터융합학부 최신 공지사항을 조회합니다.",
         keywords=["공지사항", "공지", "알림"],
+        parameters={
+            "count": {"type": "integer", "description": "가져올 공지 수(기본 5)."},
+        },
         run=get_notices,
         infer_args=_infer_notice_args,
     )

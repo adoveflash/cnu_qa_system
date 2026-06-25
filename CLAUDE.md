@@ -262,6 +262,8 @@ Colab에서 실행. `data/test_cls.json`을 읽어 `outputs/cls_output.json` 생
 
 - `001-base-model-검증.md`: Qwen2.5-7B 4bit 채택 (T4 VRAM 5.33GB 검증) → 이후 Gemma 4 12B로 교체
 - `002-크롤링-범위.md`: plus.cnu.ac.kr/html/, computer, job 도메인 한정
+- `003-ui-gradio에서-streamlit으로.md`: Task2 UI를 Gradio → Streamlit 전환
+- `004-검색정밀도-및-LLM-라우팅.md`: RAG 기본 모드 rerank화 + score 컷오프, 스킬 라우팅 키워드 → LLM tool-calling
 
 ## 제출 체크리스트
 

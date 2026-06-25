@@ -62,11 +62,14 @@ class Skill:
 
     Attributes:
         name: 스킬 식별자 (기존 tool 이름과 호환 — get_meal_menu 등)
-        description: 스킬 설명 (발표/디버그용)
-        keywords: 이 스킬을 발동시키는 질문 키워드
-        negative_keywords: 오발동을 막는 제외 키워드
-        infer_args: 질문에서 실행 인자(dict)를 추론하는 함수
-        run: 실제 실행 함수 (infer_args 결과를 **kwargs 로 받음)
+        description: 스킬 설명 (LLM 라우터에 주는 도구 설명 + 발표/디버그용)
+        keywords: 이 스킬을 발동시키는 질문 키워드 (LLM 라우터 실패 시 폴백용)
+        negative_keywords: 오발동을 막는 제외 키워드 (키워드 폴백 전용)
+        parameters: LLM tool-calling용 인자 스키마.
+            {인자명: {"type": "string|integer", "description": ..., "enum": [...]}} 형태.
+            비우면 인자 없는 도구. 라우터가 이걸로 도구 스펙을 만들고 인자를 검증한다.
+        infer_args: 질문에서 실행 인자(dict)를 추론하는 함수 (키워드 폴백 전용)
+        run: 실제 실행 함수 (인자를 **kwargs 로 받음)
     """
 
     name: str
@@ -74,6 +77,7 @@ class Skill:
     keywords: list[str]
     run: Callable[..., str]
     negative_keywords: list[str] = field(default_factory=list)
+    parameters: dict = field(default_factory=dict)
     infer_args: Callable[[str], dict] = _no_args
 
     def match_length(self, question: str) -> int | None:

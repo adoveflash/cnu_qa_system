@@ -232,6 +232,10 @@ register(
             "성적발표",
         ],
         negative_keywords=["기말 레포트", "기말 과제", "중간 레포트", "중간 과제", "중간 정도"],
+        parameters={
+            "month": {"type": "integer", "description": "조회할 월(1-12). 비우면 이번 달 기준."},
+            "year": {"type": "integer", "description": "조회할 연도. 비우면 올해."},
+        },
         run=get_academic_calendar,
         infer_args=_infer_calendar_args,
     )

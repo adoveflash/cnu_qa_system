@@ -6,11 +6,13 @@
 ## 구조
 
 - `base.py` — `Skill` 데이터클래스 + 공용 HTTP `SESSION`(재시도·학술 UA) + `now_kst()`
-- `registry.py` — 스킬 자동 import/등록, `detect(질문)→스킬`, `run_skill(이름, 인자)`
+- `router.py` — **LLM tool-calling 라우터**(`route_llm`). 기본 라우팅 경로.
+- `registry.py` — 스킬 자동 import/등록, `detect(질문)→스킬`(키워드 폴백), `run_skill(이름, 인자)`
 - `meal.py` / `shuttle.py` / `calendar.py` / `notice.py` — 실제 스킬
 
 호환용 shim: `src/tools/detector.py(detect_tool)`, `src/tools/definitions.py(execute_tool)`
-→ 둘 다 이 패키지로 위임한다. 신규 코드는 `from src.skills import detect, run_skill` 사용.
+→ 둘 다 이 패키지의 **키워드 detect**로 위임한다(레거시·노트북 인라인 사본용).
+신규 코드는 `from src.skills import detect, run_skill` + `from src.skills.router import route_llm` 사용.
 
 ## 새 스킬 추가 (파일 하나 + 한 줄)
 
@@ -28,23 +30,31 @@ def _infer_args(question: str) -> dict:   # 인자가 필요할 때만
 
 register(Skill(
     name="get_xxx",
-    description="...",
-    keywords=["키워드1", "키워드2"],
-    negative_keywords=["오발동 방지어"],   # 선택
+    description="...",                      # LLM 라우터가 읽는 도구 설명 — 명확하게
+    keywords=["키워드1", "키워드2"],         # 키워드 폴백용
+    negative_keywords=["오발동 방지어"],   # 선택 (키워드 폴백 전용)
+    parameters={                           # LLM tool-calling 인자 스키마 (인자 있을 때만)
+        "arg": {"type": "string", "description": "...", "enum": [...]},  # enum 선택
+    },
     run=get_xxx,
-    infer_args=_infer_args,               # 선택 (기본: 인자 없음)
+    infer_args=_infer_args,               # 선택, 키워드 폴백 전용 (기본: 인자 없음)
 ))
 ```
 
 2. `registry.py` 의 `_SKILL_MODULES` 에 `"<이름>"` 한 줄 추가.
 
-끝. `detect()`/`run_skill()` 이 자동으로 새 스킬을 라우팅에 포함한다.
+끝. `route_llm()`(LLM)과 `detect()`(키워드 폴백)이 자동으로 새 스킬을 포함한다.
 
 ## 라우팅 규칙
 
-- 질문에 키워드가 포함되면 매칭. 여러 스킬이 걸리면 **가장 긴 키워드**의 스킬 우선.
-- `negative_keywords` 가 하나라도 걸리면 그 스킬은 매칭 제외(오발동 방지).
-- 매칭이 없으면 `(None, {})` → 호출부에서 RAG 검색으로 폴백.
+기본은 **LLM tool-calling**(`router.route_llm`): Gemma가 `description`+`parameters`를 읽고
+호출할 도구와 인자를 직접 고른다. "1학"(제1학생회관) 같은 변형·줄임말을 의미로 인식한다.
+
+- `route_llm` 반환 tri-state: `("get_xxx", args)` 도구선택 / `(None, {})` 도구불필요(LLM 판단) /
+  `None` 파싱실패 → 호출부가 **키워드 `detect()`로 폴백**.
+- 키워드 `detect()`(폴백): 질문에 키워드 포함 시 매칭, 여러 개면 **가장 긴 키워드** 우선,
+  `negative_keywords` 걸리면 제외. 매칭 없으면 `(None, {})` → RAG 폴백.
+- 즉 키워드(`keywords`/`negative_keywords`/`infer_args`)는 이제 **안전망**이지 1차 경로가 아니다.
 
 ## 주의
 
