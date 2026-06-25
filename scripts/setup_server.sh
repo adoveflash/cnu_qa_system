@@ -24,13 +24,15 @@ echo "[2/4] 환경 활성화..."
 eval "$(conda shell.bash hook)"
 conda activate "$ENV_NAME"
 
-# 3. PyTorch (CUDA 12.4 호환)
-echo "[3/4] PyTorch 설치 (CUDA 12.4)..."
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+# 3. PyTorch — Gemma 4는 torch 2.7+ 필요(float8_e8m0fnu).
+# 드라이버 CUDA 12.4 박스는 cu126 빌드로 설치(cu130 기본 빌드는 드라이버가 거부,
+# cu124는 torch 2.6이 상한이라 gemma-4 불가). minor-compat으로 12.4 드라이버에서 동작.
+echo "[3/4] PyTorch 설치 (torch 2.12.1 / cu126)..."
+pip install torch==2.12.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
 
-# 4. 나머지 의존성
+# 4. 나머지 의존성 (torch는 위에서 설치했으므로 제외)
 echo "[4/4] 프로젝트 의존성 설치..."
-pip install -r "$PROJECT_DIR/requirements.txt"
+grep -viE '^(torch|torchvision|torchaudio)' "$PROJECT_DIR/requirements.txt" | pip install -r /dev/stdin
 
 # 5. 확인
 echo ""
