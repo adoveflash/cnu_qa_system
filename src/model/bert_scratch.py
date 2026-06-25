@@ -1,6 +1,6 @@
-"""밑바닥부터 직접 구현한 BERT (Final Project 1 — Transformer Encoder).
+"""밑바닥부터 직접 구현한 BERT (Transformer Encoder).
 
-신입생 튜토리얼 5주차 요구사항 구현:
+구현 내용:
   1. BERT 아키텍처(임베딩 + 멀티헤드 셀프어텐션 인코더 + 풀러)를 직접 구현
   2. HuggingFace 사전학습 가중치를 직접 구현한 모델로 copy
   3. HF 모델과 임베딩(last_hidden_state) 값이 일치하는지 검증
@@ -221,7 +221,7 @@ class BertModel(nn.Module):
 
 
 class BertForQuestionClassification(nn.Module):
-    """직접 구현한 BERT + 분류 헤드 (Task 1: 질문 5분류, N21).
+    """직접 구현한 BERT + 분류 헤드 (Task 1: 질문 5분류).
 
     HF BertForSequenceClassification과 같은 이름(bert/classifier)을 써,
     백본 가중치는 copy하고 분류 헤드만 새로 학습한다.
