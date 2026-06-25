@@ -49,8 +49,9 @@ _GenerationConfig.from_model_config = classmethod(_safe_from_model_config)
 _DEFAULT_MODEL = os.environ.get("BASE_MODEL", "google/gemma-4-12b-it")
 _SEED = 42
 
-# Turing(T4·RTX8000)은 bf16 텐서코어가 없어 float16.
-_COMPUTE_DTYPE = torch.float16
+# Gemma 계열은 bf16로 학습돼 float16이면 활성값 오버플로 → NaN → 출력이 깨진다(점·쉼표만).
+# Turing(T4·RTX8000)도 bf16 연산은 지원한다(텐서코어 가속만 없을 뿐, 정확도 보장).
+_COMPUTE_DTYPE = torch.bfloat16
 
 
 def get_bnb_config() -> BitsAndBytesConfig:
