@@ -24,14 +24,28 @@ if [ -n "$_NVJIT_LIB" ]; then
     export LD_LIBRARY_PATH="${_NVJIT_LIB}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi
 
+# ── Python 헤더 가드 (bitsandbytes/triton JIT 컴파일용) ──
+# triton이 import 시 cuda_utils를 gcc로 컴파일하는데 시스템에 Python.h가 없으면
+# 실패한다. conda env 헤더가 있으면 CPATH 앞에 둔다(없으면 아무 일 안 함).
+_PYHDR="/home/dev/miniconda3/envs/dlnlp/include/python3.10"
+if [ -d "$_PYHDR" ]; then
+    export CPATH="${_PYHDR}${CPATH:+:$CPATH}"
+fi
+
+# --ui-only: 배치/실시간 건너뛰고 UI만 실행
+UI_ONLY=0
+for _a in "$@"; do [ "$_a" = "--ui-only" ] && UI_ONLY=1; done
+
 echo "============================================"
 echo "  CNU Q&A 챗봇 — Task 2 & 3"
 echo "============================================"
 
 # ── 의존성 확인 ──
+# torch/torchvision/torchaudio는 GPU 드라이버별 cuda 빌드가 달라(박스=cu126)
+# 재설치하면 깨진다. 이미 설치된 torch는 유지하고 나머지만 설치한다.
 echo ""
 echo "[1/4] 의존성 확인..."
-pip install -q -r requirements.txt 2>/dev/null || true
+grep -viE '^(torch|torchvision|torchaudio)' requirements.txt | pip install -q -r /dev/stdin 2>/dev/null || true
 
 # ── outputs 디렉터리 생성 ──
 mkdir -p outputs
@@ -43,22 +57,29 @@ if [ ! -d "data/vector_db" ]; then
     python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='adoveflash/cnu-qa-system', repo_type='model', local_dir='.', allow_patterns=['data/vector_db/**'])"
 fi
 
-# ── Task 3: 실시간 정보 (Optional) ──
-echo ""
-echo "[2/4] Task 3 — 실시간 정보 반영..."
-if [ -f "data/test_realtime.json" ]; then
-    # realtime_model은 --batch-only를 모르므로 제거하고 나머지 인자만 전달
-    RT_ARGS=()
-    for _a in "$@"; do [ "$_a" != "--batch-only" ] && RT_ARGS+=("$_a"); done
-    python -m src.realtime_model "${RT_ARGS[@]}" || echo "  [경고] Task 3 실행 실패 — 건너뜀"
-else
-    echo "  data/test_realtime.json 없음 — 건너뜀"
-fi
+if [ "$UI_ONLY" = 0 ]; then
+    # ── Task 3: 실시간 정보 (Optional) ──
+    echo ""
+    echo "[2/4] Task 3 — 실시간 정보 반영..."
+    if [ -f "data/test_realtime.json" ]; then
+        # realtime_model은 모르는 플래그(--batch-only/--ui-only)를 제거하고 전달
+        RT_ARGS=()
+        for _a in "$@"; do
+            case "$_a" in --batch-only | --ui-only) ;; *) RT_ARGS+=("$_a") ;; esac
+        done
+        python -m src.realtime_model "${RT_ARGS[@]}" || echo "  [경고] Task 3 실행 실패 — 건너뜀"
+    else
+        echo "  data/test_realtime.json 없음 — 건너뜀"
+    fi
 
-# ── Task 2: 배치 추론 ──
-echo ""
-echo "[3/4] Task 2 — 챗봇 배치 추론 (chat_output.json)..."
-python -m src.chatbot_ui --batch-only "$@" || echo "  [경고] 배치 추론 실패"
+    # ── Task 2: 배치 추론 ──
+    echo ""
+    echo "[3/4] Task 2 — 챗봇 배치 추론 (chat_output.json)..."
+    python -m src.chatbot_ui --batch-only || echo "  [경고] 배치 추론 실패"
+else
+    echo ""
+    echo "[2-3/4] --ui-only — 실시간/배치 건너뜀"
+fi
 
 # ── Task 2: UI 실행 ──
 echo ""
