@@ -25,6 +25,26 @@ from transformers import AutoTokenizer, BitsAndBytesConfig
 # (멀티모달 AutoModelForImageTextToText는 config 파싱에서 'list'.keys() 에러)
 from transformers import Gemma4ForCausalLM as _ModelClass
 
+# transformers 회귀버그(#42374): gemma-4 unified 체크포인트를 텍스트로 로드할 때
+# GenerationConfig.from_model_config가 dict 형태 config에 to_dict()를 호출해
+# `'dict' object has no attribute 'to_dict'`로 깨진다. upstream fix와 동일하게,
+# dict면 PretrainedConfig로 감싼 뒤 진행하도록 from_model_config를 패치한다.
+from transformers import GenerationConfig as _GenerationConfig, PretrainedConfig as _PretrainedConfig
+
+_orig_from_model_config = _GenerationConfig.from_model_config.__func__
+
+
+def _safe_from_model_config(cls, model_config):
+    try:
+        return _orig_from_model_config(cls, model_config)
+    except AttributeError:
+        if isinstance(model_config, dict):
+            return _orig_from_model_config(cls, _PretrainedConfig.from_dict(model_config))
+        return cls()
+
+
+_GenerationConfig.from_model_config = classmethod(_safe_from_model_config)
+
 _DEFAULT_MODEL = os.environ.get("BASE_MODEL", "google/gemma-4-12b-it")
 _SEED = 42
 
