@@ -124,7 +124,13 @@ _RAG_MODES = {
 }
 
 
-def _answer(question: str, history: list[dict], mode: str = "naive", top_k: int = 5) -> Any:
+def _answer(
+    question: str,
+    history: list[dict],
+    mode: str = "naive",
+    top_k: int = 5,
+    use_tools: bool = True,
+) -> Any:
     """질문에 대한 답변을 (가능하면 스트리밍 제너레이터로) 만든다.
 
     Args:
@@ -132,6 +138,7 @@ def _answer(question: str, history: list[dict], mode: str = "naive", top_k: int 
         history: 직전 대화 이력 [{"role", "content"}, ...] (현재 질문 제외)
         mode: RAG 검색 모드 (naive/hybrid/rerank/hybrid_rerank)
         top_k: 검색 문서 수
+        use_tools: LLM tool-calling 라우팅 사용 여부 (A/B 비교에서 B는 끈다)
 
     Returns:
         모델이 있으면 누적 텍스트를 yield 하는 제너레이터,
@@ -148,9 +155,55 @@ def _answer(question: str, history: list[dict], mode: str = "naive", top_k: int 
         while prior and prior[0].get("role") != "user":
             prior.pop(0)
         return generate_answer_stream(
-            question, context, urls, model, tokenizer, history=prior or None
+            question,
+            context,
+            urls,
+            model,
+            tokenizer,
+            use_tools=use_tools,
+            history=prior or None,
         )
     return fallback_answer(question, context, urls)
+
+
+def _answer_final(
+    question: str, history: list[dict], mode: str, top_k: int, use_tools: bool
+) -> str:
+    """A/B 후보용 — 답변을 끝까지 받아 완성 문자열 하나로 반환한다.
+
+    `generate_answer_stream`은 누적 텍스트를 yield 하므로 마지막 값이 최종 답변이다.
+    두 후보를 나란히 비교해야 하므로 스트리밍 대신 완성본을 만든다.
+    """
+    result = _answer(question, history, mode=mode, top_k=top_k, use_tools=use_tools)
+    if isinstance(result, str):
+        return result
+    final = ""
+    for partial in result:
+        final = partial
+    return final
+
+
+def _render_ab_choice() -> None:
+    """생성해 둔 두 후보(A 기본 / B 대안)를 나란히 보여주고, 고른 답변만 대화에 남긴다.
+
+    Streamlit 버튼 클릭은 rerun을 유발하므로 후보는 st.session_state.ab_pending 에
+    보존해 둔다. 사용자가 선택하면 해당 답변을 messages 에 append 하고 pending 을 비운다.
+    """
+    pend = st.session_state.ab_pending
+    with st.chat_message("assistant"):
+        st.markdown("**🤔 어떤 답변이 더 나은가요? 하나를 골라주세요.**")
+        options = [
+            ("A", "🅰️ 기본 (실시간·정밀 검색)", pend["A"]),
+            ("B", "🅱️ 대안 (넓은 검색)", pend["B"]),
+        ]
+        for col, (key, label, text) in zip(st.columns(2), options):
+            with col:
+                st.markdown(f"**{label}**")
+                st.markdown(text or "_(빈 답변)_", unsafe_allow_html=True)
+                if st.button("이 답변 선택", key=f"ab_pick_{key}", use_container_width=True):
+                    st.session_state.messages.append({"role": "assistant", "content": text})
+                    st.session_state.pop("ab_pending", None)
+                    st.rerun()
 
 
 def main() -> None:
@@ -176,9 +229,15 @@ def main() -> None:
             )
             st.session_state.rag_mode = _RAG_MODES[mode_label]
             st.session_state.rag_top_k = st.slider("검색 문서 수 (top-k)", 3, 10, 5)
-            st.caption(
-                "Rerank/Hybrid는 첫 사용 시 모델·인덱스 로딩으로 잠시 느릴 수 있어요."
+            st.session_state.ab_compare = st.checkbox(
+                "응답 2개 비교 후 선택 (GPT식)",
+                value=st.session_state.get("ab_compare", True),
+                help=(
+                    "답변을 기본(실시간·정밀)·대안(넓은 검색) 두 가지로 만들어 더 나은 쪽을 "
+                    "고르게 합니다. 생성을 2회 하므로 응답이 느려져요."
+                ),
             )
+            st.caption("Rerank/Hybrid는 첫 사용 시 모델·인덱스 로딩으로 잠시 느릴 수 있어요.")
 
         st.subheader("💡 이런 질문을 해보세요")
         for ex in _EXAMPLES:
@@ -188,12 +247,18 @@ def main() -> None:
         if st.button("🗑️ 대화 초기화", use_container_width=True):
             st.session_state.messages = [{"role": "assistant", "content": _WELCOME}]
             st.session_state.pop("pending", None)
+            st.session_state.pop("ab_pending", None)
             st.rerun()
 
     # 기존 대화 렌더
     for m in st.session_state.messages:
         with st.chat_message(m["role"]):
             st.markdown(m["content"], unsafe_allow_html=True)
+
+    # A/B 후보가 대기 중이면 선택 UI만 렌더하고 새 입력은 막는다 (선택해야 다음 질문).
+    if st.session_state.get("ab_pending"):
+        _render_ab_choice()
+        return
 
     # 입력: 채팅창 또는 사이드바 예시 버튼
     prompt = st.chat_input("궁금한 점을 물어보세요! (예: 졸업요건, 수강신청, 식단 등)")
@@ -208,27 +273,36 @@ def main() -> None:
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # 어시스턴트 응답 (스트리밍)
+    # 어시스턴트 응답
     history = st.session_state.messages[:-1]  # 현재 질문 제외
-    with st.chat_message("assistant"):
-        placeholder = st.empty()
-        result = _answer(
-            prompt,
-            history,
-            mode=st.session_state.get("rag_mode", "naive"),
-            top_k=st.session_state.get("rag_top_k", 5),
-        )
+    mode = st.session_state.get("rag_mode", "naive")
+    top_k = st.session_state.get("rag_top_k", 5)
 
-        if isinstance(result, str):
-            final = result
-            placeholder.markdown(final, unsafe_allow_html=True)
-        else:
-            final = ""
-            for partial in result:  # 누적 텍스트
-                final = partial
+    if st.session_state.get("ab_compare", True):
+        # A/B: 두 후보를 완성본으로 생성 → 다음 rerun에서 _render_ab_choice 로 선택.
+        #  A(기본) = 사이드바 모드 + 툴 ON → 툴 응답 또는 정밀 RAG
+        #  B(대안) = naive(무컷오프 recall) + 툴 OFF → 코퍼스 RAG
+        # 둘 다 RAG일 때는 정밀(A) vs recall(B) 대비, A가 툴일 때는 실시간 vs 코퍼스 대비.
+        with st.chat_message("assistant"):
+            with st.spinner("두 가지 답변을 준비하고 있어요... (조금 걸려요)"):
+                cand_a = _answer_final(prompt, history, mode=mode, top_k=top_k, use_tools=True)
+                cand_b = _answer_final(prompt, history, mode="naive", top_k=top_k, use_tools=False)
+        st.session_state.ab_pending = {"question": prompt, "A": cand_a, "B": cand_b}
+        st.rerun()
+    else:
+        # 단일 응답 (스트리밍)
+        with st.chat_message("assistant"):
+            placeholder = st.empty()
+            result = _answer(prompt, history, mode=mode, top_k=top_k)
+            if isinstance(result, str):
+                final = result
                 placeholder.markdown(final, unsafe_allow_html=True)
-
-    st.session_state.messages.append({"role": "assistant", "content": final})
+            else:
+                final = ""
+                for partial in result:  # 누적 텍스트
+                    final = partial
+                    placeholder.markdown(final, unsafe_allow_html=True)
+        st.session_state.messages.append({"role": "assistant", "content": final})
 
 
 # `streamlit run` 은 스크립트를 __main__ 으로 실행한다. 한 번만 호출한다.
